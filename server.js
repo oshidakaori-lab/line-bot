@@ -44,18 +44,17 @@ await client.replyMessage(event.replyToken, [
   
   const imageUrl = "https://i.imgur.com/gKnEQds.jpeg";
 
-  await client.replyMessage(event.replyToken, [
-    {
-      type: "image",
-      originalContentUrl: imageUrl,
-      previewImageUrl: imageUrl
-    },
-    {
-      type: "text",
-      text: "画像テストだよ！"
-    }
-  ]);
-}
+await client.replyMessage(event.replyToken, [
+  {
+    type: "image",
+    originalContentUrl: imageUrl,
+    previewImageUrl: imageUrl
+  },
+  {
+    type: "text",
+    text: `今日の空：${weather}`
+  }
+]);
     
     res.status(200).end();
 
