@@ -2,8 +2,16 @@
 // レア度
 // ------------------------------
 function getRarity(weather) {
-  if (weather === "雷") return "SSR";
+  let rand = Math.random();
 
+  // 雷はSSR出やすい
+  if (weather === "雷") rand *= 0.5;
+
+  if (rand < 0.6) return "N";
+  if (rand < 0.85) return "R";
+  if (rand < 0.97) return "SR";
+  return "SSR";
+}
   const rand = Math.random();
 
   if (rand < 0.6) return "N";
@@ -96,34 +104,50 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     // ------------------------------
     // SSR演出
     // ------------------------------
-    if (result.rarity === "SSR") {
-      result.feeling = "🌈超大吉🌈 " + result.feeling;
-    }
+if (result.rarity === "SR") {
+  result.advice = "ちょっと頑張ると跳ねる日✨ " + result.advice;
+}
 
-    if (result.character === "モモンガ" && result.rarity === "SSR") {
-      result.feeling = "💎完全覚醒💎 " + result.feeling;
-    }
+if (result.rarity === "R") {
+  result.advice = "コツコツが効く日🌱 " + result.advice;
+}
+    
+// ① モモンガ通常
+if (result.character === "モモンガ") {
+  result.feeling = "✨レア発生✨ " + result.feeling;
+  result.advice = "今日は好きに生きていい日♡ " + result.advice;
+}
 
-    // ------------------------------
-    // モモンガ演出
-    // ------------------------------
-    if (result.character === "モモンガ") {
-      result.feeling = "✨レア発生✨ " + result.feeling;
-      result.advice = "今日は好きに生きていい日♡ " + result.advice;
+// ② SSR共通
+if (result.rarity === "SSR") {
+  result.feeling = "🌈超大吉🌈 " + result.feeling;
+  result.advice = "今日は何しても上手くいく日🔥 " + result.advice;
+}
 
-      if (result.weather === "雷") {
-        result.feeling = "⚡神引き⚡ " + result.feeling;
-      }
-    }
+// ③ モモンガSSR（最強）
+if (result.character === "モモンガ" && result.rarity === "SSR") {
+  result.feeling = "💎完全覚醒💎 " + result.feeling;
+  result.advice = "全部思い通りになる日♡ " + result.advice;
+}
+
+// ④ 雷ボーナス（最後に乗算）
+if (result.weather === "雷") {
+  result.feeling = "⚡神引き⚡ " + result.feeling;
+}
 
     // ------------------------------
     // 画像分岐
     // ------------------------------
     let imageUrl = skyImages[result.weather] || skyImages["曇り"];
 
-    if (result.rarity === "SSR") {
-      imageUrl = "https://i.imgur.com/gKnEQds.jpeg"; // 神演出用
-    }
+    const ssrImages = [
+  "https://i.imgur.com/gKnEQds.jpeg",
+  "https://i.imgur.com/etZ12NJ.jpeg"
+];
+
+if (result.rarity === "SSR") {
+  imageUrl = ssrImages[Math.floor(Math.random() * ssrImages.length)];
+}
 
     const meaning = hexagramMeaning[result.name];
 
@@ -132,7 +156,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     // ------------------------------
     const flexMessage = {
       type: "flex",
-      altText: `${weatherEmoji[result.weather]} ${result.rarity}｜${result.name} ${result.line}爻`,
+      altText: `${weatherEmoji[result.weather] || ""} ${result.rarity}｜${result.name} ${result.line}爻`,
       contents: {
         type: "bubble",
 
