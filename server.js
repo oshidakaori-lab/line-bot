@@ -1,105 +1,257 @@
+// ------------------------------
+// レア度
+// ------------------------------
+function getRarity(weather) {
+  if (weather === "雷") return "SSR";
+
+  const rand = Math.random();
+
+  if (rand < 0.6) return "N";
+  if (rand < 0.85) return "R";
+  if (rand < 0.97) return "SR";
+  return "SSR";
+}
+
+// ------------------------------
+// 卦の意味
+// ------------------------------
+const hexagramMeaning = {
+  "乾為天": {
+    short: "創造・スタート",
+    detail: "エネルギー最大、攻める時"
+  },
+  "坤為地": {
+    short: "受容・安定",
+    detail: ""
+  }
+};
+
+// ------------------------------
+// キャラ演出
+// ------------------------------
+function applyCharacterFeeling(text, character) {
+  if (!text) return "";
+
+  if (character === "ちいかわ") return text + "…ってコト！？";
+  if (character === "ハチワレ") return text + " きっと大丈夫だよ";
+  if (character === "うさぎ") return text + " ワーッ！！";
+  if (character === "モモンガ") return "♡" + text + "♡";
+
+  return text;
+}
+
+function getColor(character) {
+  if (character === "ちいかわ") return "#FFC0CB";
+  if (character === "ハチワレ") return "#87CEFA";
+  if (character === "うさぎ") return "#FFD700";
+  if (character === "モモンガ") return "#FF69B4";
+  return "#f0f8ff";
+}
+
+function getComment(character) {
+  if (character === "ちいかわ") return "…ってコト！？って思ってる";
+  if (character === "ハチワレ") return "大丈夫かもねって考えてる";
+  if (character === "うさぎ") return "ワーッ！ってなってる";
+  if (character === "モモンガ") return "え〜♡全部うまくいく気しかしない〜";
+}
+
+// ------------------------------
+// 天気
+// ------------------------------
+const weatherEmoji = {
+  "晴れ": "☀️",
+  "曇り": "☁️",
+  "雨": "🌧️",
+  "風": "🌬️",
+  "雷": "⚡"
+};
+
+const skyImages = {
+  "晴れ": "https://i.imgur.com/gKnEQds.jpeg",
+  "曇り": "https://i.imgur.com/PNvbK3W.jpeg",
+  "雨": "https://i.imgur.com/WC8C8zC.jpeg",
+  "風": "https://i.imgur.com/9kFUKDI.jpeg",
+  "雷": "https://i.imgur.com/etZ12NJ.jpeg"
+};
+
+// ------------------------------
+// メイン処理
+// ------------------------------
 app.post("/callback", line.middleware(config), async (req, res) => {
   try {
     const event = req.body.events && req.body.events[0];
     if (!event) return res.status(200).end();
 
-    if (event.type === "message") {
-
-      const result = generateFortune();
-
-      const skyImages = {
-        "晴れ": "https://i.imgur.com/gKnEQds.jpeg",
-        "曇り": "https://i.imgur.com/PNvbK3W.jpeg",
-        "雨": "https://i.imgur.com/WC8C8zC.jpeg",
-        "風": "https://i.imgur.com/9kFUKDI.jpeg",
-        "雷": "https://i.imgur.com/etZ12NJ.jpeg"
-      };
-
-      const imageUrl = skyImages[result.weather];
-
-      const flexMessage = {
-        type: "flex",
-        altText: "今日の占い結果",
-        contents: {
-          type: "bubble",
-
-          hero: {
-            type: "image",
-            url: imageUrl,
-            size: "full",
-            aspectRatio: "16:9",
-            aspectMode: "cover"
-          },
-
-          body: {
-            type: "box",
-            layout: "vertical",
-            contents: [
-              {
-                type: "text",
-                text: `☁️ ${result.weather}`,
-                weight: "bold",
-                size: "lg"
-              },
-              {
-                type: "text",
-                text: `${result.name}｜${result.line}爻`,
-                size: "sm"
-              },
-              {
-                type: "text",
-                text: `🐾 ${result.character}`,
-                size: "sm"
-              },
-              {
-                type: "separator",
-                margin: "md"
-              },
-              {
-                type: "text",
-                text: result.feeling,
-                wrap: true,
-                margin: "md"
-              },
-              {
-                type: "text",
-                text: "👉 今日の一歩",
-                weight: "bold",
-                margin: "lg"
-              },
-              {
-                type: "text",
-                text: result.advice,
-                wrap: true
-              }
-            ]
-          },
-
-          styles: {
-            body: {
-              backgroundColor: "#f0f8ff"
-            }
-          },
-
-          footer: {
-            type: "box",
-            layout: "vertical",
-            contents: [
-              {
-                type: "button",
-                action: {
-                  type: "message",
-                  label: "もう一度占う",
-                  text: "占い"
-                }
-              }
-            ]
-          }
-        }
-      };
-
-      await client.replyMessage(event.replyToken, flexMessage);
+    if (event.type !== "message" || event.message.type !== "text") {
+      return res.status(200).end();
     }
+
+    const result = generateFortune();
+
+    // ------------------------------
+    // レア度決定
+    // ------------------------------
+    result.rarity = getRarity(result.weather);
+
+    // ------------------------------
+    // SSR演出
+    // ------------------------------
+    if (result.rarity === "SSR") {
+      result.feeling = "🌈超大吉🌈 " + result.feeling;
+    }
+
+    if (result.character === "モモンガ" && result.rarity === "SSR") {
+      result.feeling = "💎完全覚醒💎 " + result.feeling;
+    }
+
+    // ------------------------------
+    // モモンガ演出
+    // ------------------------------
+    if (result.character === "モモンガ") {
+      result.feeling = "✨レア発生✨ " + result.feeling;
+      result.advice = "今日は好きに生きていい日♡ " + result.advice;
+
+      if (result.weather === "雷") {
+        result.feeling = "⚡神引き⚡ " + result.feeling;
+      }
+    }
+
+    // ------------------------------
+    // 画像分岐
+    // ------------------------------
+    let imageUrl = skyImages[result.weather] || skyImages["曇り"];
+
+    if (result.rarity === "SSR") {
+      imageUrl = "https://i.imgur.com/gKnEQds.jpeg"; // 神演出用
+    }
+
+    const meaning = hexagramMeaning[result.name];
+
+    // ------------------------------
+    // Flex Message
+    // ------------------------------
+    const flexMessage = {
+      type: "flex",
+      altText: `${weatherEmoji[result.weather]} ${result.rarity}｜${result.name} ${result.line}爻`,
+      contents: {
+        type: "bubble",
+
+        hero: {
+          type: "image",
+          url: imageUrl,
+          size: "full",
+          aspectRatio: "16:9",
+          aspectMode: "cover"
+        },
+
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: `${weatherEmoji[result.weather] || "☁️"} ${result.weather}`,
+              weight: "bold",
+              size: "lg"
+            },
+
+            {
+              type: "text",
+              text:
+                result.rarity === "SSR"
+                  ? "🌈 ★ SSR ★ 🌈"
+                  : `★ ${result.rarity}`,
+              size: "xs",
+              color:
+                result.rarity === "SSR" ? "#ff0000" :
+                result.rarity === "SR" ? "#ff9900" :
+                result.rarity === "R" ? "#00aaff" :
+                "#999999"
+            },
+
+            {
+              type: "text",
+              text: meaning
+                ? `${result.name}（${meaning.short}）｜${result.line}爻`
+                : `${result.name}｜${result.line}爻`,
+              size: "sm"
+            },
+
+            ...(meaning?.detail ? [{
+              type: "text",
+              text: applyCharacterFeeling(meaning.detail, result.character),
+              size: "xs",
+              color: "#666666",
+              wrap: true,
+              margin: "sm"
+            }] : []),
+
+            {
+              type: "text",
+              text: `🐾 ${result.character}`,
+              size: "sm"
+            },
+            {
+              type: "text",
+              text: getComment(result.character),
+              size: "xs",
+              color: "#888888",
+              margin: "sm"
+            },
+
+            {
+              type: "separator",
+              margin: "md"
+            },
+
+            {
+              type: "text",
+              text: result.feeling,
+              wrap: true,
+              margin: "md"
+            },
+
+            {
+              type: "text",
+              text: "👉 今日の一歩（アクション）",
+              weight: "bold",
+              margin: "lg"
+            },
+            {
+              type: "text",
+              text: result.advice,
+              wrap: true
+            }
+          ]
+        },
+
+        styles: {
+          body: {
+            backgroundColor:
+              result.rarity === "SSR"
+                ? "#fff5e6"
+                : getColor(result.character)
+          }
+        },
+
+        footer: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "button",
+              action: {
+                type: "message",
+                label: "もう一度占う",
+                text: "占い"
+              }
+            }
+          ]
+        }
+      }
+    };
+
+    await client.replyMessage(event.replyToken, flexMessage);
 
     res.status(200).end();
 
