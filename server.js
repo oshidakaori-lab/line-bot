@@ -12,13 +12,6 @@ function getRarity(weather) {
   if (rand < 0.97) return "SR";
   return "SSR";
 }
-  const rand = Math.random();
-
-  if (rand < 0.6) return "N";
-  if (rand < 0.85) return "R";
-  if (rand < 0.97) return "SR";
-  return "SSR";
-}
 
 // ------------------------------
 // 卦の意味
@@ -145,8 +138,19 @@ if (result.weather === "雷") {
   "https://i.imgur.com/etZ12NJ.jpeg"
 ];
 
+let ssrType = "normal";
+
+if (result.weather === "雷") ssrType = "thunder";
+if (result.character === "モモンガ") ssrType = "momo";
+
 if (result.rarity === "SSR") {
-  imageUrl = ssrImages[Math.floor(Math.random() * ssrImages.length)];
+  if (ssrType === "thunder") {
+    imageUrl = "雷専用SSR画像";
+  } else if (ssrType === "momo") {
+    imageUrl = "モモンガSSR画像";
+  } else {
+    imageUrl = ssrImages[Math.floor(Math.random() * ssrImages.length)];
+  }
 }
 
     const meaning = hexagramMeaning[result.name];
