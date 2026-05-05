@@ -32,28 +32,77 @@ const skyImages = {
 
 const imageUrl = skyImages[result.weather];
 
-const text =
-`【今日の空】${result.weather}
-【卦】${result.name}｜${result.line}爻
-
-${result.feeling}
-ちいかわ達も「そんな感じだね」って言ってる
-
-👉 今日の一歩
-${result.advice}`;
+const flexMessage = {
+  type: "flex",
+  altText: "今日の占い結果",
+  contents: {
+    type: "bubble",
+    hero: {
+      type: "image",
+      url: imageUrl,
+      size: "full",
+      aspectRatio: "16:9",
+      aspectMode: "cover"
+    },
+    body: {
+      type: "box",
+      layout: "vertical",
+      contents: [
+        {
+          type: "text",
+          text: `☁️ ${result.weather}`,
+          weight: "bold",
+          size: "lg"
+        },
+        {
+          type: "text",
+          text: `${result.name}｜${result.line}爻`,
+          size: "sm",
+          color: "#666666"
+        },
+        {
+          type: "text",
+          text: `🐾 ${result.character}`,
+          size: "sm",
+          color: "#999999"
+        },
+        {
+          type: "separator",
+          margin: "md"
+        },
+        {
+          type: "text",
+          text: result.feeling,
+          wrap: true,
+          margin: "md",
+          size: "md"
+        },
+        {
+          type: "text",
+          text: "👉 今日の一歩",
+          weight: "bold",
+          margin: "lg"
+        },
+        {
+          type: "text",
+          text: result.advice,
+          wrap: true,
+          size: "sm",
+          color: "#333333"
+        }
+      ]
+    }
+  }
+};
+    
+    function getComment(character) {
+  if (character === "ちいかわ") return "…ってコト！？って言ってる";
+  if (character === "ハチワレ") return "大丈夫だよ、って言ってる";
+  if (character === "うさぎ") return "ワーッ！って言ってる";
+}
 
       // 🎯 返信（1回だけ！）
-await client.replyMessage(event.replyToken, [
-  {
-    type: "image",
-    originalContentUrl: imageUrl,
-    previewImageUrl: imageUrl
-  },
-  {
-    type: "text",
-    text: text
-  }
-]);
+await client.replyMessage(event.replyToken, flexMessage);
 
     res.status(200).end();
 
@@ -166,6 +215,82 @@ function generateFortune() {
     }
   }
 
+ const base = generateFortune();
+
+// 👇 キャラ決定
+const character = getCharacter(base.weather);
+
+// 👇 キャラ適用
+const result = applyCharacter(base, character);
+  
+function applyCharacter(result, character) {
+
+  let feeling = result.feeling;
+  let advice = result.advice;
+
+  if (character === "ちいかわ") {
+    feeling = "…ってコト！？ " + feeling;
+    advice = "ゆっくりでいいよ → " + advice;
+  }
+
+  if (character === "ハチワレ") {
+    feeling = "フーッ… " + feeling;
+    advice = "整理しよう → " + advice;
+  }
+
+  if (character === "うさぎ") {
+    feeling = "ワーッ！ " + feeling;
+    advice = "いっちゃえ！ → " + advice;
+  }
+
+  return {
+    ...result,
+    feeling,
+    advice,
+    character
+  };
+}
+  
+function getCharacter(weather) {
+  if (weather === "晴れ") return "うさぎ";
+  if (weather === "曇り") return "ハチワレ";
+  if (weather === "雨") return "ちいかわ";
+  if (weather === "風") return "うさぎ";
+  if (weather === "雷") return "ハチワレ";
+}
+  
+if (Math.random() < 0.1) return "モモンガ";  
+  
+  
+styles: {
+  body: {
+    backgroundColor: "#f0f8ff"
+  }
+}
+  
+function getColor(weather) {
+  if (weather === "晴れ") return "#FFD700";
+  if (weather === "雨") return "#87CEFA";
+  if (weather === "曇り") return "#C0C0C0";
+  if (weather === "風") return "#98FB98";
+  if (weather === "雷") return "#9370DB";
+}
+  
+footer: {
+  type: "box",
+  layout: "vertical",
+  contents: [
+    {
+      type: "button",
+      action: {
+        type: "message",
+        label: "もう一度占う",
+        text: "占い"
+      }
+    }
+  ]
+}  
+  
   return {
     weather,
     name,
@@ -174,4 +299,3 @@ function generateFortune() {
     advice
   };
 }
-
