@@ -1,3 +1,11 @@
+const skyImages = {
+  "晴れ": "https://i.imgur.com/gKnEQds.jpeg",
+  "曇り": "https://i.imgur.com/PNvbK3W.jpeg",
+  "雨": "https://i.imgur.com/WC8C8zC.jpeg",
+  "風": "https://i.imgur.com/9kFUKDI.jpeg",
+  "雷": "https://i.imgur.com/etZ12NJ.jpeg"
+};
+
 const express = require("express");
 const line = require("@line/bot-sdk");
 
@@ -77,11 +85,19 @@ ${feeling}
 👉 今日の一歩
 ${advice}`;
 
-  await client.replyMessage(event.replyToken, {
+const imageUrl = skyImages[weather];  
+  
+await client.replyMessage(event.replyToken, [
+  {
+    type: "image",
+    originalContentUrl: imageUrl,
+    previewImageUrl: imageUrl
+  },
+  {
     type: "text",
     text: text
-  });
-}
+  }
+]);
   
   res.status(200).end();
 });
