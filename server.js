@@ -29,7 +29,8 @@ if (event.type === "message") {
 
   // 🎯 ① 卦（1〜64）と爻（1〜6）
   const hexagramNumber = Math.floor(Math.random() * 64) + 1;
-  const line = Math.floor(Math.random() * 6) + 1;
+ 
+  const yao = Math.floor(Math.random() * 6) + 1;
 
   // 🎯 ② 卦名（最低限）
   const hexagramNames = [
@@ -77,7 +78,7 @@ if (event.type === "message") {
   // 🎯 ⑤ 最終メッセージ
   const text =
 `【今日の空】${weather}
-【卦】${hexagramName}｜${line}爻
+ 【卦】${hexagramName}｜${yao}爻
 
 ${feeling}
 ちいかわ達も「そんな感じだね」って言ってる
@@ -99,8 +100,10 @@ await client.replyMessage(event.replyToken, [
   }
 ]);
   
-  res.status(200).end();
-});
+const event = req.body.events && req.body.events[0];
+if (!event) {
+  return res.status(200).end();
+}
   
 const PORT = process.env.PORT || 3000;
 
