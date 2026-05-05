@@ -1,10 +1,10 @@
-// ------------------------------
+// ==============================
 // レア度
-// ------------------------------
+// ==============================
 function getRarity(weather) {
   let rand = Math.random();
 
-  // 雷はSSR出やすい
+  // 雷補正（SSR寄り）
   if (weather === "雷") rand *= 0.5;
 
   if (rand < 0.6) return "N";
@@ -13,9 +13,9 @@ function getRarity(weather) {
   return "SSR";
 }
 
-// ------------------------------
-// 卦の意味
-// ------------------------------
+// ==============================
+// 卦
+// ==============================
 const hexagramMeaning = {
   "乾為天": {
     short: "創造・スタート",
@@ -27,9 +27,9 @@ const hexagramMeaning = {
   }
 };
 
-// ------------------------------
+// ==============================
 // キャラ演出
-// ------------------------------
+// ==============================
 function applyCharacterFeeling(text, character) {
   if (!text) return "";
 
@@ -56,9 +56,9 @@ function getComment(character) {
   if (character === "モモンガ") return "え〜♡全部うまくいく気しかしない〜";
 }
 
-// ------------------------------
+// ==============================
 // 天気
-// ------------------------------
+// ==============================
 const weatherEmoji = {
   "晴れ": "☀️",
   "曇り": "☁️",
@@ -75,92 +75,78 @@ const skyImages = {
   "雷": "https://i.imgur.com/etZ12NJ.jpeg"
 };
 
-// ------------------------------
-// メイン処理
-// ------------------------------
+const ssrImages = [
+  "https://i.imgur.com/gKnEQds.jpeg",
+  "https://i.imgur.com/etZ12NJ.jpeg"
+];
+
+// ==============================
+// メイン
+// ==============================
 app.post("/callback", line.middleware(config), async (req, res) => {
   try {
-    const event = req.body.events && req.body.events[0];
-    if (!event) return res.status(200).end();
-
-    if (event.type !== "message" || event.message.type !== "text") {
+    const event = req.body.events?.[0];
+    if (!event || event.type !== "message" || event.message.type !== "text") {
       return res.status(200).end();
     }
 
     const result = generateFortune();
 
-    // ------------------------------
-    // レア度決定
-    // ------------------------------
+    // ----------------------
+    // レア度
+    // ----------------------
     result.rarity = getRarity(result.weather);
 
-    // ------------------------------
+    // ----------------------
     // SSR演出
-    // ------------------------------
-if (result.rarity === "SR") {
-  result.advice = "ちょっと頑張ると跳ねる日✨ " + result.advice;
-}
+    // ----------------------
+    if (result.rarity === "SR") {
+      result.advice = "ちょっと頑張ると跳ねる日✨ " + result.advice;
+    }
 
-if (result.rarity === "R") {
-  result.advice = "コツコツが効く日🌱 " + result.advice;
-}
-    
-// ① モモンガ通常
-if (result.character === "モモンガ") {
-  result.feeling = "✨レア発生✨ " + result.feeling;
-  result.advice = "今日は好きに生きていい日♡ " + result.advice;
-}
+    if (result.rarity === "R") {
+      result.advice = "コツコツが効く日🌱 " + result.advice;
+    }
 
-// ② SSR共通
-if (result.rarity === "SSR") {
-  result.feeling = "🌈超大吉🌈 " + result.feeling;
-  result.advice = "今日は何しても上手くいく日🔥 " + result.advice;
-}
+    if (result.rarity === "SSR") {
+      result.feeling = "🌈超大吉🌈 " + result.feeling;
+      result.advice = "今日は何しても上手くいく日🔥 " + result.advice;
+    }
 
-// ③ モモンガSSR（最強）
-if (result.character === "モモンガ" && result.rarity === "SSR") {
-  result.feeling = "💎完全覚醒💎 " + result.feeling;
-  result.advice = "全部思い通りになる日♡ " + result.advice;
-}
+    // モモンガ
+    if (result.character === "モモンガ") {
+      result.feeling = "✨レア発生✨ " + result.feeling;
+      result.advice = "今日は好きに生きていい日♡ " + result.advice;
+    }
 
-// ④ 雷ボーナス（最後に乗算）
-if (result.weather === "雷") {
-  result.feeling = "⚡神引き⚡ " + result.feeling;
-}
+    // モモンガSSR
+    if (result.character === "モモンガ" && result.rarity === "SSR") {
+      result.feeling = "💎完全覚醒💎 " + result.feeling;
+      result.advice = "全部思い通りになる日♡ " + result.advice;
+    }
 
-    // ------------------------------
-    // 画像分岐
-    // ------------------------------
+    // 雷
+    if (result.weather === "雷") {
+      result.feeling = "⚡神引き⚡ " + result.feeling;
+    }
+
+    // ----------------------
+    // 画像
+    // ----------------------
     let imageUrl = skyImages[result.weather] || skyImages["曇り"];
 
-    const ssrImages = [
-  "https://i.imgur.com/gKnEQds.jpeg",
-  "https://i.imgur.com/etZ12NJ.jpeg"
-];
-
-let ssrType = "normal";
-
-if (result.weather === "雷") ssrType = "thunder";
-if (result.character === "モモンガ") ssrType = "momo";
-
-if (result.rarity === "SSR") {
-  if (ssrType === "thunder") {
-    imageUrl = "雷専用SSR画像";
-  } else if (ssrType === "momo") {
-    imageUrl = "モモンガSSR画像";
-  } else {
-    imageUrl = ssrImages[Math.floor(Math.random() * ssrImages.length)];
-  }
-}
+    if (result.rarity === "SSR") {
+      imageUrl = ssrImages[Math.floor(Math.random() * ssrImages.length)];
+    }
 
     const meaning = hexagramMeaning[result.name];
 
-    // ------------------------------
-    // Flex Message
-    // ------------------------------
+    // ----------------------
+    // Flex
+    // ----------------------
     const flexMessage = {
       type: "flex",
-      altText: `${weatherEmoji[result.weather] || ""} ${result.rarity}｜${result.name} ${result.line}爻`,
+      altText: `${weatherEmoji[result.weather]} ${result.rarity}｜${result.name}`,
       contents: {
         type: "bubble",
 
@@ -178,17 +164,13 @@ if (result.rarity === "SSR") {
           contents: [
             {
               type: "text",
-              text: `${weatherEmoji[result.weather] || "☁️"} ${result.weather}`,
+              text: `${weatherEmoji[result.weather]} ${result.weather}`,
               weight: "bold",
               size: "lg"
             },
-
             {
               type: "text",
-              text:
-                result.rarity === "SSR"
-                  ? "🌈 ★ SSR ★ 🌈"
-                  : `★ ${result.rarity}`,
+              text: `★ ${result.rarity}`,
               size: "xs",
               color:
                 result.rarity === "SSR" ? "#ff0000" :
@@ -196,7 +178,6 @@ if (result.rarity === "SSR") {
                 result.rarity === "R" ? "#00aaff" :
                 "#999999"
             },
-
             {
               type: "text",
               text: meaning
@@ -209,9 +190,8 @@ if (result.rarity === "SSR") {
               type: "text",
               text: applyCharacterFeeling(meaning.detail, result.character),
               size: "xs",
-              color: "#666666",
-              wrap: true,
-              margin: "sm"
+              color: "#666",
+              wrap: true
             }] : []),
 
             {
@@ -219,32 +199,30 @@ if (result.rarity === "SSR") {
               text: `🐾 ${result.character}`,
               size: "sm"
             },
+
             {
               type: "text",
               text: getComment(result.character),
               size: "xs",
-              color: "#888888",
-              margin: "sm"
+              color: "#888"
             },
 
             {
-              type: "separator",
-              margin: "md"
+              type: "separator"
             },
 
             {
               type: "text",
               text: result.feeling,
-              wrap: true,
-              margin: "md"
+              wrap: true
             },
 
             {
               type: "text",
-              text: "👉 今日の一歩（アクション）",
-              weight: "bold",
-              margin: "lg"
+              text: "👉 今日の一歩",
+              weight: "bold"
             },
+
             {
               type: "text",
               text: result.advice,
@@ -260,27 +238,11 @@ if (result.rarity === "SSR") {
                 ? "#fff5e6"
                 : getColor(result.character)
           }
-        },
-
-        footer: {
-          type: "box",
-          layout: "vertical",
-          contents: [
-            {
-              type: "button",
-              action: {
-                type: "message",
-                label: "もう一度占う",
-                text: "占い"
-              }
-            }
-          ]
         }
       }
     };
 
     await client.replyMessage(event.replyToken, flexMessage);
-
     res.status(200).end();
 
   } catch (err) {
