@@ -20,13 +20,23 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     const event = req.body.events && req.body.events[0];
     if (!event) return res.status(200).end();
 
-    if (event.type === "message") {
-      await client.replyMessage(event.replyToken, {
-        type: "text",
-        text: "動いたよ！"
-      });
-    }
+if (event.type === "message") {
 
+  const imageUrl = "https://i.imgur.com/gKnEQds.jpeg";
+
+  await client.replyMessage(event.replyToken, [
+    {
+      type: "image",
+      originalContentUrl: imageUrl,
+      previewImageUrl: imageUrl
+    },
+    {
+      type: "text",
+      text: "画像テストだよ！"
+    }
+  ]);
+}
+    
     res.status(200).end();
 
   } catch (err) {
