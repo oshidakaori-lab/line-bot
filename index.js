@@ -255,23 +255,5 @@ app.post("/callback", line.middleware(config), async (req, res) => {
   }
 });
 
-  try {
-    const event = req.body.events?.[0];
-    if (!event || event.type !== "message") return res.status(200).end();
-
-    let result = generateFortune();
-    result = applyEffects(result);
-
-    const flex = buildFlex(result);
-
-    await client.replyMessage(event.replyToken, flex);
-
-    res.status(200).end();
-  } catch (err) {
-    console.error(err);
-    res.status(200).end();
-  }
-});
-
 // ==============================
 app.listen(process.env.PORT || 3000);
