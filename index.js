@@ -224,15 +224,18 @@ contents: [
     size: "sm"
   },
 
-  // 👇 ここがポイント
-  ...(getComment(result.character)
-    ? [{
-        type: "text",
-        text: getComment(result.character),
-        size: "xs",
-        color: "#888"
-      }]
-    : [],
+  ...(
+    getComment(result.character)
+      ? [
+          {
+            type: "text",
+            text: getComment(result.character),
+            size: "xs",
+            color: "#888"
+          }
+        ]
+      : []
+  ),
 
   {
     type: "separator"
@@ -255,7 +258,7 @@ contents: [
     text: result.advice,
     wrap: true
   }
-],
+]
       },
       styles: {
         body: {
