@@ -1,13 +1,12 @@
 // ==============================
 // 初期設定
 // ==============================
-const express = require("express");
-const line = require("@line/bot-sdk");
 require("dotenv").config();
 
-const app = express();
+const express = require("express");
+const line = require("@line/bot-sdk");
 
-// 👇 これを最初に入れる（超重要）
+const app = express();
 app.use(express.json());
 
 const config = {
@@ -18,11 +17,16 @@ const config = {
 const client = new line.Client(config);
 
 // ==============================
-// 生存確認
+// 生存確認（Render用）
 // ==============================
 app.get("/", (req, res) => {
   res.send("OK");
 });
+
+// ==============================
+// キュー（超シンプル）
+// ==============================
+const queue = [];
 
 // ==============================
 // レア度
@@ -118,6 +122,10 @@ function applyEffects(result) {
   if (result.rarity === "SSR") {
     feelings.unshift("🌈超大吉🌈");
     advices.unshift("今日は何しても上手くいく🔥");
+  } else if (result.rarity === "SR") {
+    feelings.unshift("✨少し跳ねる日✨");
+  } else if (result.rarity === "R") {
+    feelings.unshift("🌱コツコツの日🌱");
   }
 
   if (result.character === "モモンガ") {
@@ -199,14 +207,22 @@ function buildFlex(result) {
         layout: "vertical",
         contents: contents,
       },
+      styles: {
+        body: {
+          backgroundColor:
+            result.rarity === "SSR"
+              ? "#fff5e6"
+              : getColor(result.character),
+        },
+      },
     },
   };
 }
 
 // ==============================
-// Webhook
+// Webhook（即レス）
 // ==============================
-app.post("/callback", line.middleware(config), async (req, res) => {
+app.post("/callback", line.middleware(config), (req, res) => {
   try {
     const event = req.body.events?.[0];
 
@@ -214,20 +230,41 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       return res.status(200).end();
     }
 
+    const userId = event.source.userId;
+
+    // 👇 キューに入れるだけ
+    queue.push({ userId });
+
+    // 👇 即レス（超重要）
+    return res.status(200).end();
+
+  } catch (err) {
+    console.error("🔥 ERROR:", err);
+    return res.status(200).end();
+  }
+});
+
+// ==============================
+// Worker（裏処理）
+// ==============================
+setInterval(async () => {
+  if (queue.length === 0) return;
+
+  const job = queue.shift();
+
+  try {
     let result = generateFortune();
     result = applyEffects(result);
 
     const flexMessage = buildFlex(result);
 
-    await client.replyMessage(event.replyToken, [flexMessage]);
-
-    res.status(200).end();
+    // 👇 pushで送る（これが最強）
+    await client.pushMessage(job.userId, flexMessage);
 
   } catch (err) {
-    console.error("🔥 ERROR:", err.response?.data || err);
-    res.status(200).end();
+    console.error("🔥 WORKER ERROR:", err.response?.data || err);
   }
-});
+}, 300);
 
 // ==============================
 app.listen(process.env.PORT || 3000, () => {
