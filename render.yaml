@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: line-fortune-bot
+    name: line-bot
     runtime: node
     buildCommand: npm install
     startCommand: npm start
