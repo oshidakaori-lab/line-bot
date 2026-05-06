@@ -7,9 +7,6 @@ require("dotenv").config();
 
 const app = express();
 
-// 👇 これを追加
-app.use(express.json());
-
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
