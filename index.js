@@ -1,12 +1,4 @@
 // ==============================
-// 生きてるかチェック用
-// ==============================
-app.get("/", (req, res) => {
-  res.send("OK");
-});
-
-
-// ==============================
 // 初期設定
 // ==============================
 const express = require("express");
@@ -15,12 +7,8 @@ require("dotenv").config();
 
 const app = express();
 
-app.post(
-  "/callback",
-  line.middleware(config),
-  express.json(),
-  (req, res) => { ... }
-);
+// 👇 これを最初に入れる（超重要）
+app.use(express.json());
 
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -28,6 +16,13 @@ const config = {
 };
 
 const client = new line.Client(config);
+
+// ==============================
+// 生存確認
+// ==============================
+app.get("/", (req, res) => {
+  res.send("OK");
+});
 
 // ==============================
 // レア度
@@ -120,22 +115,15 @@ function applyEffects(result) {
   const feelings = [result.feeling];
   const advices = [result.advice];
 
-  // レア度
   if (result.rarity === "SSR") {
     feelings.unshift("🌈超大吉🌈");
     advices.unshift("今日は何しても上手くいく🔥");
-  } else if (result.rarity === "SR") {
-    feelings.unshift("✨少し跳ねる日✨");
-  } else if (result.rarity === "R") {
-    feelings.unshift("🌱コツコツの日🌱");
   }
 
-  // モモンガ
   if (result.character === "モモンガ") {
     feelings.unshift("✨レア発生✨");
   }
 
-  // 雷
   if (result.weather === "雷") {
     feelings.unshift("⚡神引き⚡");
   }
@@ -177,7 +165,6 @@ function buildFlex(result) {
     },
   ];
 
-  // コメント追加（安全）
   const comment = getComment(result.character);
   if (comment) {
     contents.push({
@@ -211,14 +198,6 @@ function buildFlex(result) {
         type: "box",
         layout: "vertical",
         contents: contents,
-      },
-      styles: {
-        body: {
-          backgroundColor:
-            result.rarity === "SSR"
-              ? "#fff5e6"
-              : getColor(result.character),
-        },
       },
     },
   };
