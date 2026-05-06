@@ -1,3 +1,5 @@
+console.error(err.response?.data);
+
 // ==============================
 // 初期設定
 // ==============================
@@ -6,8 +8,6 @@ const line = require("@line/bot-sdk");
 require("dotenv").config();
 
 const app = express();
-
-console.log("SECRET:", process.env.LINE_CHANNEL_SECRET);
 
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -77,7 +77,7 @@ function getComment(character) {
     ハチワレ: "大丈夫かもねって考えてる",
     うさぎ: "ワーッ！ってなってる",
     モモンガ: "え〜♡全部うまくいく気しかしない〜",
-  }[character] || "";
+  }[character] || "空文字";
 }
 
 // ==============================
@@ -185,7 +185,7 @@ function buildFlex(result) {
 
   return {
     type: "flex",
-    altText: `${weatherEmoji[result.weather]} ${result.rarity}｜${result.name}`,
+    altText: `${weatherEmoji[result.weather] || "空文字"} ${result.rarity}｜${result.name}`,
     contents: {
       type: "bubble",
       hero: {
@@ -245,8 +245,8 @@ app.post("/callback", line.middleware(config), async (req, res) => {
 
     const flexMessage = buildFlex(result);
 
-    await client.replyMessage(event.replyToken, flexMessage);
-
+    await client.replyMessage(event.replyToken, [flexMessage]);
+    
     return res.status(200).end();
 
   } catch (err) {
