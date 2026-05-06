@@ -1,5 +1,3 @@
-console.error(err.response?.data);
-
 // ==============================
 // 初期設定
 // ==============================
@@ -250,7 +248,9 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     return res.status(200).end();
 
   } catch (err) {
-    console.error("🔥 ERROR:", err);
+    
+    // 👇 ここだけで使う
+    console.error("🔥 ERROR:", err.response?.data || err);
 
     // 👇 これが超重要
     return res.status(200).end();
