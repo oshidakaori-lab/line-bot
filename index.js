@@ -7,6 +7,9 @@ require("dotenv").config();
 
 const app = express();
 
+// 🔥 これ重要（JSONを正しく読む）
+app.use(express.json());
+
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
@@ -19,7 +22,6 @@ const client = new line.Client(config);
 // ==============================
 function getRarity(weather) {
   let rand = Math.random();
-
   if (weather === "雷") rand *= 0.5;
 
   if (rand < 0.6) return "N";
@@ -29,11 +31,11 @@ function getRarity(weather) {
 }
 
 // ==============================
-// データ定義
+// データ
 // ==============================
 const hexagramMeaning = {
-  乾為天: { short: "創造・スタート", detail: "エネルギー最大、攻める時" },
-  坤為地: { short: "受容・安定", detail: "流れに任せると整う日" },
+  乾為天: { short: "創造・スタート" },
+  坤為地: { short: "受容・安定" },
 };
 
 const weatherEmoji = {
@@ -52,13 +54,8 @@ const skyImages = {
   雷: "https://i.imgur.com/etZ12NJ.jpeg",
 };
 
-const ssrImages = [
-  "https://i.imgur.com/gKnEQds.jpeg",
-  "https://i.imgur.com/etZ12NJ.jpeg",
-];
-
 // ==============================
-// キャラ処理
+// キャラ
 // ==============================
 function getColor(character) {
   return {
@@ -66,7 +63,7 @@ function getColor(character) {
     ハチワレ: "#87CEFA",
     うさぎ: "#FFD700",
     モモンガ: "#FF69B4",
-  }[character] || "#f0f8ff";
+  }[character] || "#ffffff";
 }
 
 function getComment(character) {
@@ -75,7 +72,7 @@ function getComment(character) {
     ハチワレ: "大丈夫かもねって考えてる",
     うさぎ: "ワーッ！ってなってる",
     モモンガ: "え〜♡全部うまくいく気しかしない〜",
-  }[character] || "空文字";
+  }[character] || "";
 }
 
 // ==============================
@@ -83,67 +80,52 @@ function getComment(character) {
 // ==============================
 function generateFortune() {
   const weatherList = ["晴れ", "曇り", "雨", "風", "雷"];
-  const nameList = Object.keys(hexagramMeaning);
   const characterList = ["ちいかわ", "ハチワレ", "うさぎ", "モモンガ"];
+  const nameList = Object.keys(hexagramMeaning);
 
   const weather = weatherList[Math.floor(Math.random() * weatherList.length)];
+  const character = characterList[Math.floor(Math.random() * characterList.length)];
   const name = nameList[Math.floor(Math.random() * nameList.length)];
   const line = Math.floor(Math.random() * 6) + 1;
-  const character = characterList[Math.floor(Math.random() * characterList.length)];
 
   const meaning = hexagramMeaning[name];
 
   return {
     weather,
+    character,
     name,
     line,
-    character,
     rarity: getRarity(weather),
-    feeling: meaning ? `${name}の気配がある日` : "少し不思議な空気の日",
-    advice: meaning ? `${meaning.short}を意識するとよさそう` : "まず一歩だけ動こう",
+    feeling: `${name}の気配がある日`,
+    advice: `${meaning.short}を意識するとよさそう`,
   };
 }
 
 // ==============================
-// 演出合成（コア）
+// 演出
 // ==============================
 function applyEffects(result) {
   const feelings = [result.feeling];
   const advices = [result.advice];
 
-  // --- レア度 ---
+  // レア度
   if (result.rarity === "SSR") {
     feelings.unshift("🌈超大吉🌈");
-    advices.unshift("今日は何しても上手くいく日🔥");
+    advices.unshift("今日は何しても上手くいく🔥");
   } else if (result.rarity === "SR") {
     feelings.unshift("✨少し跳ねる日✨");
-    advices.unshift("ちょっと頑張ると跳ねる日✨");
   } else if (result.rarity === "R") {
-    feelings.unshift("🌱コツコツが光る日🌱");
-    advices.unshift("コツコツが効く日🌱");
+    feelings.unshift("🌱コツコツの日🌱");
   }
 
-  // --- キャラ ---
+  // モモンガ
   if (result.character === "モモンガ") {
     feelings.unshift("✨レア発生✨");
-    advices.unshift("今日は好きに生きていい日♡");
-
-    if (result.rarity === "SSR") {
-      feelings.unshift("💎完全覚醒💎");
-      advices.unshift("全部思い通りになる日♡");
-    }
   }
 
-  // --- 卦 ---
-  const meaning = hexagramMeaning[result.name];
-  if (meaning) {
-    feelings.unshift(`「${meaning.short}」の日`);
-  }
-
-  // --- 天気 ---
+  // 雷
   if (result.weather === "雷") {
     feelings.unshift("⚡神引き⚡");
-    advices.unshift("全部一撃で決まる気がする日");
   }
 
   result.feeling = feelings.join(" ");
@@ -153,37 +135,57 @@ function applyEffects(result) {
 }
 
 // ==============================
-// 画像決定
-// ==============================
-function getImage(result) {
-  let imageUrl = skyImages[result.weather] || skyImages["曇り"];
-
-  if (result.rarity === "SSR") {
-    if (result.character === "モモンガ" && result.weather === "雷") {
-      return "https://i.imgur.com/etZ12NJ.jpeg";
-    }
-    if (result.character === "モモンガ") {
-      return "https://i.imgur.com/gKnEQds.jpeg";
-    }
-    if (result.weather === "雷") {
-      return "https://i.imgur.com/etZ12NJ.jpeg";
-    }
-    return ssrImages[Math.floor(Math.random() * ssrImages.length)];
-  }
-
-  return imageUrl;
-}
-
-// ==============================
 // Flex Message
 // ==============================
 function buildFlex(result) {
   const meaning = hexagramMeaning[result.name];
-  const imageUrl = getImage(result);
+  const imageUrl = skyImages[result.weather];
+
+  const contents = [
+    {
+      type: "text",
+      text: `${weatherEmoji[result.weather]} ${result.weather}`,
+      size: "lg",
+      weight: "bold",
+    },
+    {
+      type: "text",
+      text: result.rarity === "SSR" ? "🌈 ★ SSR ★ 🌈" : `★ ${result.rarity}`,
+      size: "xs",
+    },
+    {
+      type: "text",
+      text: `${result.name}（${meaning.short}）｜${result.line}爻`,
+      size: "sm",
+    },
+    {
+      type: "text",
+      text: `🐾 ${result.character}`,
+      size: "sm",
+    },
+  ];
+
+  // コメント追加（安全）
+  const comment = getComment(result.character);
+  if (comment) {
+    contents.push({
+      type: "text",
+      text: comment,
+      size: "xs",
+      color: "#888",
+    });
+  }
+
+  contents.push(
+    { type: "separator" },
+    { type: "text", text: result.feeling, wrap: true },
+    { type: "text", text: "👉 今日の一歩", weight: "bold" },
+    { type: "text", text: result.advice, wrap: true }
+  );
 
   return {
     type: "flex",
-    altText: `${weatherEmoji[result.weather] || "空文字"} ${result.rarity}｜${result.name}`,
+    altText: `${result.weather} ${result.rarity}`,
     contents: {
       type: "bubble",
       hero: {
@@ -196,73 +198,14 @@ function buildFlex(result) {
       body: {
         type: "box",
         layout: "vertical",
-contents: [
-  {
-    type: "text",
-    text: `${weatherEmoji[result.weather]} ${result.weather}`,
-    size: "lg",
-    weight: "bold"
-  },
-
-  {
-    type: "text",
-    text: result.rarity === "SSR" ? "🌈 ★ SSR ★ 🌈" : `★ ${result.rarity}`,
-    size: "xs"
-  },
-
-  {
-    type: "text",
-    text: meaning
-      ? `${result.name}（${meaning.short}）｜${result.line}爻`
-      : `${result.name}｜${result.line}爻`,
-    size: "sm"
-  },
-
-  {
-    type: "text",
-    text: `🐾 ${result.character}`,
-    size: "sm"
-  },
-
-  ...(
-    getComment(result.character)
-      ? [
-          {
-            type: "text",
-            text: getComment(result.character),
-            size: "xs",
-            color: "#888"
-          }
-        ]
-      : []
-  ),
-
-  {
-    type: "separator"
-  },
-
-  {
-    type: "text",
-    text: result.feeling,
-    wrap: true
-  },
-
-  {
-    type: "text",
-    text: "👉 今日の一歩",
-    weight: "bold"
-  },
-
-  {
-    type: "text",
-    text: result.advice,
-    wrap: true
-  }
-]
+        contents: contents,
       },
       styles: {
         body: {
-          backgroundColor: result.rarity === "SSR" ? "#fff5e6" : getColor(result.character),
+          backgroundColor:
+            result.rarity === "SSR"
+              ? "#fff5e6"
+              : getColor(result.character),
         },
       },
     },
@@ -276,7 +219,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
   try {
     const event = req.body.events?.[0];
 
-    if (!event || event.type !== "message" || event.message.type !== "text") {
+    if (!event || event.type !== "message") {
       return res.status(200).end();
     }
 
@@ -286,18 +229,16 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     const flexMessage = buildFlex(result);
 
     await client.replyMessage(event.replyToken, [flexMessage]);
-    
-    return res.status(200).end();
+
+    res.status(200).end();
 
   } catch (err) {
-    
-    // 👇 ここだけで使う
     console.error("🔥 ERROR:", err.response?.data || err);
-
-    // 👇 これが超重要
-    return res.status(200).end();
+    res.status(200).end();
   }
 });
 
 // ==============================
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, () => {
+  console.log("🚀 Server started");
+});
