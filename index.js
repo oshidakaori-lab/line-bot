@@ -7,8 +7,12 @@ require("dotenv").config();
 
 const app = express();
 
-// 🔥 これ重要（JSONを正しく読む）
-app.use(express.json());
+app.post(
+  "/callback",
+  line.middleware(config),
+  express.json(),
+  (req, res) => { ... }
+);
 
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
