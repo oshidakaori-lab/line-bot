@@ -233,6 +233,30 @@ function buildFlex(result) {
 app.post("/callback", line.middleware(config), async (req, res) => {
   try {
     const event = req.body.events?.[0];
+
+    if (!event || event.type !== "message" || event.message.type !== "text") {
+      return res.status(200).end();
+    }
+
+    let result = generateFortune();
+    result = applyRarityEffect(result);
+
+    const flexMessage = buildFlexMessage(result);
+
+    await client.replyMessage(event.replyToken, flexMessage);
+
+    return res.status(200).end();
+
+  } catch (err) {
+    console.error("🔥 ERROR:", err);
+
+    // 👇 これが超重要
+    return res.status(200).end();
+  }
+});
+
+  try {
+    const event = req.body.events?.[0];
     if (!event || event.type !== "message") return res.status(200).end();
 
     let result = generateFortune();
