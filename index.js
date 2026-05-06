@@ -232,7 +232,7 @@ contents: [
         size: "xs",
         color: "#888"
       }]
-    : []),
+    : [],
 
   {
     type: "separator"
