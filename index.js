@@ -196,36 +196,66 @@ function buildFlex(result) {
       body: {
         type: "box",
         layout: "vertical",
-        contents: [
-          { type: "text", text: `${weatherEmoji[result.weather]} ${result.weather}`, size: "lg", weight: "bold" },
-          {
-            type: "text",
-            text: result.rarity === "SSR" ? "🌈 ★ SSR ★ 🌈" : `★ ${result.rarity}`,
-            size: "xs",
-          },
-          {
-            type: "text",
-            text: meaning
-              ? `${result.name}（${meaning.short}）｜${result.line}爻`
-              : `${result.name}｜${result.line}爻`,
-            size: "sm",
-          },
-          { type: "text", text: `🐾 ${result.character}`, size: "sm" },
-          { type: "text", text: getComment(result.character)
-             ? [{
-               type: "text",
-               text: getComment(result.character), 
-               size: "xs",
-               color: "#888"
-               }]
-              : [])
-            
-            , size: "xs", color: "#888" },
-          { type: "separator" },
-          { type: "text", text: result.feeling, wrap: true },
-          { type: "text", text: "👉 今日の一歩", weight: "bold" },
-          { type: "text", text: result.advice, wrap: true },
-        ],
+contents: [
+  {
+    type: "text",
+    text: `${weatherEmoji[result.weather]} ${result.weather}`,
+    size: "lg",
+    weight: "bold"
+  },
+
+  {
+    type: "text",
+    text: result.rarity === "SSR" ? "🌈 ★ SSR ★ 🌈" : `★ ${result.rarity}`,
+    size: "xs"
+  },
+
+  {
+    type: "text",
+    text: meaning
+      ? `${result.name}（${meaning.short}）｜${result.line}爻`
+      : `${result.name}｜${result.line}爻`,
+    size: "sm"
+  },
+
+  {
+    type: "text",
+    text: `🐾 ${result.character}`,
+    size: "sm"
+  },
+
+  // 👇 ここがポイント
+  ...(getComment(result.character)
+    ? [{
+        type: "text",
+        text: getComment(result.character),
+        size: "xs",
+        color: "#888"
+      }]
+    : []),
+
+  {
+    type: "separator"
+  },
+
+  {
+    type: "text",
+    text: result.feeling,
+    wrap: true
+  },
+
+  {
+    type: "text",
+    text: "👉 今日の一歩",
+    weight: "bold"
+  },
+
+  {
+    type: "text",
+    text: result.advice,
+    wrap: true
+  }
+],
       },
       styles: {
         body: {
