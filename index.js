@@ -239,9 +239,9 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     }
 
     let result = generateFortune();
-    result = applyRarityEffect(result);
+    result = applyEffects(result);
 
-    const flexMessage = buildFlexMessage(result);
+    const flexMessage = buildFlex(result);
 
     await client.replyMessage(event.replyToken, flexMessage);
 
