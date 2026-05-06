@@ -211,7 +211,16 @@ function buildFlex(result) {
             size: "sm",
           },
           { type: "text", text: `🐾 ${result.character}`, size: "sm" },
-          { type: "text", text: getComment(result.character), size: "xs", color: "#888" },
+          { type: "text", text: getComment(result.character)
+             ? [{
+               type: "text",
+               text: getComment(result.character), 
+               size: "xs",
+               color: "#888"
+               }]
+              : [])
+            
+            , size: "xs", color: "#888" },
           { type: "separator" },
           { type: "text", text: result.feeling, wrap: true },
           { type: "text", text: "👉 今日の一歩", weight: "bold" },
