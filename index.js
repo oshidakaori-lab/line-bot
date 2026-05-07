@@ -6,9 +6,6 @@ const OpenAI = require("openai");
 
 const app = express();
 
-// JSON
-app.use(express.json());
-
 // ==============================
 // LINE設定
 // ==============================
@@ -34,7 +31,7 @@ app.get("/", (req, res) => {
 });
 
 // ==============================
-// Queue
+// queue
 // ==============================
 const queue = [];
 
@@ -81,7 +78,7 @@ const hexagrams = [
 ];
 
 // ==============================
-// OpenAI 占い
+// AI占い
 // ==============================
 async function generateAIAdvice(result) {
 
@@ -221,7 +218,7 @@ function buildFlex(result) {
 app.post(
   "/callback",
 
-  // middleware
+  // ここ重要
   line.middleware(config),
 
   async (req, res) => {
@@ -230,7 +227,7 @@ app.post(
 
       console.log("Webhook受信");
 
-      // まず即200返す
+      // 即200返す
       res.status(200).end();
 
       const events = req.body.events || [];
@@ -260,11 +257,6 @@ app.post(
 
       console.error("WEBHOOK ERROR");
       console.error(err);
-
-      // ここ重要
-      try {
-        res.status(200).end();
-      } catch {}
     }
   }
 );
