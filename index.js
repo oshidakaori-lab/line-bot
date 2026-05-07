@@ -3,6 +3,26 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+async function askGPT(text) {
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4.1-mini",
+    messages: [
+      {
+        role: "system",
+        content: "あなたは空と易の幻想的占い師です"
+      },
+      {
+        role: "user",
+        content: text
+      }
+    ]
+  });
+
+  return response.choices[0].message.content;
+}
+
+const reply = await askGPT("今日の運勢を占って");
 
 require("dotenv").config();
 
