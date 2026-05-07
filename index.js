@@ -1,12 +1,10 @@
-// ==============================
-// 初期設定
-// ==============================
 require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
 
 const app = express();
+
 app.use(express.json());
 
 const config = {
@@ -17,38 +15,20 @@ const config = {
 const client = new line.Client(config);
 
 // ==============================
-// 生存確認（Render用）
+// 生存確認
 // ==============================
 app.get("/", (req, res) => {
   res.send("OK");
 });
 
 // ==============================
-// キュー（超シンプル）
+// queue
 // ==============================
 const queue = [];
 
 // ==============================
-// レア度
-// ==============================
-function getRarity(weather) {
-  let rand = Math.random();
-  if (weather === "雷") rand *= 0.5;
-
-  if (rand < 0.6) return "N";
-  if (rand < 0.85) return "R";
-  if (rand < 0.97) return "SR";
-  return "SSR";
-}
-
-// ==============================
 // データ
 // ==============================
-const hexagramMeaning = {
-  乾為天: { short: "創造・スタート" },
-  坤為地: { short: "受容・安定" },
-};
-
 const weatherEmoji = {
   晴れ: "☀️",
   曇り: "☁️",
@@ -65,206 +45,178 @@ const skyImages = {
   雷: "https://i.imgur.com/etZ12NJ.jpeg",
 };
 
-// ==============================
-// キャラ
-// ==============================
-function getColor(character) {
-  return {
-    ちいかわ: "#FFC0CB",
-    ハチワレ: "#87CEFA",
-    うさぎ: "#FFD700",
-    モモンガ: "#FF69B4",
-  }[character] || "#ffffff";
-}
+const characters = [
+  "ちいかわ",
+  "ハチワレ",
+  "うさぎ",
+  "モモンガ"
+];
 
-function getComment(character) {
-  return {
-    ちいかわ: "…ってコト！？って思ってる",
-    ハチワレ: "大丈夫かもねって考えてる",
-    うさぎ: "ワーッ！ってなってる",
-    モモンガ: "え〜♡全部うまくいく気しかしない〜",
-  }[character] || "";
-}
+const weathers = [
+  "晴れ",
+  "曇り",
+  "雨",
+  "風",
+  "雷"
+];
 
 // ==============================
 // 占い生成
 // ==============================
 function generateFortune() {
-  const weatherList = ["晴れ", "曇り", "雨", "風", "雷"];
-  const characterList = ["ちいかわ", "ハチワレ", "うさぎ", "モモンガ"];
-  const nameList = Object.keys(hexagramMeaning);
 
-  const weather = weatherList[Math.floor(Math.random() * weatherList.length)];
-  const character = characterList[Math.floor(Math.random() * characterList.length)];
-  const name = nameList[Math.floor(Math.random() * nameList.length)];
-  const line = Math.floor(Math.random() * 6) + 1;
+  const weather =
+    weathers[Math.floor(Math.random() * weathers.length)];
 
-  const meaning = hexagramMeaning[name];
+  const character =
+    characters[Math.floor(Math.random() * characters.length)];
 
   return {
     weather,
     character,
-    name,
-    line,
-    rarity: getRarity(weather),
-    feeling: `${name}の気配がある日`,
-    advice: `${meaning.short}を意識するとよさそう`,
+    rarity: Math.random() > 0.9 ? "SSR" : "N",
+    feeling: "今日は空気が動く日",
+    advice: "まず一歩動いてみよう",
   };
-}
-
-// ==============================
-// 演出
-// ==============================
-function applyEffects(result) {
-  const feelings = [result.feeling];
-  const advices = [result.advice];
-
-  if (result.rarity === "SSR") {
-    feelings.unshift("🌈超大吉🌈");
-    advices.unshift("今日は何しても上手くいく🔥");
-  } else if (result.rarity === "SR") {
-    feelings.unshift("✨少し跳ねる日✨");
-  } else if (result.rarity === "R") {
-    feelings.unshift("🌱コツコツの日🌱");
-  }
-
-  if (result.character === "モモンガ") {
-    feelings.unshift("✨レア発生✨");
-  }
-
-  if (result.weather === "雷") {
-    feelings.unshift("⚡神引き⚡");
-  }
-
-  result.feeling = feelings.join(" ");
-  result.advice = advices.join(" ");
-
-  return result;
 }
 
 // ==============================
 // Flex Message
 // ==============================
 function buildFlex(result) {
-  const meaning = hexagramMeaning[result.name];
-  const imageUrl = skyImages[result.weather];
-
-  const contents = [
-    {
-      type: "text",
-      text: `${weatherEmoji[result.weather]} ${result.weather}`,
-      size: "lg",
-      weight: "bold",
-    },
-    {
-      type: "text",
-      text: result.rarity === "SSR" ? "🌈 ★ SSR ★ 🌈" : `★ ${result.rarity}`,
-      size: "xs",
-    },
-    {
-      type: "text",
-      text: `${result.name}（${meaning.short}）｜${result.line}爻`,
-      size: "sm",
-    },
-    {
-      type: "text",
-      text: `🐾 ${result.character}`,
-      size: "sm",
-    },
-  ];
-
-  const comment = getComment(result.character);
-  if (comment) {
-    contents.push({
-      type: "text",
-      text: comment,
-      size: "xs",
-      color: "#888",
-    });
-  }
-
-  contents.push(
-    { type: "separator" },
-    { type: "text", text: result.feeling, wrap: true },
-    { type: "text", text: "👉 今日の一歩", weight: "bold" },
-    { type: "text", text: result.advice, wrap: true }
-  );
 
   return {
     type: "flex",
-    altText: `${result.weather} ${result.rarity}`,
+    altText: "今日の運勢",
     contents: {
       type: "bubble",
+
       hero: {
         type: "image",
-        url: imageUrl,
+        url: skyImages[result.weather],
         size: "full",
         aspectRatio: "16:9",
-        aspectMode: "cover",
+        aspectMode: "cover"
       },
+
       body: {
         type: "box",
         layout: "vertical",
-        contents: contents,
-      },
-      styles: {
-        body: {
-          backgroundColor:
-            result.rarity === "SSR"
-              ? "#fff5e6"
-              : getColor(result.character),
-        },
-      },
-    },
+
+        contents: [
+
+          {
+            type: "text",
+            text:
+              `${weatherEmoji[result.weather]} ${result.weather}`,
+            size: "xl",
+            weight: "bold"
+          },
+
+          {
+            type: "text",
+            text: result.rarity,
+            size: "sm"
+          },
+
+          {
+            type: "text",
+            text: `🐾 ${result.character}`,
+            size: "sm"
+          },
+
+          {
+            type: "separator"
+          },
+
+          {
+            type: "text",
+            text: result.feeling,
+            wrap: true
+          },
+
+          {
+            type: "text",
+            text: result.advice,
+            wrap: true
+          }
+
+        ]
+      }
+    }
   };
 }
 
 // ==============================
-// Webhook（即レス）
+// Webhook
 // ==============================
-app.post("/callback", line.middleware(config), (req, res) => {
-  try {
-    const event = req.body.events?.[0];
+app.post(
+  "/callback",
+  line.middleware(config),
+  (req, res) => {
 
-    if (!event) {
+    try {
+
+      const event = req.body.events?.[0];
+
+      if (!event) {
+        return res.status(200).end();
+      }
+
+      console.log("受信OK");
+
+      // queueへ追加
+      queue.push({
+        userId: event.source.userId
+      });
+
+      // 即200返す
+      return res.status(200).end();
+
+    } catch (err) {
+
+      console.error("ERROR:", err);
+
       return res.status(200).end();
     }
-
-    console.log("受信OK");
-
-    return res.status(200).end();
-
-  } catch (err) {
-    console.error("🔥 ERROR:", err);
-    return res.status(200).end();
   }
-});
+);
 
 // ==============================
-// Worker（裏処理）
+// Worker
 // ==============================
 setInterval(async () => {
+
   if (queue.length === 0) return;
 
   const job = queue.shift();
 
   try {
-    let result = generateFortune();
-    result = applyEffects(result);
 
-    const flexMessage = buildFlex(result);
+    console.log("送信開始");
 
-    // 👇 pushで送る（これが最強）
-    await client.pushMessage(job.userId, flexMessage);
+    const result = generateFortune();
+
+    const flex = buildFlex(result);
+
+    await client.pushMessage(
+      job.userId,
+      [flex]
+    );
+
+    console.log("送信成功");
 
   } catch (err) {
-    console.error("🔥 WORKER ERROR:", err.response?.data || err);
+
+    console.error(
+      "WORKER ERROR:",
+      err.response?.data || err
+    );
   }
-}, 300);
+
+}, 500);
 
 // ==============================
 app.listen(process.env.PORT || 3000, () => {
   console.log("🚀 Server started");
 });
-
-console.log("来た");
