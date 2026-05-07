@@ -1,3 +1,9 @@
+const OpenAI = require("openai");
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+
 require("dotenv").config();
 
 const express = require("express");
@@ -64,6 +70,42 @@ const weathers = [
 ];
 
 // ==============================
+// AI占い関数
+// ==============================
+async function generateAIAdvice(result) {
+  try {
+
+    const prompt = `
+あなたは幻想的な空の占い師です。
+
+天気: ${result.weather}
+卦: ${result.name}
+レア度: ${result.rarity}
+キャラ: ${result.character}
+
+80文字以内で
+幻想的で優しい今日の運勢を返してください。
+`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    return completion.choices[0].message.content;
+
+  } catch (err) {
+    console.error(err);
+    return "静かな空気が流れています。";
+  }
+}
+
+// ==============================
 // 占い生成
 // ==============================
 function generateFortune() {
@@ -108,6 +150,14 @@ function buildFlex(result) {
 
         contents: [
 
+{
+  type: "text",
+  text: result.aiAdvice,
+  wrap: true,
+  size: "sm",
+  color: "#444444"
+},        
+        
           {
             type: "text",
             text:
@@ -235,6 +285,8 @@ setInterval(async () => {
 
     const result = generateFortune();
 
+    result.aiAdvice = await generateAIAdvice(result);
+    
     const flex = buildFlex(result);
 
     await client.pushMessage(
