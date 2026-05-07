@@ -156,19 +156,19 @@ function buildFlex(result) {
 app.post("/callback", line.middleware(config), (req, res) => {
   try {
 
+    console.log("Webhook受信");
+
     const events = req.body.events || [];
+
+    if (events.length === 0) {
+      return res.status(200).end();
+    }
 
     for (const event of events) {
 
       if (event.type !== "message") continue;
 
-      if (!event.source?.userId) continue;
-
-      queue.push({
-        userId: event.source.userId
-      });
-
-      console.log("QUEUE追加");
+      console.log("メッセージ受信");
     }
 
     return res.status(200).end();
