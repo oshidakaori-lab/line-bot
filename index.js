@@ -5,7 +5,7 @@ const line = require("@line/bot-sdk");
 
 const app = express();
 
-app.use(express.json());
+
 
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -13,6 +13,9 @@ const config = {
 };
 
 const client = new line.Client(config);
+
+console.log("SECRET:", process.env.LINE_CHANNEL_SECRET);
+console.log("TOKEN:", process.env.LINE_CHANNEL_ACCESS_TOKEN);
 
 // ==============================
 // 生存確認
@@ -150,37 +153,33 @@ function buildFlex(result) {
 // ==============================
 // Webhook
 // ==============================
-app.post(
-  "/callback",
-  line.middleware(config),
-  (req, res) => {
+app.post("/callback", line.middleware(config), (req, res) => {
+  try {
 
-    try {
+    const events = req.body.events || [];
 
-      const event = req.body.events?.[0];
+    for (const event of events) {
 
-      if (!event) {
-        return res.status(200).end();
-      }
+      if (event.type !== "message") continue;
 
-      console.log("受信OK");
+      if (!event.source?.userId) continue;
 
-      // queueへ追加
       queue.push({
         userId: event.source.userId
       });
 
-      // 即200返す
-      return res.status(200).end();
-
-    } catch (err) {
-
-      console.error("ERROR:", err);
-
-      return res.status(200).end();
+      console.log("QUEUE追加");
     }
+
+    return res.status(200).end();
+
+  } catch (err) {
+
+    console.error("🔥 ERROR:", err);
+
+    return res.status(200).end();
   }
-);
+});
 
 // ==============================
 // Worker
