@@ -168,7 +168,13 @@ app.post("/callback", line.middleware(config), (req, res) => {
 
       if (event.type !== "message") continue;
 
+      if (!event.source?.userId) continue;
+
       console.log("メッセージ受信");
+
+      queue.push({
+        userId: event.source.userId
+      });
     }
 
     return res.status(200).end();
@@ -184,6 +190,39 @@ app.post("/callback", line.middleware(config), (req, res) => {
 // ==============================
 // Worker
 // ==============================
+
+setInterval(async () => {
+
+  if (queue.length === 0) return;
+
+  const job = queue.shift();
+
+  try {
+
+    let result = generateFortune();
+
+    result = applyEffects(result);
+
+    const flexMessage = buildFlex(result);
+
+    await client.pushMessage(
+      job.userId,
+      [flexMessage]
+    );
+
+    console.log("送信成功");
+
+  } catch (err) {
+
+    console.error(
+      "🔥 PUSH ERROR:",
+      err.response?.data || err
+    );
+  }
+
+}, 300);
+
+
 setInterval(async () => {
 
   if (queue.length === 0) return;
