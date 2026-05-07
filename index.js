@@ -255,6 +255,46 @@ setInterval(async () => {
 }, 500);
 
 // ==============================
+// 演出
+// ==============================
+function applyEffects(result) {
+
+  const feelings = [result.feeling];
+  const advices = [result.advice];
+
+  // SSR
+  if (result.rarity === "SSR") {
+    feelings.unshift("🌈超大吉🌈");
+    advices.unshift("今日は何しても上手くいく🔥");
+  }
+
+  // SR
+  else if (result.rarity === "SR") {
+    feelings.unshift("✨少し跳ねる日✨");
+  }
+
+  // R
+  else if (result.rarity === "R") {
+    feelings.unshift("🌱コツコツの日🌱");
+  }
+
+  // モモンガ
+  if (result.character === "モモンガ") {
+    feelings.unshift("✨レア発生✨");
+  }
+
+  // 雷
+  if (result.weather === "雷") {
+    feelings.unshift("⚡神引き⚡");
+  }
+
+  result.feeling = feelings.join(" ");
+  result.advice = advices.join(" ");
+
+  return result;
+}
+
+// ==============================
 app.listen(process.env.PORT || 3000, () => {
   console.log("🚀 Server started");
 });
