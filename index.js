@@ -226,16 +226,12 @@ app.post("/callback", line.middleware(config), (req, res) => {
   try {
     const event = req.body.events?.[0];
 
-    if (!event || event.type !== "message") {
+    if (!event) {
       return res.status(200).end();
     }
 
-    const userId = event.source.userId;
+    console.log("受信OK");
 
-    // 👇 キューに入れるだけ
-    queue.push({ userId });
-
-    // 👇 即レス（超重要）
     return res.status(200).end();
 
   } catch (err) {
@@ -270,3 +266,5 @@ setInterval(async () => {
 app.listen(process.env.PORT || 3000, () => {
   console.log("🚀 Server started");
 });
+
+console.log("来た");
