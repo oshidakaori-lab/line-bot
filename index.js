@@ -8,6 +8,9 @@ const app = express();
 
 app.use(express.json());
 
+// ==============================
+// LINE設定
+// ==============================
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
@@ -15,6 +18,9 @@ const config = {
 
 const client = new line.Client(config);
 
+// ==============================
+// OpenAI
+// ==============================
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -54,7 +60,7 @@ const characters = [
   "ちいかわ",
   "ハチワレ",
   "うさぎ",
-  "モモンガ"
+  "モモンガ",
 ];
 
 const weathers = [
@@ -62,7 +68,7 @@ const weathers = [
   "曇り",
   "雨",
   "風",
-  "雷"
+  "雷",
 ];
 
 const hexagrams = [
@@ -70,54 +76,26 @@ const hexagrams = [
   "坤為地",
   "水雷屯",
   "山水蒙",
-  "天水訟"
+  "天水訟",
 ];
 
 // ==============================
-// AI占い
+// レア度
 // ==============================
-async function generateAIAdvice(result) {
-  try {
+function getRarity(weather) {
 
-    const prompt = `
-あなたは「空の易」の幻想的占い師です。
+  let rand = Math.random();
 
-空模様・易経・感情・運命を詩的に読み解きます。
-
-条件:
-- 80文字以内
-- 幻想的
-- やさしい
-- 不思議
-- 日本語
-
-天気: ${result.weather}
-卦: ${result.name}
-レア度: ${result.rarity}
-キャラ: ${result.character}
-
-今日の運勢:
-`;
-
-    const completion =
-      await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ]
-      });
-
-    return completion.choices[0].message.content;
-
-  } catch (err) {
-
-    console.error(err);
-
-    return "静かな空気が流れています。";
+  // 雷はSSR率UP
+  if (weather === "雷") {
+    rand *= 0.5;
   }
+
+  if (rand < 0.6) return "N";
+  if (rand < 0.85) return "R";
+  if (rand < 0.97) return "SR";
+
+  return "SSR";
 }
 
 // ==============================
@@ -135,7 +113,7 @@ function generateFortune() {
     hexagrams[Math.floor(Math.random() * hexagrams.length)];
 
   const rarity =
-    Math.random() > 0.9 ? "SSR" : "N";
+    getRarity(weather);
 
   return {
     weather,
@@ -148,12 +126,131 @@ function generateFortune() {
 }
 
 // ==============================
+// 演出
+// ==============================
+function applyEffects(result) {
+
+  const feelings = [result.feeling];
+  const advices = [result.advice];
+
+  // SSR
+  if (result.rarity === "SSR") {
+
+    feelings.unshift("🌈 超大吉 🌈");
+
+    advices.unshift(
+      "運命が大きく動く日"
+    );
+  }
+
+  // SR
+  else if (result.rarity === "SR") {
+
+    feelings.unshift(
+      "✨ 少し跳ねる日 ✨"
+    );
+  }
+
+  // R
+  else if (result.rarity === "R") {
+
+    feelings.unshift(
+      "🌱 積み重ねの日 🌱"
+    );
+  }
+
+  // モモンガ
+  if (result.character === "モモンガ") {
+
+    feelings.unshift(
+      "💎 レア気配 💎"
+    );
+  }
+
+  // 雷
+  if (result.weather === "雷") {
+
+    feelings.unshift(
+      "⚡ 神引き ⚡"
+    );
+  }
+
+  result.feeling =
+    feelings.join(" ");
+
+  result.advice =
+    advices.join(" ");
+
+  return result;
+}
+
+// ==============================
+// AI占い
+// ==============================
+async function generateAIAdvice(result) {
+
+  try {
+
+    const prompt = `
+あなたは「空の易」の幻想的占い師です。
+
+空・雲・雷・風・雨・易経・夢・感情を
+静かに読み解きます。
+
+条件:
+
+- 80文字以内
+- 日本語
+- 幻想的
+- 少し切ない
+- 詩的
+- 優しい
+- 不思議
+- 余韻
+- 説明しすぎない
+
+天気: ${result.weather}
+卦: ${result.name}
+レア度: ${result.rarity}
+キャラ: ${result.character}
+
+今日の運勢:
+`;
+
+    const completion =
+      await openai.chat.completions.create({
+        model: "gpt-4.1-mini",
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
+
+    return completion.choices[0].message.content;
+
+  } catch (err) {
+
+    console.error(
+      "OPENAI ERROR:",
+      err.response?.data ||
+      err.message ||
+      err
+    );
+
+    return "静かな空気が流れています。";
+  }
+}
+
+// ==============================
 // Flex
 // ==============================
 function buildFlex(result) {
 
   return {
     type: "flex",
+
     altText: "今日の運勢",
 
     contents: {
@@ -161,49 +258,71 @@ function buildFlex(result) {
 
       hero: {
         type: "image",
-        url: skyImages[result.weather],
+
+        url:
+          skyImages[result.weather] ||
+          skyImages["曇り"],
+
         size: "full",
+
         aspectRatio: "16:9",
+
         aspectMode: "cover",
       },
 
       body: {
         type: "box",
+
         layout: "vertical",
 
         contents: [
 
           {
             type: "text",
+
             text: result.aiAdvice,
+
             wrap: true,
+
             size: "sm",
+
             color: "#444444",
           },
 
           {
             type: "text",
+
             text:
               `${weatherEmoji[result.weather]} ${result.weather}`,
+
             size: "xl",
+
             weight: "bold",
           },
 
           {
             type: "text",
-            text: result.rarity,
+
+            text:
+              `★ ${result.rarity}`,
+
             size: "sm",
           },
 
           {
             type: "text",
+
             text: result.name,
+
             size: "sm",
           },
 
           {
             type: "text",
-            text: `🐾 ${result.character}`,
+
+            text:
+              `🐾 ${result.character}`,
+
             size: "sm",
           },
 
@@ -213,16 +332,19 @@ function buildFlex(result) {
 
           {
             type: "text",
+
             text: result.feeling,
+
             wrap: true,
           },
 
           {
             type: "text",
+
             text: result.advice,
+
             wrap: true,
           },
-
         ],
       },
     },
@@ -234,35 +356,60 @@ function buildFlex(result) {
 // ==============================
 app.post(
   "/callback",
+
   line.middleware(config),
+
   (req, res) => {
 
     try {
 
       console.log("Webhook受信");
 
-      const events = req.body.events || [];
+      const events =
+        req.body.events || [];
 
+      // 疎通確認
       if (events.length === 0) {
+
         return res.status(200).end();
       }
 
       for (const event of events) {
 
-        if (event.type !== "message") continue;
+        if (event.type !== "message") {
+          continue;
+        }
 
-        if (!event.source?.userId) continue;
+        if (!event.source?.userId) {
+          continue;
+        }
 
-        queue.push({
-          userId: event.source.userId,
-        });
+        console.log(
+          "メッセージ受信:",
+          event.source.userId
+        );
+
+        // queue暴走防止
+        if (queue.length < 100) {
+
+          queue.push({
+            userId:
+              event.source.userId,
+          });
+        }
       }
 
+      // 即200返す
       return res.status(200).end();
 
     } catch (err) {
 
-      console.error(err);
+      console.error(
+        "WEBHOOK ERROR:",
+        err.response?.data ||
+        err.message ||
+        err
+      );
 
       return res.status(200).end();
     }
@@ -274,7 +421,9 @@ app.post(
 // ==============================
 setInterval(async () => {
 
-  if (queue.length === 0) return;
+  if (queue.length === 0) {
+    return;
+  }
 
   const job = queue.shift();
 
@@ -282,7 +431,11 @@ setInterval(async () => {
 
     console.log("送信開始");
 
-    const result = generateFortune();
+    let result =
+      generateFortune();
+
+    result =
+      applyEffects(result);
 
     result.aiAdvice =
       await generateAIAdvice(result);
@@ -295,19 +448,30 @@ setInterval(async () => {
       [flex]
     );
 
-    console.log("送信成功");
+    console.log(
+      "送信成功:",
+      job.userId
+    );
 
   } catch (err) {
 
     console.error(
       "PUSH ERROR:",
-      err.response?.data || err
+      err.response?.data ||
+      err.message ||
+      err
     );
   }
 
-}, 500);
+}, 1500);
 
 // ==============================
-app.listen(process.env.PORT || 3000, () => {
-  console.log("🚀 Server started");
-});
+// 起動
+// ==============================
+app.listen(
+  process.env.PORT || 3000,
+  () => {
+
+    console.log("🚀 Server started");
+  }
+);
