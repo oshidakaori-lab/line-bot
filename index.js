@@ -1,37 +1,12 @@
-const OpenAI = require("openai");
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-async function askGPT(text) {
-
-  const response = await openai.chat.completions.create({
-    model: "gpt-4.1-mini",
-    messages: [
-      {
-        role: "system",
-        content: "あなたは空と易の幻想的占い師です"
-      },
-      {
-        role: "user",
-        content: text
-      }
-    ]
-  });
-
-  return response.choices[0].message.content;
-}
-
-const reply = await askGPT("今日の運勢を占って");
-
 require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
+const OpenAI = require("openai");
 
 const app = express();
 
-
+app.use(express.json());
 
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -40,8 +15,9 @@ const config = {
 
 const client = new line.Client(config);
 
-console.log("SECRET:", process.env.LINE_CHANNEL_SECRET);
-console.log("TOKEN:", process.env.LINE_CHANNEL_ACCESS_TOKEN);
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 // ==============================
 // 生存確認
@@ -89,38 +65,57 @@ const weathers = [
   "雷"
 ];
 
+const hexagrams = [
+  "乾為天",
+  "坤為地",
+  "水雷屯",
+  "山水蒙",
+  "天水訟"
+];
+
 // ==============================
-// AI占い関数
+// AI占い
 // ==============================
 async function generateAIAdvice(result) {
   try {
 
     const prompt = `
-あなたは幻想的な空の占い師です。
+あなたは「空の易」の幻想的占い師です。
+
+空模様・易経・感情・運命を詩的に読み解きます。
+
+条件:
+- 80文字以内
+- 幻想的
+- やさしい
+- 不思議
+- 日本語
 
 天気: ${result.weather}
 卦: ${result.name}
 レア度: ${result.rarity}
 キャラ: ${result.character}
 
-80文字以内で
-幻想的で優しい今日の運勢を返してください。
+今日の運勢:
 `;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
+    const completion =
+      await openai.chat.completions.create({
+        model: "gpt-4.1-mini",
+        messages: [
+          {
+            role: "user",
+            content: prompt
+          }
+        ]
+      });
 
     return completion.choices[0].message.content;
 
   } catch (err) {
+
     console.error(err);
+
     return "静かな空気が流れています。";
   }
 }
@@ -136,23 +131,31 @@ function generateFortune() {
   const character =
     characters[Math.floor(Math.random() * characters.length)];
 
+  const name =
+    hexagrams[Math.floor(Math.random() * hexagrams.length)];
+
+  const rarity =
+    Math.random() > 0.9 ? "SSR" : "N";
+
   return {
     weather,
     character,
-    rarity: Math.random() > 0.9 ? "SSR" : "N",
+    name,
+    rarity,
     feeling: "今日は空気が動く日",
     advice: "まず一歩動いてみよう",
   };
 }
 
 // ==============================
-// Flex Message
+// Flex
 // ==============================
 function buildFlex(result) {
 
   return {
     type: "flex",
     altText: "今日の運勢",
+
     contents: {
       type: "bubble",
 
@@ -161,7 +164,7 @@ function buildFlex(result) {
         url: skyImages[result.weather],
         size: "full",
         aspectRatio: "16:9",
-        aspectMode: "cover"
+        aspectMode: "cover",
       },
 
       body: {
@@ -170,129 +173,105 @@ function buildFlex(result) {
 
         contents: [
 
-{
-  type: "text",
-  text: result.aiAdvice,
-  wrap: true,
-  size: "sm",
-  color: "#444444"
-},        
-        
+          {
+            type: "text",
+            text: result.aiAdvice,
+            wrap: true,
+            size: "sm",
+            color: "#444444",
+          },
+
           {
             type: "text",
             text:
               `${weatherEmoji[result.weather]} ${result.weather}`,
             size: "xl",
-            weight: "bold"
+            weight: "bold",
           },
 
           {
             type: "text",
             text: result.rarity,
-            size: "sm"
+            size: "sm",
+          },
+
+          {
+            type: "text",
+            text: result.name,
+            size: "sm",
           },
 
           {
             type: "text",
             text: `🐾 ${result.character}`,
-            size: "sm"
+            size: "sm",
           },
 
           {
-            type: "separator"
+            type: "separator",
           },
 
           {
             type: "text",
             text: result.feeling,
-            wrap: true
+            wrap: true,
           },
 
           {
             type: "text",
             text: result.advice,
-            wrap: true
-          }
+            wrap: true,
+          },
 
-        ]
-      }
-    }
+        ],
+      },
+    },
   };
 }
 
 // ==============================
 // Webhook
 // ==============================
-app.post("/callback", line.middleware(config), (req, res) => {
-  try {
+app.post(
+  "/callback",
+  line.middleware(config),
+  (req, res) => {
 
-    console.log("Webhook受信");
+    try {
 
-    const events = req.body.events || [];
+      console.log("Webhook受信");
 
-    if (events.length === 0) {
+      const events = req.body.events || [];
+
+      if (events.length === 0) {
+        return res.status(200).end();
+      }
+
+      for (const event of events) {
+
+        if (event.type !== "message") continue;
+
+        if (!event.source?.userId) continue;
+
+        queue.push({
+          userId: event.source.userId,
+        });
+      }
+
+      return res.status(200).end();
+
+    } catch (err) {
+
+      console.error(err);
+
       return res.status(200).end();
     }
-
-    for (const event of events) {
-
-      if (event.type !== "message") continue;
-
-      if (!event.source?.userId) continue;
-
-      console.log("メッセージ受信");
-
-      queue.push({
-        userId: event.source.userId
-      });
-    }
-
-    return res.status(200).end();
-
-  } catch (err) {
-
-    console.error("🔥 ERROR:", err);
-
-    return res.status(200).end();
   }
-});
+);
 
 // ==============================
 // Worker
 // ==============================
-
-setInterval(async () => {
-
-  if (queue.length === 0) return;
-
-  const job = queue.shift();
-
-  try {
-
-    let result = generateFortune();
-
-    result = applyEffects(result);
-
-    const flexMessage = buildFlex(result);
-
-    await client.pushMessage(
-      job.userId,
-      [flexMessage]
-    );
-
-    console.log("送信成功");
-
-  } catch (err) {
-
-    console.error(
-      "🔥 PUSH ERROR:",
-      err.response?.data || err
-    );
-  }
-
-}, 300);
-
-
 setInterval(async () => {
 
   if (queue.length === 0) return;
@@ -305,9 +284,11 @@ setInterval(async () => {
 
     const result = generateFortune();
 
-    result.aiAdvice = await generateAIAdvice(result);
-    
-    const flex = buildFlex(result);
+    result.aiAdvice =
+      await generateAIAdvice(result);
+
+    const flex =
+      buildFlex(result);
 
     await client.pushMessage(
       job.userId,
@@ -319,52 +300,12 @@ setInterval(async () => {
   } catch (err) {
 
     console.error(
-      "WORKER ERROR:",
+      "PUSH ERROR:",
       err.response?.data || err
     );
   }
 
 }, 500);
-
-// ==============================
-// 演出
-// ==============================
-function applyEffects(result) {
-
-  const feelings = [result.feeling];
-  const advices = [result.advice];
-
-  // SSR
-  if (result.rarity === "SSR") {
-    feelings.unshift("🌈超大吉🌈");
-    advices.unshift("今日は何しても上手くいく🔥");
-  }
-
-  // SR
-  else if (result.rarity === "SR") {
-    feelings.unshift("✨少し跳ねる日✨");
-  }
-
-  // R
-  else if (result.rarity === "R") {
-    feelings.unshift("🌱コツコツの日🌱");
-  }
-
-  // モモンガ
-  if (result.character === "モモンガ") {
-    feelings.unshift("✨レア発生✨");
-  }
-
-  // 雷
-  if (result.weather === "雷") {
-    feelings.unshift("⚡神引き⚡");
-  }
-
-  result.feeling = feelings.join(" ");
-  result.advice = advices.join(" ");
-
-  return result;
-}
 
 // ==============================
 app.listen(process.env.PORT || 3000, () => {
