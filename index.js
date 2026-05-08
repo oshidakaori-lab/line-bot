@@ -5,7 +5,6 @@ const line = require("@line/bot-sdk");
 const OpenAI = require("openai");
 
 const app = express();
-app.use(express.json());
 
 // ==============================
 // LINE設定
