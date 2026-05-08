@@ -5,6 +5,7 @@ const line = require("@line/bot-sdk");
 const OpenAI = require("openai");
 
 const app = express();
+app.use(express.json());
 
 // ==============================
 // LINE設定
@@ -82,6 +83,10 @@ const hexagrams = [
 // ==============================
 async function generateAIAdvice(result) {
 
+  if (!process.env.OPENAI_API_KEY) {
+    return "静かな空が広がっています。";
+  }
+
   try {
 
     const prompt = `
@@ -150,60 +155,135 @@ function buildFlex(result) {
   return {
     type: "flex",
 
-    altText: "今日の運勢",
+    altText: "空の易",
 
     contents: {
+
       type: "bubble",
+
+      size: "mega",
 
       hero: {
         type: "image",
+
         url:
           skyImages[result.weather] ||
           skyImages["曇り"],
 
         size: "full",
+
         aspectRatio: "16:9",
+
         aspectMode: "cover",
       },
 
       body: {
+
         type: "box",
+
         layout: "vertical",
+
+        spacing: "md",
+
+        paddingAll: "20px",
 
         contents: [
 
           {
             type: "text",
-            text: result.aiAdvice,
+
+            text:
+              result.aiAdvice,
+
             wrap: true,
-            size: "sm",
+
+            size: "lg",
+
+            color: "#444444",
+
+            margin: "md",
           },
 
           {
             type: "text",
+
             text:
               `${weatherEmoji[result.weather]} ${result.weather}`,
 
-            size: "xl",
+            size: "xxl",
+
             weight: "bold",
+
+            color: "#222222",
+
+            margin: "lg",
           },
 
           {
             type: "text",
-            text: result.rarity,
+
+            text:
+              result.rarity,
+
             size: "sm",
+
+            color: "#999999",
           },
 
           {
             type: "text",
-            text: result.name,
-            size: "sm",
+
+            text:
+              `☯ ${result.name}`,
+
+            size: "lg",
+
+            weight: "bold",
+
+            color: "#555555",
           },
 
           {
             type: "text",
-            text: `🐾 ${result.character}`,
+            
+            text:
+            result.emotion || "静かな感情",
+
             size: "sm",
+
+            color: "#999999",
+          },
+
+          {
+            type: "text",
+
+            text:
+              `🐾 ${result.character}`,
+
+            size: "sm",
+
+            color: "#777777",
+          },
+
+          {
+            type: "separator",
+
+            margin: "xl",
+          },
+
+          {
+            type: "text",
+
+            text:
+              "空が静かに揺れています。",
+
+            size: "xs",
+
+            color: "#aaaaaa",
+
+            margin: "lg",
+
+            wrap: true,
           },
 
         ],
@@ -211,7 +291,6 @@ function buildFlex(result) {
     },
   };
 }
-
 // ==============================
 // Webhook
 // ==============================
