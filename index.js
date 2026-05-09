@@ -188,24 +188,39 @@ function generateFortune() {
 
   const tarotCards = [
 
-  {
-    name: "ワンドの6",
+{
+  name: "ワンドの6",
 
-    character: "🟦ハチワレ",
+  character: "🟦ハチワレ",
 
-    positive: "「優勝！」パフォーマー",
+  positive:
+    "「優勝！」パフォーマー",
 
-    reverse: "「俺だけ！」独り占め",
+  reverse:
+    "「俺だけ！」独り占め",
 
-    positiveEpisode:
-      "アニメ11話「1位！優勝だー！」",
+  positiveEpisode:
+    "アニメ11話「1位！優勝だー！」",
 
-    reverseEpisode:
-      "アニメ12話「俺だけMVP！」",
+  reverseEpisode:
+    "アニメ12話「俺だけMVP！」",
 
-    image:
-      "https://i.imgur.com/gKnEQds.jpeg",
-  },
+  // 正位置URL
+  positiveUrl:
+    "https://www.youtube.com/",
+
+  // 逆位置URL
+  reverseUrl:
+    "https://www.youtube.com/",
+
+  // 正位置サムネ
+  positiveImage:
+    "https://i.imgur.com/gKnEQds.jpeg",
+
+  // 逆位置サムネ
+  reverseImage:
+    "https://i.imgur.com/WC8C8zC.jpeg",
+},
 
 ];  
 
@@ -239,13 +254,53 @@ function generateTarot() {
         ? card.reverse
         : card.positive,
 
-    recommendedEpisode:
-      isReverse
-        ? card.reverseEpisode
-        : card.positiveEpisode,
+recommendedEpisode:
+  isReverse
+    ? card.reverseEpisode
+    : card.positiveEpisode,
 
-    image:
-      card.image,
+episodeUrl:
+  card.episodeUrl,
+
+const isReverse =
+  Math.random() > 0.5;
+
+return {
+
+  type: "tarot",
+
+  cardName:
+    card.name,
+
+  character:
+    card.character,
+
+  position:
+    isReverse
+      ? "逆位置"
+      : "正位置",
+
+  meaning:
+    isReverse
+      ? card.reverse
+      : card.positive,
+
+  recommendedEpisode:
+    isReverse
+      ? card.reverseEpisode
+      : card.positiveEpisode,
+
+  episodeUrl:
+    isReverse
+      ? card.reverseUrl
+      : card.positiveUrl,
+
+  image:
+    isReverse
+      ? card.reverseImage
+      : card.positiveImage,
+};
+    
   };
 }
 // ==============================
