@@ -88,20 +88,57 @@ async function generateAIAdvice(result) {
 
   try {
 
-    const prompt = `
+    let prompt = "";
+
+    // タロット
+    if (result.type === "tarot") {
+
+      prompt = `
+あなたは幻想的な
+ちいかわタロット占い師です。
+
+80文字以内で、
+やさしく幻想的に、
+運勢を返してください。
+
+カード:
+${result.cardName}
+
+位置:
+${result.position}
+
+意味:
+${result.meaning}
+
+キャラ:
+${result.character}
+`;
+
+    } else {
+
+      prompt = `
 あなたは幻想的な空の占い師です。
 
 80文字以内で、
 やさしく幻想的な運勢を返してください。
 
-天気: ${result.weather}
-卦: ${result.name}
-キャラ: ${result.character}
+天気:
+${result.weather}
+
+卦:
+${result.name}
+
+キャラ:
+${result.character}
 `;
+
+    }
 
     const completion =
       await openai.chat.completions.create({
+
         model: "gpt-4.1-mini",
+
         messages: [
           {
             role: "user",
@@ -110,17 +147,20 @@ async function generateAIAdvice(result) {
         ],
       });
 
-    return completion.choices[0].message.content;
+    return completion
+      .choices[0]
+      .message
+      .content;
 
   } catch (err) {
 
     console.error("OPENAI ERROR");
+
     console.error(err.message);
 
     return "静かな風が流れています。";
   }
 }
-
 // ==============================
 // 占い生成
 // ==============================
@@ -137,7 +177,7 @@ function generateFortune() {
 
   const rarity =
     Math.random() > 0.9 ? "SSR" : "N";
-
+  
   return {
     weather,
     character,
@@ -146,8 +186,219 @@ function generateFortune() {
   };
 }
 
+  const tarotCards = [
+
+  {
+    name: "ワンドの6",
+
+    character: "🟦ハチワレ",
+
+    positive: "「優勝！」パフォーマー",
+
+    reverse: "「俺だけ！」独り占め",
+
+    positiveEpisode:
+      "アニメ11話「1位！優勝だー！」",
+
+    reverseEpisode:
+      "アニメ12話「俺だけMVP！」",
+
+    image:
+      "https://i.imgur.com/gKnEQds.jpeg",
+  },
+
+];  
+
+function generateTarot() {
+
+  const card =
+    tarotCards[
+      Math.floor(
+        Math.random() * tarotCards.length
+      )
+    ];
+
+  const isReverse =
+    Math.random() > 0.5;
+
+  return {
+
+    type: "tarot",
+
+    cardName:
+      card.name,
+
+    character:
+      card.character,
+
+    position:
+      isReverse ? "逆位置" : "正位置",
+
+    meaning:
+      isReverse
+        ? card.reverse
+        : card.positive,
+
+    recommendedEpisode:
+      isReverse
+        ? card.reverseEpisode
+        : card.positiveEpisode,
+
+    image:
+      card.image,
+  };
+}
 // ==============================
-// Flex
+// タロットFlex
+// ==============================
+function buildTarotFlex(result) {
+
+  return {
+
+    type: "flex",
+
+    altText: "ちいかわタロット",
+
+    contents: {
+
+      type: "bubble",
+
+      size: "mega",
+
+      hero: {
+
+        type: "image",
+
+        url: result.image,
+
+        size: "full",
+
+        aspectRatio: "3:4",
+
+        aspectMode: "cover",
+      },
+
+      body: {
+
+        type: "box",
+
+        layout: "vertical",
+
+        spacing: "md",
+
+        paddingAll: "20px",
+
+        contents: [
+
+          {
+            type: "text",
+
+            text:
+              result.cardName,
+
+            size: "xl",
+
+            weight: "bold",
+          },
+
+          {
+            type: "text",
+
+            text:
+              result.position,
+
+            size: "sm",
+
+            color: "#999999",
+          },
+
+          {
+            type: "text",
+
+            text:
+              result.meaning,
+
+            wrap: true,
+
+            size: "lg",
+
+            margin: "md",
+          },
+
+          {
+            type: "text",
+
+            text:
+              `🐾 ${result.character}`,
+
+            size: "sm",
+
+            color: "#666666",
+
+            margin: "md",
+          },
+
+          {
+            type: "separator",
+
+            margin: "lg",
+          },
+
+          {
+            type: "text",
+
+            text:
+              "📺 おすすめ回",
+
+            size: "sm",
+
+            weight: "bold",
+
+            margin: "lg",
+          },
+
+          {
+            type: "text",
+
+            text:
+              result.recommendedEpisode,
+
+            wrap: true,
+
+            size: "sm",
+
+            color: "#888888",
+          },
+
+          {
+            type: "separator",
+
+            margin: "lg",
+          },
+
+          {
+            type: "text",
+
+            text:
+              result.aiAdvice,
+
+            wrap: true,
+
+            size: "sm",
+
+            color: "#555555",
+
+            margin: "lg",
+          },
+
+        ],
+      },
+    },
+  };
+}
+
+// ==============================
+// 空Flex
 // ==============================
 function buildFlex(result) {
 
@@ -324,10 +575,28 @@ app.post(
           continue;
         }
 
-        console.log("QUEUE追加");
+console.log("QUEUE追加");
 
-        queue.push({
+const text =
+  event.message.text;
+
+queue.push({
+
+  userId:
+    event.source.userId,
+
+  mode:
+    text.includes("タロット")
+      ? "tarot"
+      : "sky",
+});
           userId: event.source.userId,
+          
+            mode:
+          text.includes("タロット")
+          ? "tarot"
+          : "sky",
+          
         });
       }
 
@@ -353,15 +622,19 @@ setInterval(async () => {
   try {
 
     console.log("送信開始");
-
+    
     const result =
-      generateFortune();
-
+  job.mode === "tarot"
+    ? generateTarot()
+    : generateFortune();
+    
     result.aiAdvice =
       await generateAIAdvice(result);
 
-    const flex =
-      buildFlex(result);
+const flex =
+    result.type === "tarot"
+    ? buildTarotFlex(result)
+    : buildFlex(result);
 
     await client.pushMessage(
       job.userId,
