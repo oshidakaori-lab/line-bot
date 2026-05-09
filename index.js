@@ -565,40 +565,32 @@ app.post(
         return;
       }
 
-      for (const event of events) {
+for (const event of events) {
 
-        if (event.type !== "message") {
-          continue;
-        }
+  if (event.type !== "message") {
+    continue;
+  }
 
-        if (!event.source?.userId) {
-          continue;
-        }
+  if (!event.source?.userId) {
+    continue;
+  }
 
-console.log("QUEUE追加");
+  // ユーザー入力
+  const text = event.message.text;
 
-const text =
-  event.message.text;
+  console.log("QUEUE追加");
 
-queue.push({
+  queue.push({
 
-  userId:
-    event.source.userId,
+    userId: event.source.userId,
 
-  mode:
-    text.includes("タロット")
-      ? "tarot"
-      : "sky",
-});
-          userId: event.source.userId,
-          
-            mode:
-          text.includes("タロット")
-          ? "tarot"
-          : "sky",
-          
-        });
-      }
+    mode:
+      text.includes("タロット")
+        ? "tarot"
+        : "sky",
+
+  });
+}
 
     } catch (err) {
 
