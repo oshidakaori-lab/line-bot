@@ -247,60 +247,29 @@ function generateTarot() {
       card.character,
 
     position:
-      isReverse ? "逆位置" : "正位置",
+      isReverse
+        ? "逆位置"
+        : "正位置",
 
     meaning:
       isReverse
         ? card.reverse
         : card.positive,
 
-recommendedEpisode:
-  isReverse
-    ? card.reverseEpisode
-    : card.positiveEpisode,
+    recommendedEpisode:
+      isReverse
+        ? card.reverseEpisode
+        : card.positiveEpisode,
 
-episodeUrl:
-  card.episodeUrl,
+    episodeUrl:
+      isReverse
+        ? card.reverseUrl
+        : card.positiveUrl,
 
-const isReverse =
-  Math.random() > 0.5;
-
-return {
-
-  type: "tarot",
-
-  cardName:
-    card.name,
-
-  character:
-    card.character,
-
-  position:
-    isReverse
-      ? "逆位置"
-      : "正位置",
-
-  meaning:
-    isReverse
-      ? card.reverse
-      : card.positive,
-
-  recommendedEpisode:
-    isReverse
-      ? card.reverseEpisode
-      : card.positiveEpisode,
-
-  episodeUrl:
-    isReverse
-      ? card.reverseUrl
-      : card.positiveUrl,
-
-  image:
-    isReverse
-      ? card.reverseImage
-      : card.positiveImage,
-};
-    
+    image:
+      isReverse
+        ? card.reverseImage
+        : card.positiveImage,
   };
 }
 // ==============================
@@ -308,149 +277,177 @@ return {
 // ==============================
 function buildTarotFlex(result) {
 
-  return {
+return {
 
-    type: "flex",
+  type: "flex",
 
-    altText: "ちいかわタロット",
+  altText: "ちいかわタロット",
 
-    contents: {
+  contents: {
 
-      type: "bubble",
+    type: "bubble",
 
-      size: "mega",
+    size: "mega",
 
-      hero: {
+    hero: {
 
-        type: "image",
+      type: "image",
 
-        url: result.image,
+      url: result.image,
 
-        size: "full",
+      size: "full",
 
-        aspectRatio: "3:4",
+      aspectRatio: "3:4",
 
-        aspectMode: "cover",
-      },
-
-      body: {
-
-        type: "box",
-
-        layout: "vertical",
-
-        spacing: "md",
-
-        paddingAll: "20px",
-
-        contents: [
-
-          {
-            type: "text",
-
-            text:
-              result.cardName,
-
-            size: "xl",
-
-            weight: "bold",
-          },
-
-          {
-            type: "text",
-
-            text:
-              result.position,
-
-            size: "sm",
-
-            color: "#999999",
-          },
-
-          {
-            type: "text",
-
-            text:
-              result.meaning,
-
-            wrap: true,
-
-            size: "lg",
-
-            margin: "md",
-          },
-
-          {
-            type: "text",
-
-            text:
-              `🐾 ${result.character}`,
-
-            size: "sm",
-
-            color: "#666666",
-
-            margin: "md",
-          },
-
-          {
-            type: "separator",
-
-            margin: "lg",
-          },
-
-          {
-            type: "text",
-
-            text:
-              "📺 おすすめ回",
-
-            size: "sm",
-
-            weight: "bold",
-
-            margin: "lg",
-          },
-
-          {
-            type: "text",
-
-            text:
-              result.recommendedEpisode,
-
-            wrap: true,
-
-            size: "sm",
-
-            color: "#888888",
-          },
-
-          {
-            type: "separator",
-
-            margin: "lg",
-          },
-
-          {
-            type: "text",
-
-            text:
-              result.aiAdvice,
-
-            wrap: true,
-
-            size: "sm",
-
-            color: "#555555",
-
-            margin: "lg",
-          },
-
-        ],
-      },
+      aspectMode: "cover",
     },
-  };
-}
+
+    body: {
+
+      type: "box",
+
+      layout: "vertical",
+
+      spacing: "md",
+
+      paddingAll: "20px",
+
+      contents: [
+
+        {
+          type: "text",
+
+          text:
+            result.cardName,
+
+          size: "xl",
+
+          weight: "bold",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.position,
+
+          size: "sm",
+
+          color: "#999999",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.meaning,
+
+          wrap: true,
+
+          size: "lg",
+
+          margin: "md",
+        },
+
+        {
+          type: "text",
+
+          text:
+            `🐾 ${result.character}`,
+
+          size: "sm",
+
+          color: "#666666",
+
+          margin: "md",
+        },
+
+        {
+          type: "separator",
+
+          margin: "lg",
+        },
+
+        {
+          type: "text",
+
+          text:
+            "📺 おすすめ回",
+
+          size: "sm",
+
+          weight: "bold",
+
+          margin: "lg",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.recommendedEpisode,
+
+          wrap: true,
+
+          size: "sm",
+
+          color: "#888888",
+        },
+
+        {
+          type: "separator",
+
+          margin: "lg",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.aiAdvice,
+
+          wrap: true,
+
+          size: "sm",
+
+          color: "#555555",
+
+          margin: "lg",
+        },
+
+      ],
+    },
+
+    footer: {
+
+      type: "box",
+
+      layout: "vertical",
+
+      spacing: "sm",
+
+      contents: [
+
+        {
+          type: "button",
+
+          style: "primary",
+
+          action: {
+
+            type: "uri",
+
+            label: "📺 アニメを見る",
+
+            uri:
+              result.episodeUrl,
+          },
+        },
+
+      ],
+    },
+  },
+};
 
 // ==============================
 // 空Flex
