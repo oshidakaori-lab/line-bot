@@ -567,28 +567,35 @@ app.post(
 
 for (const event of events) {
 
+  // message以外無視
   if (event.type !== "message") {
     continue;
   }
 
+  // text以外無視
+  if (event.message.type !== "text") {
+    continue;
+  }
+
+  // userId無いなら無視
   if (!event.source?.userId) {
     continue;
   }
 
-  // ユーザー入力
-  const text = event.message.text;
+  const text =
+    event.message.text || "";
 
   console.log("QUEUE追加");
 
   queue.push({
 
-    userId: event.source.userId,
+    userId:
+      event.source.userId,
 
     mode:
       text.includes("タロット")
         ? "tarot"
         : "sky",
-
   });
 }
 
