@@ -246,6 +246,8 @@ function generateFortune() {
 ];  
 
 function generateTarot() {
+  
+  
 
   const card =
     tarotCards[
@@ -293,10 +295,37 @@ function generateTarot() {
         : card.positiveImage,
   };
 }
+
+// ==============================
+// 3枚引き生成
+// ==============================
+function generateTripleTarot() {
+
+  return [
+
+    {
+      title: "過去",
+      ...generateTarot(),
+    },
+
+    {
+      title: "現在",
+      ...generateTarot(),
+    },
+
+    {
+      title: "未来",
+      ...generateTarot(),
+    },
+
+  ];
+}
+
 // ==============================
 // タロットFlex
 // ==============================
 function buildTarotFlex(result) {
+  
 
 return {
 
@@ -470,6 +499,145 @@ return {
   },
 };
 }
+
+// ==============================
+// タロット3枚引き
+// ==============================
+function buildTripleCarousel(results) {
+
+  return {
+
+    type: "flex",
+
+    altText: "3枚引きタロット",
+
+    contents: {
+
+      type: "carousel",
+
+      contents:
+
+        results.map(
+          buildTarotBubble
+        ),
+    },
+  };
+}
+
+// ==============================
+// タロットBubble
+// ==============================
+function buildTarotBubble(result) {
+
+  return {
+
+    type: "bubble",
+
+    size: "mega",
+
+    hero: {
+
+      type: "image",
+
+      url: result.image,
+
+      size: "full",
+
+      aspectRatio: "3:4",
+
+      aspectMode: "cover",
+    },
+
+    body: {
+
+      type: "box",
+
+      layout: "vertical",
+
+      spacing: "md",
+
+      paddingAll: "20px",
+
+      contents: [
+
+        {
+          type: "text",
+
+          text:
+            `🔮 ${result.title}`,
+
+          size: "sm",
+
+          color: "#999999",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.cardName,
+
+          size: "xl",
+
+          weight: "bold",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.position,
+
+          size: "sm",
+
+          color: "#999999",
+        },
+
+        {
+          type: "text",
+
+          text:
+            result.meaning,
+
+          wrap: true,
+
+          size: "md",
+
+          margin: "md",
+        },
+
+      ],
+    },
+
+    footer: {
+
+      type: "box",
+
+      layout: "vertical",
+
+      contents: [
+
+        {
+          type: "button",
+
+          style: "primary",
+
+          action: {
+
+            type: "uri",
+
+            label: "📺 アニメを見る",
+
+            uri:
+              result.episodeUrl,
+          },
+        },
+
+      ],
+    },
+  };
+}
+
 // ==============================
 // 空Flex
 // ==============================
@@ -660,17 +828,24 @@ for (const event of events) {
 
   console.log("QUEUE追加");
 
-  queue.push({
+  let mode = "sky";
 
-    userId:
-      event.source.userId,
+if (text.includes("3枚")) {
 
-    mode:
-      text.includes("タロット")
-        ? "tarot"
-        : "sky",
-  });
+  mode = "triple";
+
+} else if (text.includes("タロット")) {
+
+  mode = "tarot";
 }
+
+queue.push({
+
+  userId:
+    event.source.userId,
+
+  mode,
+});
 
     } catch (err) {
 
@@ -694,19 +869,60 @@ setInterval(async () => {
   try {
 
     console.log("送信開始");
-    
-    const result =
-  job.mode === "tarot"
-    ? generateTarot()
-    : generateFortune();
-    
-    result.aiAdvice =
-      await generateAIAdvice(result);
 
-const flex =
-    result.type === "tarot"
-    ? buildTarotFlex(result)
-    : buildFlex(result);
+    let result;
+
+    // ======================
+    // モード分岐
+    // ======================
+
+    if (job.mode === "triple") {
+
+      result =
+        generateTripleTarot();
+
+    } else if (job.mode === "tarot") {
+
+      result =
+        generateTarot();
+
+      result.aiAdvice =
+        await generateAIAdvice(result);
+
+    } else {
+
+      result =
+        generateFortune();
+
+      result.aiAdvice =
+        await generateAIAdvice(result);
+    }
+
+    // ======================
+    // Flex生成
+    // ======================
+
+    let flex;
+
+    if (job.mode === "triple") {
+
+      flex =
+        buildTripleCarousel(result);
+
+    } else if (result.type === "tarot") {
+
+      flex =
+        buildTarotFlex(result);
+
+    } else {
+
+      flex =
+        buildFlex(result);
+    }
+
+    // ======================
+    // 送信
+    // ======================
 
     await client.pushMessage(
       job.userId,
@@ -720,14 +936,16 @@ const flex =
     console.error("PUSH ERROR");
 
     if (err.response?.data) {
+
       console.error(err.response.data);
+
     } else {
+
       console.error(err.message);
     }
   }
 
 }, 1000);
-
 // ==============================
 // 起動
 // ==============================
