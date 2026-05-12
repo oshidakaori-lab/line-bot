@@ -788,7 +788,6 @@ function buildFlex(result) {
 app.post(
   "/callback",
 
-  // ここ重要
   line.middleware(config),
 
   async (req, res) => {
@@ -797,7 +796,6 @@ app.post(
 
       console.log("Webhook受信");
 
-      // 即200返す
       res.status(200).end();
 
       const events = req.body.events || [];
@@ -806,46 +804,47 @@ app.post(
         return;
       }
 
-for (const event of events) {
+      for (const event of events) {
 
-  // message以外無視
-  if (event.type !== "message") {
-    continue;
-  }
+        // message以外無視
+        if (event.type !== "message") {
+          continue;
+        }
 
-  // text以外無視
-  if (event.message.type !== "text") {
-    continue;
-  }
+        // text以外無視
+        if (event.message.type !== "text") {
+          continue;
+        }
 
-  // userId無いなら無視
-  if (!event.source?.userId) {
-    continue;
-  }
+        // userId無いなら無視
+        if (!event.source?.userId) {
+          continue;
+        }
 
-  const text =
-    event.message.text || "";
+        const text =
+          event.message.text || "";
 
-  console.log("QUEUE追加");
+        console.log("QUEUE追加");
 
-  let mode = "sky";
+        let mode = "sky";
 
-if (text.includes("3枚")) {
+        if (text.includes("3枚")) {
 
-  mode = "triple";
+          mode = "triple";
 
-} else if (text.includes("タロット")) {
+        } else if (text.includes("タロット")) {
 
-  mode = "tarot";
-}
+          mode = "tarot";
+        }
 
-queue.push({
+        queue.push({
 
-  userId:
-    event.source.userId,
+          userId:
+            event.source.userId,
 
-  mode,
-});
+          mode,
+        });
+      }
 
     } catch (err) {
 
