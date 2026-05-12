@@ -182,6 +182,70 @@ ${result.character}
     return "静かな風が流れています。";
   }
 }
+
+// ==============================
+// 3枚引きAI総合鑑定
+// ==============================
+async function generateTripleAdvice(results) {
+
+  if (!process.env.OPENAI_API_KEY) {
+    return "3つの星が静かに並んでいます。";
+  }
+
+  try {
+
+    const prompt = `
+あなたは幻想的な
+ちいかわタロット占い師です。
+
+以下の3枚から、
+やさしく幻想的に、
+120文字以内で総合鑑定してください。
+
+【過去】
+${results[0].cardName}
+${results[0].position}
+${results[0].meaning}
+
+【現在】
+${results[1].cardName}
+${results[1].position}
+${results[1].meaning}
+
+【未来】
+${results[2].cardName}
+${results[2].position}
+${results[2].meaning}
+`;
+
+    const completion =
+      await openai.chat.completions.create({
+
+        model: "gpt-4.1-mini",
+
+        messages: [
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+      });
+
+    return completion
+      .choices[0]
+      .message
+      .content;
+
+  } catch (err) {
+
+    console.error("TRIPLE AI ERROR");
+
+    console.error(err.message);
+
+    return "3つの風が静かに重なっています。";
+  }
+}
+
 // ==============================
 // 占い生成
 // ==============================
@@ -516,10 +580,63 @@ function buildTripleCarousel(results) {
       type: "carousel",
 
       contents:
+contents: [
 
-        results.map(
-          buildTarotBubble
-        ),
+  ...results.map(
+    buildTarotBubble
+  ),
+
+  {
+    type: "bubble",
+
+    size: "mega",
+
+    body: {
+
+      type: "box",
+
+      layout: "vertical",
+
+      paddingAll: "25px",
+
+      contents: [
+
+        {
+          type: "text",
+
+          text: "✨ 総合鑑定",
+
+          size: "xl",
+
+          weight: "bold",
+        },
+
+        {
+          type: "separator",
+
+          margin: "lg",
+        },
+
+        {
+          type: "text",
+
+          text:
+            results.summary,
+
+          wrap: true,
+
+          size: "lg",
+
+          margin: "lg",
+
+          color: "#555555",
+        },
+
+      ],
+    },
+  },
+
+],
     },
   };
 }
@@ -875,10 +992,16 @@ setInterval(async () => {
     // モード分岐
     // ======================
 
-    if (job.mode === "triple") {
+if (job.mode === "triple") {
 
-      result =
-        generateTripleTarot();
+  result =
+    generateTripleTarot();
+
+  const summary =
+    await generateTripleAdvice(result);
+
+  result.summary =
+    summary;
 
     } else if (job.mode === "tarot") {
 
