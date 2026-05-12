@@ -579,64 +579,63 @@ function buildTripleCarousel(results) {
 
       type: "carousel",
 
-      contents:
-contents: [
-
-  ...results.map(
-    buildTarotBubble
-  ),
-
-  {
-    type: "bubble",
-
-    size: "mega",
-
-    body: {
-
-      type: "box",
-
-      layout: "vertical",
-
-      paddingAll: "25px",
-
       contents: [
 
-        {
-          type: "text",
-
-          text: "✨ 総合鑑定",
-
-          size: "xl",
-
-          weight: "bold",
-        },
+        ...results.map(
+          buildTarotBubble
+        ),
 
         {
-          type: "separator",
+          type: "bubble",
 
-          margin: "lg",
-        },
+          size: "mega",
 
-        {
-          type: "text",
+          body: {
 
-          text:
-            results.summary,
+            type: "box",
 
-          wrap: true,
+            layout: "vertical",
 
-          size: "lg",
+            paddingAll: "25px",
 
-          margin: "lg",
+            contents: [
 
-          color: "#555555",
+              {
+                type: "text",
+
+                text: "✨ 総合鑑定",
+
+                size: "xl",
+
+                weight: "bold",
+              },
+
+              {
+                type: "separator",
+
+                margin: "lg",
+              },
+
+              {
+                type: "text",
+
+                text:
+                  results.summary,
+
+                wrap: true,
+
+                size: "lg",
+
+                margin: "lg",
+
+                color: "#555555",
+              },
+
+            ],
+          },
         },
 
       ],
-    },
-  },
-
-],
     },
   };
 }
