@@ -3,57 +3,57 @@ require("dotenv").config();
 const express = require("express");
 const line = require("@line/bot-sdk");
 const OpenAI = require("openai");
+const fs = require("fs");
+const csv = require("csv-parser");
 
 const app = express();
 
-// ==============================
-// LINE設定
-// ==============================
+// ======================
+// LINE
+// ======================
 const config = {
-  channelSecret: process.env.LINE_CHANNEL_SECRET,
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret:
+    process.env.LINE_CHANNEL_SECRET,
+
+  channelAccessToken:
+    process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
 
-const client = new line.Client(config);
+const client =
+  new line.Client(config);
 
-// ==============================
+// ======================
 // OpenAI
-// ==============================
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// ======================
+const openai =
+  new OpenAI({
+    apiKey:
+      process.env.OPENAI_API_KEY,
+  });
 
-// ==============================
-// 生存確認
-// ==============================
-app.get("/", (req, res) => {
-  res.status(200).send("OK");
-});
+// ======================
+// CSV
+// ======================
+const hexagrams = [];
 
-// ==============================
-// queue
-// ==============================
-const queue = [];
+fs.createReadStream("hexagrams.csv")
+  .pipe(csv())
+  .on("data", (data) => {
 
-// ==============================
-// データ
-// ==============================
-const weatherEmoji = {
-  晴れ: "☀️",
-  曇り: "☁️",
-  雨: "🌧️",
-  風: "🌬️",
-  雷: "⚡",
-};
+    hexagrams.push(data);
 
-const skyImages = {
-  晴れ: "https://i.imgur.com/gKnEQds.jpeg",
-  曇り: "https://i.imgur.com/PNvbK3W.jpeg",
-  雨: "https://i.imgur.com/WC8C8zC.jpeg",
-  風: "https://i.imgur.com/9kFUKDI.jpeg",
-  雷: "https://i.imgur.com/etZ12NJ.jpeg",
-};
+  })
+  .on("end", () => {
 
+    console.log("CSV読込完了");
+
+    console.log(hexagrams.length);
+
+  });
+
+// ======================
+// キャラ
+// ======================
 const characters = [
   "ちいかわ",
   "ハチワレ",
@@ -61,161 +61,26 @@ const characters = [
   "モモンガ",
 ];
 
-const weathers = [
-  "晴れ",
-  "曇り",
-  "雨",
-  "風",
-  "雷",
-];
-
-const hexagrams = [
-  "乾為天",
-  "坤為地",
-  "水雷屯",
-  "山水蒙",
-  "天水訟",
-];
-
-// ==============================
-// emotion
-// ==============================
-const emotions = {
-
-  乾為天:
-    "空へ伸びていく感覚",
-
-  坤為地:
-    "やさしく包まれる安心",
-
-  水雷屯:
-    "迷いながら始まる気配",
-
-  山水蒙:
-    "幼い霧のような感情",
-
-  天水訟:
-    "心が静かに揺れている",
-};
-
-// ==============================
-// AI占い
-// ==============================
+// ======================
+// AI
+// ======================
 async function generateAIAdvice(result) {
-
-  if (!process.env.OPENAI_API_KEY) {
-    return "静かな空が広がっています。";
-  }
-
-  try {
-
-    let prompt = "";
-
-    // タロット
-    if (result.type === "tarot") {
-
-      prompt = `
-あなたは幻想的な
-ちいかわタロット占い師です。
-
-80文字以内で、
-やさしく幻想的に、
-運勢を返してください。
-
-カード:
-${result.cardName}
-
-位置:
-${result.position}
-
-意味:
-${result.meaning}
-
-キャラ:
-${result.character}
-`;
-
-    } else {
-
-      prompt = `
-あなたは幻想的な空の占い師です。
-
-80文字以内で、
-やさしく幻想的な運勢を返してください。
-
-天気:
-${result.weather}
-
-卦:
-${result.name}
-
-キャラ:
-${result.character}
-`;
-
-    }
-
-    const completion =
-      await openai.chat.completions.create({
-
-        model: "gpt-4.1-mini",
-
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
-
-    return completion
-      .choices[0]
-      .message
-      .content;
-
-  } catch (err) {
-
-    console.error("OPENAI ERROR");
-
-    console.error(err.message);
-
-    return "静かな風が流れています。";
-  }
-}
-
-// ==============================
-// 3枚引きAI総合鑑定
-// ==============================
-async function generateTripleAdvice(results) {
-
-  if (!process.env.OPENAI_API_KEY) {
-    return "3つの星が静かに並んでいます。";
-  }
 
   try {
 
     const prompt = `
-あなたは幻想的な
-ちいかわタロット占い師です。
+幻想的な占い師として、
+80文字以内で、
+やさしく運勢を返してください。
 
-以下の3枚から、
-やさしく幻想的に、
-120文字以内で総合鑑定してください。
+卦:
+${result.name}
 
-【過去】
-${results[0].cardName}
-${results[0].position}
-${results[0].meaning}
+感情:
+${result.emotion}
 
-【現在】
-${results[1].cardName}
-${results[1].position}
-${results[1].meaning}
-
-【未来】
-${results[2].cardName}
-${results[2].position}
-${results[2].meaning}
+意味:
+${result.meaning}
 `;
 
     const completion =
@@ -238,528 +103,75 @@ ${results[2].meaning}
 
   } catch (err) {
 
-    console.error("TRIPLE AI ERROR");
+    console.log(err.message);
 
-    console.error(err.message);
-
-    return "3つの風が静かに重なっています。";
+    return "静かな空が広がっています。";
   }
 }
 
-// ==============================
+// ======================
 // 占い生成
-// ==============================
+// ======================
 function generateFortune() {
 
-  const weather =
-    weathers[Math.floor(Math.random() * weathers.length)];
-
-  const character =
-    characters[Math.floor(Math.random() * characters.length)];
-
-  const name =
-    hexagrams[Math.floor(Math.random() * hexagrams.length)];
-
-  const rarity =
-    Math.random() > 0.9 ? "SSR" : "N";
-  
-  return {
-    weather,
-    character,
-    name,
-    rarity,
-  };
-}
-
-  const tarotCards = [
-
-{
-  name: "ワンドの6",
-
-  character: "🟦ハチワレ",
-
-  positive:
-    "「優勝！」パフォーマー",
-
-  reverse:
-    "「俺だけ！」独り占め",
-
-  positiveEpisode:
-    "アニメ11話「1位！優勝だー！」",
-
-  reverseEpisode:
-    "アニメ12話「俺だけMVP！」",
-
-  // 正位置URL
-  positiveUrl:
-    "https://www.youtube.com/",
-
-  // 逆位置URL
-  reverseUrl:
-    "https://www.youtube.com/",
-
-  // 正位置サムネ
-  positiveImage:
-    "https://i.imgur.com/gKnEQds.jpeg",
-
-  // 逆位置サムネ
-  reverseImage:
-    "https://i.imgur.com/WC8C8zC.jpeg",
-},
-
-];  
-
-function generateTarot() {
-  
-  
-
-  const card =
-    tarotCards[
+  const hexagram =
+    hexagrams[
       Math.floor(
-        Math.random() * tarotCards.length
+        Math.random() *
+        hexagrams.length
       )
     ];
 
-  const isReverse =
-    Math.random() > 0.5;
+  const character =
+    characters[
+      Math.floor(
+        Math.random() *
+        characters.length
+      )
+    ];
 
   return {
 
-    type: "tarot",
+    type: "sky",
 
-    cardName:
-      card.name,
+    weather:
+      hexagram.weather,
 
-    character:
-      card.character,
-
-    position:
-      isReverse
-        ? "逆位置"
-        : "正位置",
+    emotion:
+      hexagram.emotion,
 
     meaning:
-      isReverse
-        ? card.reverse
-        : card.positive,
+      hexagram.meaning,
 
-    recommendedEpisode:
-      isReverse
-        ? card.reverseEpisode
-        : card.positiveEpisode,
+    rarity:
+      hexagram.rarity,
 
-    episodeUrl:
-      isReverse
-        ? card.reverseUrl
-        : card.positiveUrl,
+    color:
+      hexagram.color,
+
+    bgm:
+      hexagram.bgm,
 
     image:
-      isReverse
-        ? card.reverseImage
-        : card.positiveImage,
+      hexagram.image,
+
+    name:
+      hexagram.name,
+
+    kana:
+      hexagram.kana,
+
+    character,
   };
 }
 
-// ==============================
-// 3枚引き生成
-// ==============================
-function generateTripleTarot() {
-
-  return [
-
-    {
-      title: "過去",
-      ...generateTarot(),
-    },
-
-    {
-      title: "現在",
-      ...generateTarot(),
-    },
-
-    {
-      title: "未来",
-      ...generateTarot(),
-    },
-
-  ];
-}
-
-// ==============================
-// タロットFlex
-// ==============================
-function buildTarotFlex(result) {
-  
-
-return {
-
-  type: "flex",
-
-  altText: "ちいかわタロット",
-
-  contents: {
-
-    type: "bubble",
-
-    size: "mega",
-
-    hero: {
-
-      type: "image",
-
-      url: result.image,
-
-      size: "full",
-
-      aspectRatio: "3:4",
-
-      aspectMode: "cover",
-    },
-
-    body: {
-
-      type: "box",
-
-      layout: "vertical",
-
-      spacing: "md",
-
-      paddingAll: "20px",
-
-      contents: [
-
-        {
-          type: "text",
-
-          text:
-            result.cardName,
-
-          size: "xl",
-
-          weight: "bold",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.position,
-
-          size: "sm",
-
-          color: "#999999",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.meaning,
-
-          wrap: true,
-
-          size: "lg",
-
-          margin: "md",
-        },
-
-        {
-          type: "text",
-
-          text:
-            `🐾 ${result.character}`,
-
-          size: "sm",
-
-          color: "#666666",
-
-          margin: "md",
-        },
-
-        {
-          type: "separator",
-
-          margin: "lg",
-        },
-
-        {
-          type: "text",
-
-          text:
-            "📺 おすすめ回",
-
-          size: "sm",
-
-          weight: "bold",
-
-          margin: "lg",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.recommendedEpisode,
-
-          wrap: true,
-
-          size: "sm",
-
-          color: "#888888",
-        },
-
-        {
-          type: "separator",
-
-          margin: "lg",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.aiAdvice,
-
-          wrap: true,
-
-          size: "sm",
-
-          color: "#555555",
-
-          margin: "lg",
-        },
-
-      ],
-    },
-
-    footer: {
-
-      type: "box",
-
-      layout: "vertical",
-
-      spacing: "sm",
-
-      contents: [
-
-        {
-          type: "button",
-
-          style: "primary",
-
-          action: {
-
-            type: "uri",
-
-            label: "📺 アニメを見る",
-
-            uri:
-              result.episodeUrl,
-          },
-        },
-
-      ],
-    },
-  },
-};
-}
-
-// ==============================
-// タロット3枚引き
-// ==============================
-function buildTripleCarousel(results) {
-
-  return {
-
-    type: "flex",
-
-    altText: "3枚引きタロット",
-
-    contents: {
-
-      type: "carousel",
-
-      contents: [
-
-        ...results.map(
-          buildTarotBubble
-        ),
-
-        {
-          type: "bubble",
-
-          size: "mega",
-
-          body: {
-
-            type: "box",
-
-            layout: "vertical",
-
-            paddingAll: "25px",
-
-            contents: [
-
-              {
-                type: "text",
-
-                text: "✨ 総合鑑定",
-
-                size: "xl",
-
-                weight: "bold",
-              },
-
-              {
-                type: "separator",
-
-                margin: "lg",
-              },
-
-              {
-                type: "text",
-
-                text:
-                  results.summary,
-
-                wrap: true,
-
-                size: "lg",
-
-                margin: "lg",
-
-                color: "#555555",
-              },
-
-            ],
-          },
-        },
-
-      ],
-    },
-  };
-}
-
-// ==============================
-// タロットBubble
-// ==============================
-function buildTarotBubble(result) {
-
-  return {
-
-    type: "bubble",
-
-    size: "mega",
-
-    hero: {
-
-      type: "image",
-
-      url: result.image,
-
-      size: "full",
-
-      aspectRatio: "3:4",
-
-      aspectMode: "cover",
-    },
-
-    body: {
-
-      type: "box",
-
-      layout: "vertical",
-
-      spacing: "md",
-
-      paddingAll: "20px",
-
-      contents: [
-
-        {
-          type: "text",
-
-          text:
-            `🔮 ${result.title}`,
-
-          size: "sm",
-
-          color: "#999999",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.cardName,
-
-          size: "xl",
-
-          weight: "bold",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.position,
-
-          size: "sm",
-
-          color: "#999999",
-        },
-
-        {
-          type: "text",
-
-          text:
-            result.meaning,
-
-          wrap: true,
-
-          size: "md",
-
-          margin: "md",
-        },
-
-      ],
-    },
-
-    footer: {
-
-      type: "box",
-
-      layout: "vertical",
-
-      contents: [
-
-        {
-          type: "button",
-
-          style: "primary",
-
-          action: {
-
-            type: "uri",
-
-            label: "📺 アニメを見る",
-
-            uri:
-              result.episodeUrl,
-          },
-        },
-
-      ],
-    },
-  };
-}
-
-// ==============================
-// 空Flex
-// ==============================
+// ======================
+// Flex
+// ======================
 function buildFlex(result) {
 
   return {
+
     type: "flex",
 
     altText: "空の易",
@@ -768,14 +180,12 @@ function buildFlex(result) {
 
       type: "bubble",
 
-      size: "mega",
-
       hero: {
+
         type: "image",
 
         url:
-          skyImages[result.weather] ||
-          skyImages["曇り"],
+          result.image,
 
         size: "full",
 
@@ -790,10 +200,6 @@ function buildFlex(result) {
 
         layout: "vertical",
 
-        spacing: "md",
-
-        paddingAll: "20px",
-
         contents: [
 
           {
@@ -805,23 +211,17 @@ function buildFlex(result) {
             wrap: true,
 
             size: "lg",
-
-            color: "#444444",
-
-            margin: "md",
           },
 
           {
             type: "text",
 
             text:
-              `${weatherEmoji[result.weather]} ${result.weather}`,
+              result.name,
 
             size: "xxl",
 
             weight: "bold",
-
-            color: "#222222",
 
             margin: "lg",
           },
@@ -830,35 +230,37 @@ function buildFlex(result) {
             type: "text",
 
             text:
-              result.rarity,
+              result.kana,
 
             size: "sm",
 
-            color: "#999999",
+            color: "#888888",
           },
 
           {
             type: "text",
 
             text:
-              `☯ ${result.name}`,
+              result.weather,
 
             size: "lg",
 
-            weight: "bold",
-
-            color: "#555555",
+            margin: "lg",
           },
 
           {
             type: "text",
-            
+
             text:
-            result.emotion || "静かな感情",
+              result.emotion,
+
+            wrap: true,
 
             size: "sm",
 
-            color: "#999999",
+            color: "#666666",
+
+            margin: "md",
           },
 
           {
@@ -869,28 +271,7 @@ function buildFlex(result) {
 
             size: "sm",
 
-            color: "#777777",
-          },
-
-          {
-            type: "separator",
-
-            margin: "xl",
-          },
-
-          {
-            type: "text",
-
-            text:
-              "空が静かに揺れています。",
-
-            size: "xs",
-
-            color: "#aaaaaa",
-
             margin: "lg",
-
-            wrap: true,
           },
 
         ],
@@ -898,9 +279,10 @@ function buildFlex(result) {
     },
   };
 }
-// ==============================
-// Webhook
-// ==============================
+
+// ======================
+// webhook
+// ======================
 app.post(
   "/callback",
 
@@ -908,174 +290,49 @@ app.post(
 
   async (req, res) => {
 
-    try {
+    res.sendStatus(200);
 
-      console.log("Webhook受信");
+    const events =
+      req.body.events;
 
-      res.status(200).end();
+    for (const event of events) {
 
-      const events = req.body.events || [];
-
-      if (events.length === 0) {
-        return;
+      if (
+        event.type !== "message"
+      ) {
+        continue;
       }
 
-      for (const event of events) {
-
-        // message以外無視
-        if (event.type !== "message") {
-          continue;
-        }
-
-        // text以外無視
-        if (event.message.type !== "text") {
-          continue;
-        }
-
-        // userId無いなら無視
-        if (!event.source?.userId) {
-          continue;
-        }
-
-        const text =
-          event.message.text || "";
-
-        console.log("QUEUE追加");
-
-        let mode = "sky";
-
-        if (text.includes("3枚")) {
-
-          mode = "triple";
-
-        } else if (text.includes("タロット")) {
-
-          mode = "tarot";
-        }
-
-        queue.push({
-
-          userId:
-            event.source.userId,
-
-          mode,
-        });
+      if (
+        event.message.type !== "text"
+      ) {
+        continue;
       }
 
-    } catch (err) {
-
-      console.error("WEBHOOK ERROR");
-      console.error(err);
-    }
-  }
-);
-
-// ==============================
-// Worker
-// ==============================
-setInterval(async () => {
-
-  if (queue.length === 0) {
-    return;
-  }
-
-  const job = queue.shift();
-
-  try {
-
-    console.log("送信開始");
-
-    let result;
-
-    // ======================
-    // モード分岐
-    // ======================
-
-if (job.mode === "triple") {
-
-  result =
-    generateTripleTarot();
-
-  const summary =
-    await generateTripleAdvice(result);
-
-  result.summary =
-    summary;
-
-    } else if (job.mode === "tarot") {
-
-      result =
-        generateTarot();
-
-      result.aiAdvice =
-        await generateAIAdvice(result);
-
-    } else {
-
-      result =
+      const result =
         generateFortune();
 
       result.aiAdvice =
         await generateAIAdvice(result);
-    }
 
-    // ======================
-    // Flex生成
-    // ======================
-
-    let flex;
-
-    if (job.mode === "triple") {
-
-      flex =
-        buildTripleCarousel(result);
-
-    } else if (result.type === "tarot") {
-
-      flex =
-        buildTarotFlex(result);
-
-    } else {
-
-      flex =
+      const flex =
         buildFlex(result);
-    }
 
-    // ======================
-    // 送信
-    // ======================
-
-    await client.pushMessage(
-      job.userId,
-      [flex]
-    );
-
-    console.log("送信成功");
-
-  } catch (err) {
-
-    console.error("PUSH ERROR");
-
-    if (err.response?.data) {
-
-      console.error(err.response.data);
-
-    } else {
-
-      console.error(err.message);
+      await client.replyMessage(
+        event.replyToken,
+        flex
+      );
     }
   }
+);
 
-}, 1000);
-// ==============================
+// ======================
 // 起動
-// ==============================
+// ======================
 const PORT =
   process.env.PORT || 3000;
 
 app.listen(PORT, () => {
 
-  console.log("🚀 Server started");
-  console.log("PORT:", PORT);
-
+  console.log("起動成功");
 });
