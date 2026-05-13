@@ -9,6 +9,7 @@
     "@line/bot-sdk": "^9.7.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "openai": "^4.56.0"
+    "openai": "^4.47.1",
+    "csv-parser": "^3.0.0"
   }
 }
