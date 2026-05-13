@@ -9,6 +9,13 @@ const csv = require("csv-parser");
 const app = express();
 
 // ======================
+// 画像URL
+// ======================
+
+const IMAGE_BASE =
+  "https://line-bot-v2rk.onrender.com/images/";
+
+// ======================
 // LINE
 // ======================
 const config = {
@@ -97,9 +104,10 @@ ${result.meaning}
       });
 
     return completion
-      .choices[0]
-      .message
-      .content;
+  .choices[0]
+  .message
+  .content
+  .slice(0, 80);
 
   } catch (err) {
 
@@ -113,6 +121,11 @@ ${result.meaning}
 // 占い生成
 // ======================
 function generateFortune() {
+  
+  if (hexagrams.length === 0) {
+
+    return null;
+  }
 
   const hexagram =
     hexagrams[
@@ -185,7 +198,7 @@ function buildFlex(result) {
         type: "image",
 
         url:
-          result.image,
+  IMAGE_BASE + result.image,
 
         size: "full",
 
@@ -273,7 +286,21 @@ function buildFlex(result) {
 
             margin: "lg",
           },
+            ...(result.rarity === "SSR"
+            ? [{
+                type: "text",
 
+                text: "✨ SSR ✨",
+
+                size: "xl",
+
+                weight: "bold",
+
+                color: "#FFD700",
+
+                margin: "lg",
+              }]
+            : []),
         ],
       },
     },
@@ -311,6 +338,19 @@ app.post(
 
       const result =
         generateFortune();
+      
+      if (!result) {
+
+        await client.replyMessage(
+          event.replyToken,
+          {
+            type: "text",
+            text: "空を読み込み中です…☁️",
+          }
+        );
+
+        continue;
+      }
 
       result.aiAdvice =
         await generateAIAdvice(result);
