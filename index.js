@@ -7,9 +7,8 @@ const fs = require("fs");
 const csv = require("csv-parser");
 
 const app = express();
-app.use(
-  "/images",
-  app.use('/images', express.static('public/images'));
+
+app.use('/images', express.static('public/images'));
 
 // ======================
 // 画像URL
