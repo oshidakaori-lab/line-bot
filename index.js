@@ -1,4 +1,4 @@
-require("dotenv").config();
+const app = express();require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -7,6 +7,9 @@ const fs = require("fs");
 const csv = require("csv-parser");
 
 const app = express();
+app.use(
+  "/images",
+  app.use('/images', express.static('public/images'));
 
 // ======================
 // 画像URL
