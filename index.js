@@ -206,7 +206,7 @@ function buildFlex(result) {
 
         aspectRatio: "16:9",
 
-        aspectMode: "cover",
+        aspectMode: "fit",
         
         backgroundColor: "#000000"
         
