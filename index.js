@@ -136,10 +136,12 @@ ${result.meaning}
 
   } catch (err) {
 
-    console.log(err.message);
+catch (err) {
 
-    return "静かな空が広がっています。";
-  }
+  console.log(err.message);
+
+  return "静かな空が広がっています。";
+}
 }
 
 // ======================
@@ -168,13 +170,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-  const selectedLine =
-    lines.find(
-      (l) =>
-        l.hexagram_id ==
-          hexagram.id &&
-        l.line == line
-    );
+const selectedLine =
+  lines.find(
+    l =>
+      l.hexagram_id == hexagram.id &&
+      Number(l.line) === line
+  );
 
   // キャラ
   const character =
