@@ -91,9 +91,7 @@ const characters = [
 // ======================
 // AI
 // ======================
-async function generateAIAdvice(
-  result
-) {
+async function generateAIAdvice(result) {
 
   try {
 
@@ -136,12 +134,10 @@ ${result.meaning}
 
   } catch (err) {
 
-catch (err) {
+    console.log(err.message);
 
-  console.log(err.message);
-
-  return "静かな空が広がっています。";
-}
+    return "静かな空が広がっています。";
+  }
 }
 
 // ======================
@@ -170,12 +166,13 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-const selectedLine =
-  lines.find(
-    l =>
-      l.hexagram_id == hexagram.id &&
-      Number(l.line) === line
-  );
+  const selectedLine =
+    lines.find(
+      (l) =>
+        l.hexagram_id ==
+          hexagram.id &&
+        l.line == line
+    );
 
   // キャラ
   const character =
