@@ -362,18 +362,9 @@ function buildFlex(result) {
 
     contents: {
 
-      type: "bubble",
+  type: "bubble",
 
-      backgroundColor:
-        result.rarity === "SSR"
-          ? "#FFFDE7"
-          : (
-              result.rarity === "SR"
-                ? "#F3E5F5"
-                : "#FFFFFF"
-            ),
-
-      hero: {
+  hero: {
 
         type: "image",
 
@@ -411,25 +402,23 @@ function buildFlex(result) {
 
           // メッセージ
           {
-            type: "text",
+  type: "text",
 
-            text:
-              result.message,
+  text:
+    result.message,
 
-            wrap: true,
+  wrap: true,
 
-            size: "lg",
+  size: "lg",
 
-            color:
-              result.rarity === "SSR"
-                ? "#E65100"
-                : "#333333",
+  color:
+    result.rarity === "SSR"
+      ? "#E65100"
+      : "#333333",
 
-            weight:
-              result.rarity === "SSR"
-                ? "bold"
-                : "regular",
-          },
+  weight:
+    "bold",
+},
 
           // 卦名
           {
@@ -438,7 +427,7 @@ function buildFlex(result) {
             text:
               result.name,
 
-            size: "xxl",
+            size: "xl",
 
             weight: "bold",
 
@@ -580,28 +569,21 @@ function buildFlex(result) {
 // ======================
 app.post(
   "/callback",
-
   line.middleware(config),
 
   async (req, res) => {
 
     try {
 
-      const events =
-        req.body.events;
+      const events = req.body.events;
 
       for (const event of events) {
 
-        if (
-          event.type !== "message"
-        ) {
+        if (event.type !== "message") {
           continue;
         }
 
-        if (
-          event.message.type !==
-          "text"
-        ) {
+        if (event.message.type !== "text") {
           continue;
         }
 
@@ -614,7 +596,6 @@ app.post(
             event.replyToken,
             {
               type: "text",
-
               text:
                 "空を読み込み中です…☁️",
             }
@@ -622,8 +603,6 @@ app.post(
 
           continue;
         }
-
-        
 
         console.log(result);
 
@@ -641,29 +620,23 @@ app.post(
     } catch (err) {
 
       console.log("====== ERROR ======");
-
       console.log(err);
 
-      console.log("====== RESPONSE ======");
+      console.log("====== MESSAGE ======");
+      console.log(err.message);
 
-      console.log(
-        err.response?.data
-      );
+      console.log("====== FULL RESPONSE ======");
 
-      console.log("====== DETAILS ======");
-
-      console.log(
-        JSON.stringify(
-          err.response?.data,
-          null,
-          2
-        )
+      console.dir(
+        err.response?.data,
+        { depth: null }
       );
 
       res.sendStatus(500);
     }
-  } // ← これを追加！！！
+  }
 );
+
 
 // ======================
 // 起動
