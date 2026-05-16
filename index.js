@@ -259,7 +259,16 @@ function buildFlex(result) {
 
     contents: {
 
-      type: "bubble",
+  type: "bubble",
+
+  backgroundColor:
+    result.rarity === "SSR"
+      ? "#FFFDE7"
+      : "#FFFFFF",
+      
+      : result.rarity === "SR"
+      ? "#F3E5F5"
+      : "#FFFFFF",
 
       hero: {
 
@@ -289,6 +298,13 @@ function buildFlex(result) {
 
   spacing: "md",
 
+  paddingAll: "20px",
+
+  backgroundColor:
+    result.rarity === "SSR"
+      ? "#FFF8E1"
+      : "#FFFFFF",
+
   contents: [
 
           // メッセージ
@@ -301,10 +317,16 @@ function buildFlex(result) {
   wrap: true,
 
   size: "lg",
-weight: "regular",
 
   color:
-    "#333333",
+    result.rarity === "SSR"
+      ? "#E65100"
+      : "#333333",
+
+  weight:
+    result.rarity === "SSR"
+      ? "bold"
+      : "regular",
 },
 
           // 卦名
@@ -408,22 +430,23 @@ weight: "regular",
           ...(result.rarity === "SSR"
             ? [
                 {
-                  type: "text",
+  type: "text",
 
-                  text:
-                    "✨ SSR ✨",
+  text:
+    "✦ SUPER RARE ✦",
 
-                  size: "xl",
+  size: "xl",
 
-                  weight:
-                    "bold",
+  weight:
+    "bold",
 
-                  color:
-                    "#FFD700",
+  color:
+    "#FFB300",
 
-                  margin:
-                    "lg",
+  align: "center",
 
+  margin:
+    "xl",
                   
                 },
               ]
