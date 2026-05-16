@@ -33,9 +33,6 @@ const config = {
 const client =
   new line.Client(config);
 
-// ======================
-// OpenAI
-// ======================
 
 
 // ======================
@@ -95,14 +92,14 @@ function generateMessage(result) {
 ${result.line_emotion}`,
 
     result.emotion,
-  
-    `${result.weather}の空がゆっくり流れています。`
 
-"まだ名前のない感情が漂っています。"
+    `${result.weather}の空がゆっくり流れています。`,
 
-"遠い空から気配が届いています。"
+    "まだ名前のない感情が漂っています。",
 
-"風向きが少し変わり始めました。"
+    "遠い空から気配が届いています。",
+
+    "風向きが少し変わり始めました。",
 
     `${result.name}の風が流れています。`,
 
@@ -114,9 +111,9 @@ ${result.line_emotion}`,
 
     "静かな兆しが空に浮かんでいます。",
 
-    `${result.character}が空を見上げています。`
-  
-   `${result.weather}の空が、静かに流れています。`,
+    `${result.character}が空を見上げています。`,
+
+    `${result.weather}の空が、静かに流れています。`,
 
     `${result.line_name}の気配が、心を照らしています。`,
 
@@ -161,12 +158,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-const selectedLine =
-  lines.find(
-    (l) =>
-      Number(l.hexagram_id) === Number(hexagram.id) &&
-      Number(l.line) === Number(line)
-  );
+  const selectedLine =
+    lines.find(
+      (l) =>
+        Number(l.hexagram_id) === Number(hexagram.id) &&
+        Number(l.line) === Number(line)
+    );
 
   // キャラ
   const character =
@@ -178,8 +175,7 @@ const selectedLine =
     ];
 
   return {
-
-    type: "sky",
+    
 
     weather:
       hexagram.weather,
@@ -219,8 +215,36 @@ const selectedLine =
     line_emotion:
       selectedLine?.line_emotion ||
       "",
+
+    // ←追加
+    message:
+      generateMessage({
+
+        weather:
+          hexagram.weather,
+
+        emotion:
+          hexagram.emotion,
+
+        meaning:
+          hexagram.meaning,
+
+        line_name:
+          selectedLine?.line_name ||
+          "爻",
+
+        line_emotion:
+          selectedLine?.line_emotion ||
+          "",
+
+        name:
+          hexagram.name,
+
+        character,
+      }),
   };
 }
+
 
 // ======================
 // Flex
@@ -247,9 +271,11 @@ function buildFlex(result) {
 
         size: "full",
 
-        aspectRatio: "16:9",
+        aspectRatio: "20:13",
 
         aspectMode: "cover",
+        
+        gravity: "top",
 
         backgroundColor:
           "#000000",
@@ -257,23 +283,29 @@ function buildFlex(result) {
 
       body: {
 
-        type: "box",
+  type: "box",
 
-        layout: "vertical",
+  layout: "vertical",
 
-        contents: [
+  spacing: "md",
 
-          // AIメッセージ
+  contents: [
+
+          // メッセージ
           {
-            type: "text",
+  type: "text",
 
-            text:
-              result.aiAdvice,
+  text:
+    result.message,
 
-            wrap: true,
+  wrap: true,
 
-            size: "lg",
-          },
+  size: "lg",
+weight: "regular",
+
+  color:
+    "#333333",
+},
 
           // 卦名
           {
@@ -391,6 +423,8 @@ function buildFlex(result) {
 
                   margin:
                     "lg",
+
+                  
                 },
               ]
             : []),
@@ -448,8 +482,7 @@ app.post(
           continue;
         }
 
-        result.aiAdvice =
-  generateMessage(result);
+        
 
         console.log(result);
 
