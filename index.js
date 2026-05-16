@@ -376,17 +376,18 @@ function buildFlex(result) {
 
       hero: {
 
-        type: "image",
+  type: "image",
 
-        url:
-          IMAGE_BASE +
-          result.image,
+  url:
+    IMAGE_BASE +
+    result.image,
 
-        size: "full",
+  size: "full",
 
-        aspectRatio: "20:13",
+  aspectRatio: "16:9",
 
-        aspectMode: "cover",
+  aspectMode: "cover",
+},
         
         gravity: "top",
 
@@ -539,7 +540,7 @@ function buildFlex(result) {
   type: "text",
 
   text:
-    result.characterLine,
+  result.characterLine || "",
 
   size: "sm",
 
@@ -647,20 +648,30 @@ app.post(
 
       res.sendStatus(200);
 
-    } catch (err) {
+    catch (err) {
 
-      console.log(
-  JSON.stringify(
-    err.response?.data,
-    null,
-    2
-  )
-);
+  console.log("====== ERROR ======");
 
-      res.sendStatus(500);
-    }
-  }
-);
+  console.log(err);
+
+  console.log("====== RESPONSE ======");
+
+  console.log(
+    err.response?.data
+  );
+
+  console.log("====== DETAILS ======");
+
+  console.log(
+    JSON.stringify(
+      err.response?.data,
+      null,
+      2
+    )
+  );
+
+  res.sendStatus(500);
+}
 
 // ======================
 // 起動
