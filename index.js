@@ -81,6 +81,110 @@ const characters = [
   "モモンガ",
 ];
 
+
+// ======================
+// キャラセリフ
+// ======================
+function generateCharacterLine(character) {
+
+  // うさぎ
+  if (character === "うさぎ") {
+
+    const lines = [
+      "……ヤハ。",
+      "風、来てるヤハ。",
+      "フゥン。",
+      "……！！",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // ハチワレ
+  if (character === "ハチワレ") {
+
+    const lines = [
+      "なんとかなりそう。",
+      "大丈夫だといいね。",
+      "不思議な空だね。",
+      "ちょっと安心した。",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // モモンガ
+  if (character === "モモンガ") {
+
+    const lines = [
+      "最高じゃ〜ん。",
+      "今日はイイ感じ。",
+      "運命って感じする。",
+      "空、キレイじゃん。",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // ちいかわ
+  const lines = [
+    "……。",
+    "ちょっとこわい…。",
+    "でも、進みたい…。",
+    "空、見てる…。",
+  ];
+
+  return lines[
+    Math.floor(
+      Math.random() *
+      lines.length
+    )
+  ];
+}
+
+// ======================
+// 天気アイコン
+// ======================
+function getWeatherIcon(weather) {
+
+  if (weather === "晴れ") {
+    return "☀️";
+  }
+
+  if (weather === "雨") {
+    return "🌧️";
+  }
+
+  if (weather === "雷") {
+    return "⛈️";
+  }
+
+  if (weather === "風") {
+    return "🌪️";
+  }
+
+  if (weather === "曇り") {
+    return "☁️";
+  }
+
+  return "✨";
+}
+
 // ======================
 // メッセージ生成
 // ======================
@@ -88,8 +192,7 @@ function generateMessage(result) {
 
   const messages = [
 
-    `${result.line_name} —
-${result.line_emotion}`,
+    `${result.line_name} - ${result.line_emotion}`,
 
     result.emotion,
 
@@ -175,76 +278,77 @@ function generateFortune() {
     ];
 
   return {
-    
 
-    weather:
-      hexagram.weather,
+  weather:
+    hexagram.weather,
 
-    emotion:
-      hexagram.emotion,
+  emotion:
+    hexagram.emotion,
 
-    meaning:
-      hexagram.meaning,
+  meaning:
+    hexagram.meaning,
 
-    rarity:
-      hexagram.rarity,
+  rarity:
+    hexagram.rarity,
 
-    color:
-      hexagram.color,
+  color:
+    hexagram.color,
 
-    bgm:
-      hexagram.bgm,
+  bgm:
+    hexagram.bgm,
 
-    image:
-      hexagram.image,
+  image:
+    hexagram.image,
 
-    name:
-      hexagram.name,
+  name:
+    hexagram.name,
 
-    kana:
-      hexagram.kana,
+  kana:
+    hexagram.kana,
 
-    character,
+  character,
 
-    line,
+  characterLine:
+    generateCharacterLine(
+      character
+    ),
 
-    line_name:
-      selectedLine?.line_name ||
-      "爻",
+  line,
 
-    line_emotion:
-      selectedLine?.line_emotion ||
-      "",
+  line_name:
+    selectedLine?.line_name ||
+    "爻",
 
-    // ←追加
-    message:
-      generateMessage({
+  line_emotion:
+    selectedLine?.line_emotion ||
+    "",
 
-        weather:
-          hexagram.weather,
+  message:
+    generateMessage({
+      weather:
+        hexagram.weather,
 
-        emotion:
-          hexagram.emotion,
+      emotion:
+        hexagram.emotion,
 
-        meaning:
-          hexagram.meaning,
+      meaning:
+        hexagram.meaning,
 
-        line_name:
-          selectedLine?.line_name ||
-          "爻",
+      line_name:
+        selectedLine?.line_name ||
+        "爻",
 
-        line_emotion:
-          selectedLine?.line_emotion ||
-          "",
+      line_emotion:
+        selectedLine?.line_emotion ||
+        "",
 
-        name:
-          hexagram.name,
+      name:
+        hexagram.name,
 
-        character,
-      }),
+      character,
+    }),
   };
 }
-
 
 // ======================
 // Flex
@@ -262,13 +366,13 @@ function buildFlex(result) {
   type: "bubble",
 
   backgroundColor:
-    result.rarity === "SSR"
-      ? "#FFFDE7"
-      : "#FFFFFF",
-      
-      : result.rarity === "SR"
-      ? "#F3E5F5"
-      : "#FFFFFF",
+  result.rarity === "SSR"
+    ? "#FFFDE7"
+    : (
+        result.rarity === "SR"
+          ? "#F3E5F5"
+          : "#FFFFFF"
+      ),
 
       hero: {
 
@@ -301,9 +405,13 @@ function buildFlex(result) {
   paddingAll: "20px",
 
   backgroundColor:
-    result.rarity === "SSR"
-      ? "#FFF8E1"
-      : "#FFFFFF",
+  result.rarity === "SSR"
+    ? "#FFF7D6"
+    : (
+        result.rarity === "SR"
+          ? "#F3E8FF"
+          : "#FFFFFF"
+      ),
 
   contents: [
 
@@ -390,7 +498,10 @@ function buildFlex(result) {
             type: "text",
 
             text:
-              `☁️ ${result.weather}`,
+              `text:
+  `${getWeatherIcon(
+    result.weather
+  )} ${result.weather}`,
 
             size: "md",
 
@@ -425,6 +536,24 @@ function buildFlex(result) {
 
             margin: "lg",
           },
+        
+        {
+  type: "text",
+
+  text:
+    result.characterLine,
+
+  size: "sm",
+
+  wrap: true,
+
+  color:
+    "#555555",
+
+  margin: "sm",
+
+  style: "italic",
+},
 
           // SSR
           ...(result.rarity === "SSR"
