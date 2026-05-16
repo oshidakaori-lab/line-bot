@@ -494,19 +494,18 @@ function buildFlex(result) {
           },
 
           // 天気
-          {
-            type: "text",
+{
+  type: "text",
 
-            text:
-              `text:
+  text:
   `${getWeatherIcon(
     result.weather
   )} ${result.weather}`,
 
-            size: "md",
+  size: "md",
 
-            margin: "lg",
-          },
+  margin: "lg",
+},
 
           // 卦emotion
           {
