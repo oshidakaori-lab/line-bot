@@ -498,15 +498,14 @@ function buildFlex(result) {
   type: "text",
 
   text:
-  `${getWeatherIcon(
-    result.weather
-  )} ${result.weather}`,
+    `${getWeatherIcon(
+      result.weather
+    )} ${result.weather}`,
 
   size: "md",
 
   margin: "lg",
 },
-
           // 卦emotion
           {
             type: "text",
