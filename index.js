@@ -113,18 +113,20 @@ ${result.line_emotion}
 ${result.meaning}
 `;
 
-    const completion =
-      await openai.chat.completions.create({
+const completion =
+  await openai.chat.completions.create({
 
-        model: "gpt-4.1-mini",
+    model: "gpt-4o-mini",
 
-        messages: [
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
-      });
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+console.log(completion);
 
     return completion
       .choices[0]
@@ -134,7 +136,7 @@ ${result.meaning}
 
   } catch (err) {
 
-    console.log(err.message);
+    console.log(err);
 
     return "静かな空が広がっています。";
   }
