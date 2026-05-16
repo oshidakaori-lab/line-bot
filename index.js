@@ -417,70 +417,65 @@ app.post(
 
     try {
 
-  for (const event of events) {
+      const events =
+        req.body.events;
 
-    // 処理
+      for (const event of events) {
 
-  }
+        if (
+          event.type !== "message"
+        ) {
+          continue;
+        }
 
-  res.sendStatus(200);
+        if (
+          event.message.type !==
+          "text"
+        ) {
+          continue;
+        }
 
-} catch(err) {
+        const result =
+          generateFortune();
 
-  console.log(err);
+        if (!result) {
 
-  res.sendStatus(500);
+          await client.replyMessage(
+            event.replyToken,
+            {
+              type: "text",
 
-}
+              text:
+                "空を読み込み中です…☁️",
+            }
+          );
 
-    const events =
-      req.body.events;
+          continue;
+        }
 
-    for (const event of events) {
+        result.aiAdvice =
+          await generateAIAdvice(
+            result
+          );
 
-      if (
-        event.type !== "message"
-      ) {
-        continue;
-      }
+        console.log(result);
 
-      if (
-        event.message.type !==
-        "text"
-      ) {
-        continue;
-      }
-
-      const result =
-        generateFortune();
-
-      if (!result) {
+        const flex =
+          buildFlex(result);
 
         await client.replyMessage(
           event.replyToken,
-          {
-            type: "text",
-
-            text:
-              "空を読み込み中です…☁️",
-          }
+          flex
         );
-
-        continue;
       }
 
-      result.aiAdvice =
-        await generateAIAdvice(
-          result
-        );
+      res.sendStatus(200);
 
-      const flex =
-        buildFlex(result);
+    } catch (err) {
 
-      await client.replyMessage(
-        event.replyToken,
-        flex
-      );
+      console.log(err);
+
+      res.sendStatus(500);
     }
   }
 );
