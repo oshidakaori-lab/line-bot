@@ -550,7 +550,7 @@ function buildFlex(result) {
 
   margin: "sm",
 
-  style: "italic",
+  
 },
 
           // SSR
@@ -649,7 +649,13 @@ app.post(
 
     } catch (err) {
 
-      console.log(err);
+      console.log(
+  JSON.stringify(
+    err.response?.data,
+    null,
+    2
+  )
+);
 
       res.sendStatus(500);
     }
