@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const OpenAI = require("openai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -32,15 +31,6 @@ const config = {
 
 const client =
   new line.Client(config);
-
-// ======================
-// OpenAI
-// ======================
-const openai =
-  new OpenAI({
-    apiKey:
-      process.env.OPENAI_API_KEY,
-  });
 
 // ======================
 // CSV
@@ -89,57 +79,29 @@ const characters = [
 ];
 
 // ======================
-// AI
+// 固定メッセージ生成
 // ======================
-async function generateAIAdvice(result) {
+function generateFixedAdvice(result) {
 
-  try {
+  const messages = [
 
-    const prompt = `
-幻想的な占い師として、
-80文字以内で、
-やさしく運勢を返してください。
+    `${result.weather}の空が、静かに流れています。`,
 
-卦:
-${result.name}
+    `${result.line_name}の気配が、心を照らしています。`,
 
-爻:
-${result.line_name}
+    `${result.emotion}が、やさしく広がっています。`,
 
-感情:
-${result.line_emotion}
+    `今日は「${result.meaning}」がテーマになりそうです。`,
 
-意味:
-${result.meaning}
-`;
+    `${result.character}が、そっと寄り添っています。`,
+  ];
 
-const completion =
-  await openai.chat.completions.create({
-
-    model: "gpt-4o-mini",
-
-    messages: [
-      {
-        role: "user",
-        content: prompt,
-      },
-    ],
-  });
-
-console.log(completion);
-
-    return completion
-      .choices[0]
-      .message
-      .content
-      .slice(0, 80);
-
-  } catch (err) {
-
-    console.log(err);
-
-    return "静かな空が広がっています。";
-  }
+  return messages[
+    Math.floor(
+      Math.random() *
+      messages.length
+    )
+  ];
 }
 
 // ======================
@@ -168,12 +130,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-const selectedLine =
-  lines.find(
-    (l) =>
-      Number(l.hexagram_id) === Number(hexagram.id) &&
-      Number(l.line) === Number(line)
-  );
+  const selectedLine =
+    lines.find(
+      (l) =>
+        Number(l.hexagram_id) === Number(hexagram.id) &&
+        Number(l.line) === Number(line)
+    );
 
   // キャラ
   const character =
@@ -184,7 +146,7 @@ const selectedLine =
       )
     ];
 
-  return {
+  const result = {
 
     type: "sky",
 
@@ -227,6 +189,12 @@ const selectedLine =
       selectedLine?.line_emotion ||
       "",
   };
+
+  // AIの代わり
+  result.aiAdvice =
+    generateFixedAdvice(result);
+
+  return result;
 }
 
 // ======================
@@ -270,7 +238,7 @@ function buildFlex(result) {
 
         contents: [
 
-          // AIメッセージ
+          // メッセージ
           {
             type: "text",
 
@@ -309,7 +277,7 @@ function buildFlex(result) {
               "#888888",
           },
 
-          // 爻名
+          // 爻
           {
             type: "text",
 
@@ -350,7 +318,7 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // 卦emotion
+          // emotion
           {
             type: "text",
 
@@ -379,7 +347,7 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // SSR
+          // SSR演出
           ...(result.rarity === "SSR"
             ? [
                 {
@@ -454,11 +422,6 @@ app.post(
 
           continue;
         }
-
-        result.aiAdvice =
-          await generateAIAdvice(
-            result
-          );
 
         console.log(result);
 
