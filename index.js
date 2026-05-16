@@ -638,9 +638,7 @@ app.post(
 
       res.sendStatus(200);
 
-    }
-
-    catch (err) {
+    } catch (err) {
 
       console.log("====== ERROR ======");
 
@@ -664,7 +662,9 @@ app.post(
 
       res.sendStatus(500);
     }
-    
+  } // ← これを追加！！！
+);
+
 // ======================
 // 起動
 // ======================
