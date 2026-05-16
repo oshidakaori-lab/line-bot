@@ -166,13 +166,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-  const selectedLine =
-    lines.find(
-      (l) =>
-        l.hexagram_id ==
-          hexagram.id &&
-        l.line == line
-    );
+const selectedLine =
+  lines.find(
+    (l) =>
+      Number(l.hexagram_id) === Number(hexagram.id) &&
+      Number(l.line) === Number(line)
+  );
 
   // キャラ
   const character =
@@ -416,7 +415,23 @@ app.post(
 
   async (req, res) => {
 
-    res.sendStatus(200);
+    try {
+
+  for (const event of events) {
+
+    // 処理
+
+  }
+
+  res.sendStatus(200);
+
+} catch(err) {
+
+  console.log(err);
+
+  res.sendStatus(500);
+
+}
 
     const events =
       req.body.events;
