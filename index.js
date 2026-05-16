@@ -356,87 +356,80 @@ function generateFortune() {
 function buildFlex(result) {
 
   return {
-
     type: "flex",
 
     altText: "空の易",
 
     contents: {
 
-  type: "bubble",
+      type: "bubble",
 
-  backgroundColor:
-  result.rarity === "SSR"
-    ? "#FFFDE7"
-    : (
-        result.rarity === "SR"
-          ? "#F3E5F5"
-          : "#FFFFFF"
-      ),
+      backgroundColor:
+        result.rarity === "SSR"
+          ? "#FFFDE7"
+          : (
+              result.rarity === "SR"
+                ? "#F3E5F5"
+                : "#FFFFFF"
+            ),
 
       hero: {
 
-  type: "image",
+        type: "image",
 
-  url:
-    IMAGE_BASE +
-    result.image,
+        url:
+          IMAGE_BASE +
+          result.image,
 
-  size: "full",
+        size: "full",
 
-  aspectRatio: "16:9",
+        aspectRatio: "16:9",
 
-  aspectMode: "cover",
-},
-        
-        gravity: "top",
-
-        backgroundColor:
-          "#000000",
+        aspectMode: "cover",
       },
 
       body: {
 
-  type: "box",
+        type: "box",
 
-  layout: "vertical",
+        layout: "vertical",
 
-  spacing: "md",
+        spacing: "md",
 
-  paddingAll: "20px",
+        paddingAll: "20px",
 
-  backgroundColor:
-  result.rarity === "SSR"
-    ? "#FFF7D6"
-    : (
-        result.rarity === "SR"
-          ? "#F3E8FF"
-          : "#FFFFFF"
-      ),
+        backgroundColor:
+          result.rarity === "SSR"
+            ? "#FFF7D6"
+            : (
+                result.rarity === "SR"
+                  ? "#F3E8FF"
+                  : "#FFFFFF"
+              ),
 
-  contents: [
+        contents: [
 
           // メッセージ
           {
-  type: "text",
+            type: "text",
 
-  text:
-    result.message,
+            text:
+              result.message,
 
-  wrap: true,
+            wrap: true,
 
-  size: "lg",
+            size: "lg",
 
-  color:
-    result.rarity === "SSR"
-      ? "#E65100"
-      : "#333333",
+            color:
+              result.rarity === "SSR"
+                ? "#E65100"
+                : "#333333",
 
-  weight:
-    result.rarity === "SSR"
-      ? "bold"
-      : "regular",
-},
+            weight:
+              result.rarity === "SSR"
+                ? "bold"
+                : "regular",
+          },
 
           // 卦名
           {
@@ -495,18 +488,17 @@ function buildFlex(result) {
           },
 
           // 天気
-{
-  type: "text",
+          {
+            type: "text",
 
-  text:
-    `${getWeatherIcon(
-      result.weather
-    )} ${result.weather}`,
+            text:
+  `${getWeatherIcon(result.weather)} ${result.weather}`,
 
-  size: "md",
+            size: "md",
 
-  margin: "lg",
-},
+            margin: "lg",
+          },
+
           // 卦emotion
           {
             type: "text",
@@ -535,47 +527,45 @@ function buildFlex(result) {
 
             margin: "lg",
           },
-        
-        {
-  type: "text",
 
-  text:
-  result.characterLine || "",
+          // キャラセリフ
+          {
+            type: "text",
 
-  size: "sm",
+            text:
+              result.characterLine || "",
 
-  wrap: true,
+            size: "sm",
 
-  color:
-    "#555555",
+            wrap: true,
 
-  margin: "sm",
+            color:
+              "#555555",
 
-  
-},
+            margin: "sm",
+          },
 
-          // SSR
+          // SSR演出
           ...(result.rarity === "SSR"
             ? [
                 {
-  type: "text",
+                  type: "text",
 
-  text:
-    "✦ SUPER RARE ✦",
+                  text:
+                    "✦ SUPER RARE ✦",
 
-  size: "xl",
+                  size: "xl",
 
-  weight:
-    "bold",
+                  weight:
+                    "bold",
 
-  color:
-    "#FFB300",
+                  color:
+                    "#FFB300",
 
-  align: "center",
+                  align: "center",
 
-  margin:
-    "xl",
-                  
+                  margin:
+                    "xl",
                 },
               ]
             : []),
@@ -648,31 +638,33 @@ app.post(
 
       res.sendStatus(200);
 
+    }
+
     catch (err) {
 
-  console.log("====== ERROR ======");
+      console.log("====== ERROR ======");
 
-  console.log(err);
+      console.log(err);
 
-  console.log("====== RESPONSE ======");
+      console.log("====== RESPONSE ======");
 
-  console.log(
-    err.response?.data
-  );
+      console.log(
+        err.response?.data
+      );
 
-  console.log("====== DETAILS ======");
+      console.log("====== DETAILS ======");
 
-  console.log(
-    JSON.stringify(
-      err.response?.data,
-      null,
-      2
-    )
-  );
+      console.log(
+        JSON.stringify(
+          err.response?.data,
+          null,
+          2
+        )
+      );
 
-  res.sendStatus(500);
-}
-
+      res.sendStatus(500);
+    }
+    
 // ======================
 // 起動
 // ======================
