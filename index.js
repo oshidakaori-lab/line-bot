@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
+
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -31,6 +32,11 @@ const config = {
 
 const client =
   new line.Client(config);
+
+// ======================
+// OpenAI
+// ======================
+
 
 // ======================
 // CSV
@@ -79,13 +85,38 @@ const characters = [
 ];
 
 // ======================
-// 固定メッセージ生成
+// メッセージ生成
 // ======================
-function generateFixedAdvice(result) {
+function generateMessage(result) {
 
   const messages = [
 
-    `${result.weather}の空が、静かに流れています。`,
+    `${result.line_name} —
+${result.line_emotion}`,
+
+    result.emotion,
+  
+    `${result.weather}の空がゆっくり流れています。`
+
+"まだ名前のない感情が漂っています。"
+
+"遠い空から気配が届いています。"
+
+"風向きが少し変わり始めました。"
+
+    `${result.name}の風が流れています。`,
+
+    "空が静かに揺れています。",
+
+    "見えない流れが変わり始めています。",
+
+    `${result.weather}の気配が満ちています。`,
+
+    "静かな兆しが空に浮かんでいます。",
+
+    `${result.character}が空を見上げています。`
+  
+   `${result.weather}の空が、静かに流れています。`,
 
     `${result.line_name}の気配が、心を照らしています。`,
 
@@ -130,12 +161,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-  const selectedLine =
-    lines.find(
-      (l) =>
-        Number(l.hexagram_id) === Number(hexagram.id) &&
-        Number(l.line) === Number(line)
-    );
+const selectedLine =
+  lines.find(
+    (l) =>
+      Number(l.hexagram_id) === Number(hexagram.id) &&
+      Number(l.line) === Number(line)
+  );
 
   // キャラ
   const character =
@@ -146,7 +177,7 @@ function generateFortune() {
       )
     ];
 
-  const result = {
+  return {
 
     type: "sky",
 
@@ -189,12 +220,6 @@ function generateFortune() {
       selectedLine?.line_emotion ||
       "",
   };
-
-  // AIの代わり
-  result.aiAdvice =
-    generateFixedAdvice(result);
-
-  return result;
 }
 
 // ======================
@@ -238,7 +263,7 @@ function buildFlex(result) {
 
         contents: [
 
-          // メッセージ
+          // AIメッセージ
           {
             type: "text",
 
@@ -277,7 +302,7 @@ function buildFlex(result) {
               "#888888",
           },
 
-          // 爻
+          // 爻名
           {
             type: "text",
 
@@ -318,7 +343,7 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // emotion
+          // 卦emotion
           {
             type: "text",
 
@@ -347,7 +372,7 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // SSR演出
+          // SSR
           ...(result.rarity === "SSR"
             ? [
                 {
@@ -422,6 +447,9 @@ app.post(
 
           continue;
         }
+
+        result.aiAdvice =
+  generateMessage(result);
 
         console.log(result);
 
