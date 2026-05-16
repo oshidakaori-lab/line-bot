@@ -365,19 +365,18 @@ function buildFlex(result) {
   type: "bubble",
 
   hero: {
+  type: "image",
 
-        type: "image",
+  url:
+    IMAGE_BASE +
+    result.image,
 
-        url:
-          IMAGE_BASE +
-          result.image,
+  size: "full",
 
-        size: "full",
+  aspectRatio: "16:9",
 
-        aspectRatio: "16:9",
-
-        aspectMode: "cover",
-      },
+  aspectMode: "cover"
+},
 
       body: {
 
