@@ -39,7 +39,7 @@ const client =
 const openai =
   new OpenAI({
     apiKey:
-      process.env.OPENAI_API_KEY,
+      process.env.GEMINI_API_KEY,
   });
 
 // ======================
