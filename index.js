@@ -65,9 +65,9 @@ async function generateAIFortune(userMessage) {
       - fortuneMessage: ユーザーへの占いアドバイスメッセージ（優しく、少し不思議な空気感で、100文字程度）
     `;
 
-    // 修正②: responseMimeType を指定し、スキーマを固定して100%JSONで返却させる
+    // ⬇️ ここを修正：最新の安定版モデルに変更、または「models/」を明示する
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash", // 2026年現在、最速かつ無料枠で動く推奨モデルです
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -84,6 +84,7 @@ async function generateAIFortune(userMessage) {
         }
       }
     });
+
 
     const aiResult = await model.generateContent(prompt);
     const responseText = aiResult.response.text().trim();
