@@ -2,26 +2,28 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const { GoogleGenerativeAI } = require("@google/generative-ai"); // Gemini APIの導入
+
+const {
+  GoogleGenerativeAI
+} = require("@google/generative-ai");
 
 const app = express();
 
-app.use("/images", express.static("public/images"));
-
-// ======================
-// 各種設定
-// ======================
-const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
-
 const config = {
-  channelSecret: process.env.LINE_CHANNEL_SECRET,
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret:
+    process.env.LINE_CHANNEL_SECRET,
+
+  channelAccessToken:
+    process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
 
-const client = new line.Client(config);
+const client =
+  new line.Client(config);
 
-// Gemini APIの初期化（環境変数 GEMINI_API_KEY が必要です）
-const ai = new GoogleGenerativeAI(apiKey: process.env.GEMINI_API_KEY);
+const ai =
+  new GoogleGenerativeAI(
+    process.env.GEMINI_API_KEY
+  );
 
 // ======================
 // 天気アイコン（AIの出力に応じて選択）
