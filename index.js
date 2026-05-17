@@ -2,31 +2,27 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-
-const {
-  GoogleGenerativeAI
-} = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 
-const config = {
-  channelSecret:
-    process.env.LINE_CHANNEL_SECRET,
-
-  channelAccessToken:
-    process.env.LINE_CHANNEL_ACCESS_TOKEN,
-};
-
-const client =
-  new line.Client(config);
-
-const genAI =
-  new GoogleGenerativeAI(
-    process.env.GEMINI_API_KEY
-  );
+app.use("/images", express.static("public/images"));
 
 // ======================
-// 天気アイコン（AIの出力に応じて選択）
+// 修正①: IMAGE_BASE の定義を追加
+// ======================
+const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
+
+const config = {
+  channelSecret: process.env.LINE_CHANNEL_SECRET,
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+};
+
+const client = new line.Client(config);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+// ======================
+// 天気アイコン
 // ======================
 function getWeatherIcon(weather) {
   if (weather?.includes("晴")) return "☀️";
@@ -41,22 +37,11 @@ function getWeatherIcon(weather) {
 // 天気画像
 // ======================
 function getWeatherImage(weather) {
-
-  if (weather?.includes("晴"))
-    return "sunny.jpg";
-
-  if (weather?.includes("雨"))
-    return "rain.jpg";
-
-  if (weather?.includes("雷"))
-    return "thunder.jpg";
-
-  if (weather?.includes("風"))
-    return "wind.jpg";
-
-  if (weather?.includes("曇"))
-    return "cloudy.jpg";
-
+  if (weather?.includes("晴")) return "sunny.jpg";
+  if (weather?.includes("雨")) return "rain.jpg";
+  if (weather?.includes("雷")) return "thunder.jpg";
+  if (weather?.includes("風")) return "wind.jpg";
+  if (weather?.includes("曇")) return "cloudy.jpg";
   return "default.jpg";
 }
 
@@ -65,33 +50,45 @@ function getWeatherImage(weather) {
 // ======================
 async function generateAIFortune(userMessage) {
   try {
-    // 構造化データ(JSON)で返却してもらうためのプロンプト
     const prompt = `
       ユーザーから以下のメッセージ（悩みや一言）が届きました。
       「${userMessage}」
 
       このメッセージに対して、東洋の「易（占い）」の要素と、「ちいかわ」の世界観（ちいかわ、ハチワレ、うさぎ、モモンガのいずれか1キャラクターが登場）を融合させた占いをしてください。
-
-      必ず以下のJSONフォーマットのみで返答してください。余計な解説やマークダウン（\`\`\`json等）は一切含めないでください。
-
-      {
-        "character": "登場させるキャラクター名（ちいかわ、ハチワレ、うさぎ、モモンガのいずれか）",
-        "characterLine": "そのキャラクターらしいセリフ（うさぎなら「ヤハ」「プルャ」、ハチワレなら「なんとかなれッ」など世界観を重視）",
-        "hexagramName": "この悩みに応じた易の卦名（例: 水雷屯、地天泰など架空やアレンジでも可。漢字3〜4文字）",
-        "lineName": "その卦の状況を表す言葉（例: 初九、九二、または「一歩進むとき」など）",
-        "weather": "今の状況を表す天気（晴れ、雨、雷、風、曇りのいずれか）",
-        "fortuneMessage": "ユーザーへの占いアドバイスメッセージ（優しく、少し不思議な空気感で、100文字程度）"
-      }
+      
+      各項目の要件:
+      - character: ちいかわ、ハチワレ、うさぎ、モモンガのいずれか
+      - characterLine: そのキャラらしいセリフ。うさぎなら「ヤハ」「プルャ」、ハチワレなら「なんとかなれッ」、ちいかわなら「ワァ…」など。
+      - hexagramName: 悩みに応じた易の卦名（漢字3〜4文字、実在のものでもアレンジでも可）
+      - lineName: その卦の状況を表す言葉
+      - weather: 晴れ、雨、雷、風、曇りのいずれか
+      - fortuneMessage: ユーザーへの占いアドバイスメッセージ（優しく、少し不思議な空気感で、100文字程度）
     `;
 
-    // Gemini 1.5 Flash（高速・軽量・無料枠あり）を使用
+    // 修正②: responseMimeType を指定し、スキーマを固定して100%JSONで返却させる
     const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
-});
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: "object",
+          properties: {
+            character: { type: "string" },
+            characterLine: { type: "string" },
+            hexagramName: { type: "string" },
+            lineName: { type: "string" },
+            weather: { type: "string" },
+            fortuneMessage: { type: "string" }
+          },
+          required: ["character", "characterLine", "hexagramName", "lineName", "weather", "fortuneMessage"]
+        }
+      }
+    });
+
     const aiResult = await model.generateContent(prompt);
     const responseText = aiResult.response.text().trim();
 
-    // JSONをパース
+    // 100%綺麗なJSONが保証されているので、安全にパース可能
     const data = JSON.parse(responseText);
     return data;
   } catch (error) {
@@ -111,12 +108,7 @@ function buildFlex(result) {
       type: "bubble",
       hero: {
         type: "image",
-        // 画像は固定、または天気/キャラに応じた画像名を指定してください
-        url:
-  IMAGE_BASE +
-  getWeatherImage(
-    result.weather
-  ), 
+        url: IMAGE_BASE + getWeatherImage(result.weather), 
         size: "full",
         aspectRatio: "16:9",
         aspectMode: "cover",
@@ -195,10 +187,9 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;
       }
 
-      // ユーザーの入力テキストを取得
       const userMessage = event.message.text;
 
-      // AIで占いメッセージを生成（ガチャではなくメッセージに連動）
+      // 占い結果の生成
       const result = await generateAIFortune(userMessage);
 
       if (!result) {
