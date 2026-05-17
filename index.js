@@ -2,174 +2,461 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const fs = require("fs");
+const csv = require("csv-parser");
+
+// Gemini
+const {
+  GoogleGenerativeAI,
+} = require("@google/generative-ai");
 
 const app = express();
 
-app.use("/images", express.static("public/images"));
+app.use(
+  "/images",
+  express.static("public/images")
+);
 
 // ======================
-// 修正①: IMAGE_BASE の定義を追加
+// Gemini 初期化
 // ======================
-const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
+const genAI =
+  new GoogleGenerativeAI(
+    process.env.GEMINI_API_KEY
+  );
 
+// ======================
+// 画像URL
+// ======================
+const IMAGE_BASE =
+  "https://line-bot-v2rk.onrender.com/images/";
+
+// ======================
+// LINE
+// ======================
 const config = {
-  channelSecret: process.env.LINE_CHANNEL_SECRET,
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret:
+    process.env.LINE_CHANNEL_SECRET,
+
+  channelAccessToken:
+    process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
 
-const client = new line.Client(config);
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const client =
+  new line.Client(config);
 
 // ======================
-// 天気アイコン
+// CSV
 // ======================
-function getWeatherIcon(weather) {
-  if (weather?.includes("晴")) return "☀️";
-  if (weather?.includes("雨")) return "🌧️";
-  if (weather?.includes("雷")) return "⛈️";
-  if (weather?.includes("風")) return "🌪️";
-  if (weather?.includes("曇")) return "☁️";
-  return "✨";
-}
+const hexagrams = [];
+const lines = [];
+
+// 卦CSV
+fs.createReadStream("hexagrams.csv")
+  .pipe(csv())
+  .on("data", (data) => {
+
+    hexagrams.push(data);
+
+  })
+  .on("end", () => {
+
+    console.log("卦CSV読込完了");
+    console.log(hexagrams.length);
+
+  });
+
+// 爻CSV
+fs.createReadStream("lines.csv")
+  .pipe(csv())
+  .on("data", (data) => {
+
+    lines.push(data);
+
+  })
+  .on("end", () => {
+
+    console.log("爻CSV読込完了");
+    console.log(lines.length);
+
+  });
+
+// ======================
+// キャラ
+// ======================
+const characters = [
+  "ちいかわ",
+  "ハチワレ",
+  "うさぎ",
+  "モモンガ",
+];
 
 // ======================
 // 天気画像
 // ======================
 function getWeatherImage(weather) {
-  if (weather?.includes("晴")) return "sunny.jpg";
-  if (weather?.includes("雨")) return "rain.jpg";
-  if (weather?.includes("雷")) return "thunder.jpg";
-  if (weather?.includes("風")) return "wind.jpg";
-  if (weather?.includes("曇")) return "cloudy.jpg";
+
+  if (weather?.includes("晴"))
+    return "sunny.jpg";
+
+  if (weather?.includes("雨"))
+    return "rain.jpg";
+
+  if (weather?.includes("雷"))
+    return "thunder.jpg";
+
+  if (weather?.includes("風"))
+    return "wind.jpg";
+
+  if (weather?.includes("曇"))
+    return "cloudy.jpg";
+
   return "default.jpg";
 }
 
 // ======================
-// AIによる占い・メッセージ生成
+// Gemini AI メッセージ生成
 // ======================
-async function generateAIFortune(userMessage) {
+async function generateAIAdvice(result) {
+
   try {
+
+    const model =
+      genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+      });
+
     const prompt = `
-      ユーザーから以下のメッセージ（悩みや一言）が届きました。
-      「${userMessage}」
+あなたは「空の易」という、
+空模様と易経を融合した幻想的な占いAIです。
 
-      このメッセージに対して、東洋の「易（占い）」の要素と、「ちいかわ」の世界観（ちいかわ、ハチワレ、うさぎ、モモンガのいずれか1キャラクターが登場）を融合させた占いをしてください。
-      
-      各項目の要件:
-      - character: ちいかわ、ハチワレ、うさぎ、モモンガのいずれか
-      - characterLine: そのキャラらしいセリフ。うさぎなら「ヤハ」「プルャ」、ハチワレなら「なんとかなれッ」、ちいかわなら「ワァ…」など。
-      - hexagramName: 悩みに応じた易の卦名（漢字3〜4文字、実在のものでもアレンジでも可）
-      - lineName: その卦の状況を表す言葉
-      - weather: 晴れ、雨、雷、風、曇りのいずれか
-      - fortuneMessage: ユーザーへの占いアドバイスメッセージ（優しく、少し不思議な空気感で、100文字程度）
-    `;
+以下の情報を元に、
+短く美しい占いメッセージを
+80文字以内で生成してください。
 
-    // ⬇️ ここを修正：最新の安定版モデルに変更、または「models/」を明示する
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", // 2026年現在、最速かつ無料枠で動く推奨モデルです
-      generationConfig: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "object",
-          properties: {
-            character: { type: "string" },
-            characterLine: { type: "string" },
-            hexagramName: { type: "string" },
-            lineName: { type: "string" },
-            weather: { type: "string" },
-            fortuneMessage: { type: "string" }
-          },
-          required: ["character", "characterLine", "hexagramName", "lineName", "weather", "fortuneMessage"]
-        }
-      }
-    });
+【卦】
+${result.name}
 
+【感情】
+${result.emotion}
 
-    const aiResult = await model.generateContent(prompt);
-    const responseText = aiResult.response.text().trim();
+【意味】
+${result.meaning}
 
-    // 100%綺麗なJSONが保証されているので、安全にパース可能
-    const data = JSON.parse(responseText);
-    return data;
-  } catch (error) {
-    console.error("AI Generation Error:", error);
-    return null;
+【爻】
+${result.line_name}
+
+【天気】
+${result.weather}
+
+【キャラクター】
+${result.character}
+
+条件:
+- やさしい
+- 少し幻想的
+- 不安を煽らない
+- 空の描写を入れる
+- 日本語のみ
+- 1文のみ
+`;
+
+    const response =
+      await model.generateContent(
+        prompt
+      );
+
+    const text =
+      response.response.text();
+
+    return text.trim();
+
+  } catch (err) {
+
+    console.log(
+      "Gemini Error:"
+    );
+
+    console.log(err.message);
+
+    // fallback
+    return `${result.weather}の空が静かに揺れています。`;
   }
 }
 
 // ======================
-// Flex Message ビルダー
+// 占い生成
+// ======================
+async function generateFortune() {
+
+  if (
+    hexagrams.length === 0 ||
+    lines.length === 0
+  ) {
+    return null;
+  }
+
+  // ランダム卦
+  const hexagram =
+    hexagrams[
+      Math.floor(
+        Math.random() *
+        hexagrams.length
+      )
+    ];
+
+  // ランダム爻
+  const line =
+    Math.floor(Math.random() * 6) + 1;
+
+  // 爻検索
+  const selectedLine =
+    lines.find(
+      (l) =>
+        Number(l.hexagram_id) ===
+          Number(hexagram.id) &&
+        Number(l.line) ===
+          Number(line)
+    );
+
+  // キャラ
+  const character =
+    characters[
+      Math.floor(
+        Math.random() *
+        characters.length
+      )
+    ];
+
+  const result = {
+
+    weather:
+      hexagram.weather,
+
+    emotion:
+      hexagram.emotion,
+
+    meaning:
+      hexagram.meaning,
+
+    rarity:
+      hexagram.rarity,
+
+    color:
+      hexagram.color,
+
+    bgm:
+      hexagram.bgm,
+
+    image:
+      getWeatherImage(
+        hexagram.weather
+      ),
+
+    name:
+      hexagram.name,
+
+    kana:
+      hexagram.kana,
+
+    character,
+
+    line,
+
+    line_name:
+      selectedLine?.line_name ||
+      "爻",
+
+    line_emotion:
+      selectedLine?.line_emotion ||
+      "",
+  };
+
+  // Gemini生成
+  result.aiAdvice =
+    await generateAIAdvice(
+      result
+    );
+
+  return result;
+}
+
+// ======================
+// Flex
 // ======================
 function buildFlex(result) {
+
   return {
+
     type: "flex",
-    altText: "空の易（AI占い）",
+
+    altText: "空の易",
+
     contents: {
+
       type: "bubble",
+
       hero: {
+
         type: "image",
-        url: IMAGE_BASE + getWeatherImage(result.weather), 
+
+        url:
+          IMAGE_BASE +
+          result.image,
+
         size: "full",
+
         aspectRatio: "16:9",
+
         aspectMode: "cover",
+
+        animated: true,
       },
+
       body: {
+
         type: "box",
+
         layout: "vertical",
-        spacing: "md",
-        paddingAll: "20px",
-        backgroundColor: "#FFFFFF",
+
         contents: [
-          // AIからのメッセージ
+
+          // AIメッセージ
           {
             type: "text",
-            text: result.fortuneMessage,
+
+            text:
+              result.aiAdvice,
+
             wrap: true,
-            size: "md",
-            color: "#333333",
+
+            size: "lg",
+
             weight: "bold",
+
+            color:
+              "#333333",
           },
+
           // 卦名
           {
             type: "text",
-            text: result.hexagramName,
-            size: "xl",
+
+            text:
+              result.name,
+
+            size: "xxl",
+
             weight: "bold",
+
             margin: "lg",
           },
-          // 爻名・状況
+
+          // よみ
           {
             type: "text",
-            text: result.lineName,
+
+            text:
+              result.kana,
+
             size: "sm",
-            color: "#888888",
+
+            color:
+              "#888888",
           },
+
+          // 爻
+          {
+            type: "text",
+
+            text:
+              result.line_name,
+
+            size: "lg",
+
+            weight: "bold",
+
+            margin: "lg",
+          },
+
+          // 爻emotion
+          {
+            type: "text",
+
+            text:
+              result.line_emotion,
+
+            wrap: true,
+
+            size: "sm",
+
+            color:
+              "#888888",
+          },
+
           // 天気
           {
             type: "text",
-            text: `${getWeatherIcon(result.weather)} 空模様: ${result.weather}`,
+
+            text:
+              `☁️ ${result.weather}`,
+
             size: "md",
+
             margin: "lg",
           },
-          // キャラクター
+
+          // emotion
           {
             type: "text",
-            text: `🐾 ${result.character}`,
-            size: "sm",
-            margin: "lg",
-            weight: "bold",
-          },
-          // キャラセリフ
-          {
-            type: "text",
-            text: result.characterLine ? `「${result.characterLine}」` : "",
-            size: "sm",
+
+            text:
+              result.emotion,
+
             wrap: true,
-            color: "#555555",
-            margin: "sm",
-            style: "italic",
+
+            size: "sm",
+
+            color:
+              "#666666",
+
+            margin: "md",
           },
+
+          // キャラ
+          {
+            type: "text",
+
+            text:
+              `🐾 ${result.character}`,
+
+            size: "sm",
+
+            margin: "lg",
+          },
+
+          // SSR
+          ...(result.rarity === "SSR"
+            ? [
+                {
+                  type: "text",
+
+                  text:
+                    "✨ SSR ✨",
+
+                  size: "xl",
+
+                  weight:
+                    "bold",
+
+                  color:
+                    "#FFD700",
+
+                  margin:
+                    "lg",
+                },
+              ]
+            : []),
         ],
       },
     },
@@ -177,47 +464,87 @@ function buildFlex(result) {
 }
 
 // ======================
-// Webhook
+// webhook
 // ======================
-app.post("/callback", line.middleware(config), async (req, res) => {
-  try {
-    const events = req.body.events;
+app.post(
+  "/callback",
 
-    for (const event of events) {
-      if (event.type !== "message" || event.message.type !== "text") {
-        continue;
+  line.middleware(config),
+
+  async (req, res) => {
+
+    try {
+
+      const events =
+        req.body.events;
+
+      for (const event of events) {
+
+        if (
+          event.type !== "message"
+        ) {
+          continue;
+        }
+
+        if (
+          event.message.type !==
+          "text"
+        ) {
+          continue;
+        }
+
+        const result =
+          await generateFortune();
+
+        if (!result) {
+
+          await client.replyMessage(
+            event.replyToken,
+            {
+              type: "text",
+
+              text:
+                "空を読み込み中です…☁️",
+            }
+          );
+
+          continue;
+        }
+
+        console.log(result);
+
+        const flex =
+          buildFlex(result);
+
+        await client.replyMessage(
+          event.replyToken,
+          flex
+        );
       }
 
-      const userMessage = event.message.text;
+      res.sendStatus(200);
 
-      // 占い結果の生成
-      const result = await generateAIFortune(userMessage);
+    } catch (err) {
 
-      if (!result) {
-        await client.replyMessage(event.replyToken, {
-          type: "text",
-          text: "空の向こうでAIが考え込んでいます…☁️ しばらく経ってからもう一度話しかけてね。",
-        });
-        continue;
-      }
+      console.log(
+        "====== ERROR ======"
+      );
 
-      // Flex Messageの構築と送信
-      const flex = buildFlex(result);
-      await client.replyMessage(event.replyToken, flex);
+      console.log(err);
+
+      res.sendStatus(500);
     }
-
-    res.sendStatus(200);
-  } catch (err) {
-    console.log("====== ERROR ======");
-    console.error(err);
-    res.sendStatus(500);
   }
-});
+);
 
 // ======================
 // 起動
 // ======================
-const PORT = process.env.PORT || 3000;
+const PORT =
+  process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`サーバーがポート ${PORT} で起動しました`);
+
+  console.log("起動成功");
+
 });
