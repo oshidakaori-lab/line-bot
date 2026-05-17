@@ -92,6 +92,102 @@ const characters = [
 ];
 
 // ======================
+// キャラセリフ
+// ======================
+function generateCharacterLine(character) {
+
+  // うさぎ
+  if (character === "うさぎ") {
+
+    const lines = [
+      "……ヤハ。",
+      "風、来てるヤハ。",
+      "フゥン。",
+      "……！！",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // ハチワレ
+  if (character === "ハチワレ") {
+
+    const lines = [
+      "なんとかなりそう。",
+      "大丈夫だといいね。",
+      "不思議な空だね。",
+      "ちょっと安心した。",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // モモンガ
+  if (character === "モモンガ") {
+
+    const lines = [
+      "最高じゃ〜ん。",
+      "今日はイイ感じ。",
+      "運命って感じする。",
+      "空、キレイじゃん。",
+    ];
+
+    return lines[
+      Math.floor(
+        Math.random() *
+        lines.length
+      )
+    ];
+  }
+
+  // ちいかわ
+  const lines = [
+    "……。",
+    "ちょっとこわい…。",
+    "でも、進みたい…。",
+    "空、見てる…。",
+  ];
+
+  return lines[
+    Math.floor(
+      Math.random() *
+      lines.length
+    )
+  ];
+}
+
+function getWeatherIcon(weather) {
+
+  if (weather?.includes("晴"))
+    return "☀️";
+
+  if (weather?.includes("雨"))
+    return "🌧️";
+
+  if (weather?.includes("雷"))
+    return "⛈️";
+
+  if (weather?.includes("風"))
+    return "🌪️";
+
+  if (weather?.includes("曇"))
+    return "☁️";
+
+  return "✨";
+}
+
+
+// ======================
 // 天気画像
 // ======================
 function getWeatherImage(weather) {
@@ -126,9 +222,9 @@ async function generateAIAdvice(result) {
         model: "gemini-2.5-flash",
       });
 
-    const prompt = `
+const prompt = `
 あなたは「空の易」という、
-空模様と易経を融合した幻想的な占いAIです。
+空模様と易経を融合した占いAIです。
 
 以下の情報を元に、
 短く美しい占いメッセージを
@@ -148,17 +244,17 @@ ${result.line_name}
 
 【天気】
 ${result.weather}
-
-【キャラクター】
-${result.character}
+    
 
 条件:
 - やさしい
-- 少し幻想的
 - 不安を煽らない
 - 空の描写を入れる
 - 日本語のみ
 - 1文のみ
+- 改行禁止
+- 詩のように短く
+- 「空」「風」「雲」「光」「雨」など自然表現を必ず1つ含める
 `;
 
     const response =
@@ -261,6 +357,11 @@ async function generateFortune() {
 
     character,
 
+characterLine:
+  generateCharacterLine(
+    character
+  ),
+
     line,
 
     line_name:
@@ -298,20 +399,18 @@ function buildFlex(result) {
 
       hero: {
 
-        type: "image",
+  type: "image",
 
-        url:
-          IMAGE_BASE +
-          result.image,
+  url:
+    IMAGE_BASE +
+    result.image,
 
-        size: "full",
+  size: "full",
 
-        aspectRatio: "16:9",
+  aspectRatio: "16:9",
 
-        aspectMode: "cover",
-
-        animated: true,
-      },
+  aspectMode: "cover",
+},
 
       body: {
 
@@ -399,7 +498,7 @@ function buildFlex(result) {
             type: "text",
 
             text:
-              `☁️ ${result.weather}`,
+              `${getWeatherIcon(result.weather)} ${result.weather}`,
 
             size: "md",
 
@@ -422,8 +521,8 @@ function buildFlex(result) {
 
             margin: "md",
           },
-
-          // キャラ
+        
+        // キャラ
           {
             type: "text",
 
@@ -435,34 +534,31 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // SSR
-          ...(result.rarity === "SSR"
-            ? [
-                {
-                  type: "text",
+          // キャラセリフ
+          {
+            type: "text",
 
-                  text:
-                    "✨ SSR ✨",
+            text:
+              result.characterLine,
 
-                  size: "xl",
+            wrap: true,
 
-                  weight:
-                    "bold",
+            size: "sm",
 
-                  color:
-                    "#FFD700",
+            color:
+              "#555555",
 
-                  margin:
-                    "lg",
-                },
-              ]
-            : []),
+            margin: "sm",
+
+            style:
+              "italic",
+          },
+
         ],
       },
     },
   };
 }
-
 // ======================
 // webhook
 // ======================
