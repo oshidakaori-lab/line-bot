@@ -166,6 +166,58 @@ function generateCharacterLine(character) {
   ];
 }
 
+// ======================
+// キャラ出典リンク
+// ======================
+function getCharacterSource(character) {
+
+  // ちいかわ公式
+  if (character === "ちいかわ") {
+
+    return {
+      title:
+        "ちいかわ公式",
+
+      url:
+        "https://twitter.com/ngnchiikawa",
+    };
+  }
+
+  // ハチワレ
+  if (character === "ハチワレ") {
+
+    return {
+      title:
+        "ハチワレ登場回",
+
+      url:
+        "https://twitter.com/ngnchiikawa",
+    };
+  }
+
+  // うさぎ
+  if (character === "うさぎ") {
+
+    return {
+      title:
+        "うさぎおすすめ回",
+
+      url:
+        "https://twitter.com/ngnchiikawa",
+    };
+  }
+
+  // モモンガ
+  return {
+
+    title:
+      "モモンガおすすめ回",
+
+    url:
+      "https://twitter.com/ngnchiikawa",
+  };
+}
+
 function getWeatherIcon(weather) {
 
   if (weather?.includes("晴"))
@@ -361,6 +413,11 @@ characterLine:
   generateCharacterLine(
     character
   ),
+    
+    source:
+  getCharacterSource(
+    character
+  ),
 
     line,
 
@@ -399,18 +456,18 @@ function buildFlex(result) {
 
       hero: {
 
-  type: "image",
+        type: "image",
 
-  url:
-    IMAGE_BASE +
-    result.image,
+        url:
+          IMAGE_BASE +
+          result.image,
 
-  size: "full",
+        size: "full",
 
-  aspectRatio: "16:9",
+        aspectRatio: "16:9",
 
-  aspectMode: "cover",
-},
+        aspectMode: "cover",
+      },
 
       body: {
 
@@ -521,39 +578,97 @@ function buildFlex(result) {
 
             margin: "md",
           },
-        
-        // キャラ
+
+          // キャラタイトル
           {
             type: "text",
 
             text:
-              `🐾 ${result.character}`,
+              `🐾 「${result.character}」が何か言ってる？！`,
 
             size: "sm",
 
             margin: "lg",
+
+            weight: "bold",
+
+            color: "#444444",
           },
 
-          // キャラセリフ
-          {
-            type: "text",
+          // キャラセリフBOX
+{
+  type: "box",
 
-            text:
-              result.characterLine,
+  layout: "vertical",
 
-            wrap: true,
+  margin: "md",
 
-            size: "sm",
+  paddingAll: "12px",
 
-            color:
-              "#555555",
+  backgroundColor: "#FFFFFF",
 
-            margin: "sm",
+  borderWidth: "1px",
 
-            style:
-              "italic",
-          },
+  borderColor: "#DDDDDD",
 
+  cornerRadius: "12px",
+
+  contents: [
+
+    // セリフ
+    {
+      type: "text",
+
+      text:
+        `「${result.characterLine}」`,
+
+      wrap: true,
+
+      size: "sm",
+
+      color: "#555555",
+
+      style: "italic",
+    },
+
+    // 出典ボタン
+    {
+      type: "button",
+
+      style: "secondary",
+
+      color: "#EEF6FF",
+
+      height: "sm",
+
+      margin: "md",
+
+      action: {
+        type: "uri",
+
+        label:
+          `📚 ${result.source.title}`,
+
+        uri:
+          result.source.url,
+      },
+    },
+
+    // 注意
+    {
+      type: "text",
+
+      text:
+        "※ 空の易オリジナル再現セリフ",
+
+      size: "xs",
+
+      color: "#AAAAAA",
+
+      margin: "sm",
+    },
+  ],
+},
         ],
       },
     },
