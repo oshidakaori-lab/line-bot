@@ -20,7 +20,7 @@ const config = {
 const client =
   new line.Client(config);
 
-const ai =
+const genAI =
   new GoogleGenerativeAI(
     process.env.GEMINI_API_KEY
   );
@@ -85,7 +85,9 @@ async function generateAIFortune(userMessage) {
     `;
 
     // Gemini 1.5 Flash（高速・軽量・無料枠あり）を使用
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+});
     const aiResult = await model.generateContent(prompt);
     const responseText = aiResult.response.text().trim();
 
