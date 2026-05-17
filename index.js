@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-
+const OpenAI = require("openai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -33,7 +33,14 @@ const config = {
 const client =
   new line.Client(config);
 
-
+// ======================
+// OpenAI
+// ======================
+const openai =
+  new OpenAI({
+    apiKey:
+      process.env.OPENAI_API_KEY,
+  });
 
 // ======================
 // CSV
@@ -81,158 +88,58 @@ const characters = [
   "モモンガ",
 ];
 
-
 // ======================
-// キャラセリフ
+// AI
 // ======================
-function generateCharacterLine(character) {
+async function generateAIAdvice(result) {
 
-  // うさぎ
-  if (character === "うさぎ") {
+  try {
 
-    const lines = [
-      "……ヤハ。",
-      "風、来てるヤハ。",
-      "フゥン。",
-      "……！！",
-    ];
+    const prompt = `
+幻想的な占い師として、
+80文字以内で、
+やさしく運勢を返してください。
 
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
+卦:
+${result.name}
+
+爻:
+${result.line_name}
+
+感情:
+${result.line_emotion}
+
+意味:
+${result.meaning}
+`;
+
+const completion =
+  await openai.chat.completions.create({
+
+    model: "gpt-4o-mini",
+
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+  });
+
+console.log(completion);
+
+    return completion
+      .choices[0]
+      .message
+      .content
+      .slice(0, 80);
+
+  } catch (err) {
+
+    console.log(err);
+
+    return "静かな空が広がっています。";
   }
-
-  // ハチワレ
-  if (character === "ハチワレ") {
-
-    const lines = [
-      "なんとかなりそう。",
-      "大丈夫だといいね。",
-      "不思議な空だね。",
-      "ちょっと安心した。",
-    ];
-
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
-  }
-
-  // モモンガ
-  if (character === "モモンガ") {
-
-    const lines = [
-      "最高じゃ〜ん。",
-      "今日はイイ感じ。",
-      "運命って感じする。",
-      "空、キレイじゃん。",
-    ];
-
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
-  }
-
-  // ちいかわ
-  const lines = [
-    "……。",
-    "ちょっとこわい…。",
-    "でも、進みたい…。",
-    "空、見てる…。",
-  ];
-
-  return lines[
-    Math.floor(
-      Math.random() *
-      lines.length
-    )
-  ];
-}
-
-// ======================
-// 天気アイコン
-// ======================
-function getWeatherIcon(weather) {
-
-  if (weather === "晴れ") {
-    return "☀️";
-  }
-
-  if (weather === "雨") {
-    return "🌧️";
-  }
-
-  if (weather === "雷") {
-    return "⛈️";
-  }
-
-  if (weather === "風") {
-    return "🌪️";
-  }
-
-  if (weather === "曇り") {
-    return "☁️";
-  }
-
-  return "✨";
-}
-
-// ======================
-// メッセージ生成
-// ======================
-function generateMessage(result) {
-
-  const messages = [
-
-    `${result.line_name} - ${result.line_emotion}`,
-
-    result.emotion,
-
-    `${result.weather}の空がゆっくり流れています。`,
-
-    "まだ名前のない感情が漂っています。",
-
-    "遠い空から気配が届いています。",
-
-    "風向きが少し変わり始めました。",
-
-    `${result.name}の風が流れています。`,
-
-    "空が静かに揺れています。",
-
-    "見えない流れが変わり始めています。",
-
-    `${result.weather}の気配が満ちています。`,
-
-    "静かな兆しが空に浮かんでいます。",
-
-    `${result.character}が空を見上げています。`,
-
-    `${result.weather}の空が、静かに流れています。`,
-
-    `${result.line_name}の気配が、心を照らしています。`,
-
-    `${result.emotion}が、やさしく広がっています。`,
-
-    `今日は「${result.meaning}」がテーマになりそうです。`,
-
-    `${result.character}が、そっと寄り添っています。`,
-  ];
-
-  return messages[
-    Math.floor(
-      Math.random() *
-      messages.length
-    )
-  ];
 }
 
 // ======================
@@ -261,12 +168,12 @@ function generateFortune() {
     Math.floor(Math.random() * 6) + 1;
 
   // 爻検索
-  const selectedLine =
-    lines.find(
-      (l) =>
-        Number(l.hexagram_id) === Number(hexagram.id) &&
-        Number(l.line) === Number(line)
-    );
+const selectedLine =
+  lines.find(
+    (l) =>
+      Number(l.hexagram_id) === Number(hexagram.id) &&
+      Number(l.line) === Number(line)
+  );
 
   // キャラ
   const character =
@@ -279,74 +186,46 @@ function generateFortune() {
 
   return {
 
-  weather:
-    hexagram.weather,
+    type: "sky",
 
-  emotion:
-    hexagram.emotion,
+    weather:
+      hexagram.weather,
 
-  meaning:
-    hexagram.meaning,
+    emotion:
+      hexagram.emotion,
 
-  rarity:
-    hexagram.rarity,
+    meaning:
+      hexagram.meaning,
 
-  color:
-    hexagram.color,
+    rarity:
+      hexagram.rarity,
 
-  bgm:
-    hexagram.bgm,
+    color:
+      hexagram.color,
 
-  image:
-    hexagram.image,
+    bgm:
+      hexagram.bgm,
 
-  name:
-    hexagram.name,
+    image:
+      hexagram.image,
 
-  kana:
-    hexagram.kana,
+    name:
+      hexagram.name,
 
-  character,
+    kana:
+      hexagram.kana,
 
-  characterLine:
-    generateCharacterLine(
-      character
-    ),
+    character,
 
-  line,
+    line,
 
-  line_name:
-    selectedLine?.line_name ||
-    "爻",
+    line_name:
+      selectedLine?.line_name ||
+      "爻",
 
-  line_emotion:
-    selectedLine?.line_emotion ||
-    "",
-
-  message:
-    generateMessage({
-      weather:
-        hexagram.weather,
-
-      emotion:
-        hexagram.emotion,
-
-      meaning:
-        hexagram.meaning,
-
-      line_name:
-        selectedLine?.line_name ||
-        "爻",
-
-      line_emotion:
-        selectedLine?.line_emotion ||
-        "",
-
-      name:
-        hexagram.name,
-
-      character,
-    }),
+    line_emotion:
+      selectedLine?.line_emotion ||
+      "",
   };
 }
 
@@ -356,27 +235,32 @@ function generateFortune() {
 function buildFlex(result) {
 
   return {
+
     type: "flex",
 
     altText: "空の易",
 
     contents: {
 
-  type: "bubble",
+      type: "bubble",
 
-  hero: {
-  type: "image",
+      hero: {
 
-  url:
-    IMAGE_BASE +
-    result.image,
+        type: "image",
 
-  size: "full",
+        url:
+          IMAGE_BASE +
+          result.image,
 
-  aspectRatio: "16:9",
+        size: "full",
 
-  aspectMode: "cover"
-},
+        aspectRatio: "16:9",
+
+        aspectMode: "cover",
+
+        backgroundColor:
+          "#000000",
+      },
 
       body: {
 
@@ -384,40 +268,19 @@ function buildFlex(result) {
 
         layout: "vertical",
 
-        spacing: "md",
-
-        paddingAll: "20px",
-
-        backgroundColor:
-          result.rarity === "SSR"
-            ? "#FFF7D6"
-            : (
-                result.rarity === "SR"
-                  ? "#F3E8FF"
-                  : "#FFFFFF"
-              ),
-
         contents: [
 
-          // メッセージ
+          // AIメッセージ
           {
-  type: "text",
+            type: "text",
 
-  text:
-    result.message,
+            text:
+              result.aiAdvice,
 
-  wrap: true,
+            wrap: true,
 
-  size: "lg",
-
-  color:
-    result.rarity === "SSR"
-      ? "#E65100"
-      : "#333333",
-
-  weight:
-    "bold",
-},
+            size: "lg",
+          },
 
           // 卦名
           {
@@ -426,7 +289,7 @@ function buildFlex(result) {
             text:
               result.name,
 
-            size: "xl",
+            size: "xxl",
 
             weight: "bold",
 
@@ -480,7 +343,7 @@ function buildFlex(result) {
             type: "text",
 
             text:
-  `${getWeatherIcon(result.weather)} ${result.weather}`,
+              `☁️ ${result.weather}`,
 
             size: "md",
 
@@ -516,31 +379,14 @@ function buildFlex(result) {
             margin: "lg",
           },
 
-          // キャラセリフ
-          {
-            type: "text",
-
-            text:
-              result.characterLine || "",
-
-            size: "sm",
-
-            wrap: true,
-
-            color:
-              "#555555",
-
-            margin: "sm",
-          },
-
-          // SSR演出
+          // SSR
           ...(result.rarity === "SSR"
             ? [
                 {
                   type: "text",
 
                   text:
-                    "✦ SUPER RARE ✦",
+                    "✨ SSR ✨",
 
                   size: "xl",
 
@@ -548,12 +394,10 @@ function buildFlex(result) {
                     "bold",
 
                   color:
-                    "#FFB300",
-
-                  align: "center",
+                    "#FFD700",
 
                   margin:
-                    "xl",
+                    "lg",
                 },
               ]
             : []),
@@ -568,21 +412,28 @@ function buildFlex(result) {
 // ======================
 app.post(
   "/callback",
+
   line.middleware(config),
 
   async (req, res) => {
 
     try {
 
-      const events = req.body.events;
+      const events =
+        req.body.events;
 
       for (const event of events) {
 
-        if (event.type !== "message") {
+        if (
+          event.type !== "message"
+        ) {
           continue;
         }
 
-        if (event.message.type !== "text") {
+        if (
+          event.message.type !==
+          "text"
+        ) {
           continue;
         }
 
@@ -595,6 +446,7 @@ app.post(
             event.replyToken,
             {
               type: "text",
+
               text:
                 "空を読み込み中です…☁️",
             }
@@ -602,6 +454,11 @@ app.post(
 
           continue;
         }
+
+        result.aiAdvice =
+          await generateAIAdvice(
+            result
+          );
 
         console.log(result);
 
@@ -618,24 +475,12 @@ app.post(
 
     } catch (err) {
 
-      console.log("====== ERROR ======");
       console.log(err);
-
-      console.log("====== MESSAGE ======");
-      console.log(err.message);
-
-      console.log("====== FULL RESPONSE ======");
-
-      console.dir(
-        err.response?.data,
-        { depth: null }
-      );
 
       res.sendStatus(500);
     }
   }
 );
-
 
 // ======================
 // 起動
