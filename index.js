@@ -245,19 +245,19 @@ function getWeatherIcon(weather) {
 function getWeatherImage(weather) {
 
   if (weather?.includes("晴"))
-    return "sunny.jpg";
+    return "sunny.gif";
 
   if (weather?.includes("雨"))
-    return "rain.jpg";
+    return "rain.gif";
 
   if (weather?.includes("雷"))
-    return "thunder.jpg";
+    return "thunder.gif";
 
   if (weather?.includes("風"))
-    return "wind.jpg";
+    return "wind.gif";
 
   if (weather?.includes("曇"))
-    return "cloudy.jpg";
+    return "cloudy.gif";
 
   return "default.jpg";
 }
@@ -613,7 +613,25 @@ function buildFlex(result) {
 
   cornerRadius: "12px",
 
+  position: "relative",
+  
+  height: "140px"
+
   contents: [
+
+    // タイトル
+    {
+      type: "text",
+
+      text:
+        "「キャラ」が何か言ってる？！",
+
+      size: "xs",
+
+      color: "#999999",
+
+      weight: "bold",
+    },
 
     // セリフ
     {
@@ -628,7 +646,11 @@ function buildFlex(result) {
 
       color: "#555555",
 
-      style: "italic",
+  style: "italic",
+
+  margin: "sm",
+
+  flex: 1 // ←追加
     },
 
     // 出典ボタン
@@ -641,7 +663,7 @@ function buildFlex(result) {
 
       height: "sm",
 
-      margin: "md",
+      margin: "sm",
 
       action: {
         type: "uri",
@@ -666,6 +688,41 @@ function buildFlex(result) {
       color: "#AAAAAA",
 
       margin: "sm",
+    },
+
+    // ▼ 吹き出ししっぽ
+    {
+      type: "box",
+
+      layout: "vertical",
+
+      position: "absolute",
+
+      offsetBottom: "-10px",
+
+      offsetStart: "24px",
+
+      width: "18px",
+
+      height: "18px",
+
+      backgroundColor: "#FFFFFF",
+
+      borderWidth: "1px",
+
+      borderColor: "#DDDDDD",
+
+      cornerRadius: "2px",
+
+      rotate: "45deg",
+      
+      shadow: true,
+      
+      cornerRadius: "18px",
+      
+      backgroundColor: "#FFFDF7"
+
+      contents: [],
     },
   ],
 },
