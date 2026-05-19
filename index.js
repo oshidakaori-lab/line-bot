@@ -597,121 +597,29 @@ function buildFlex(result) {
 
           // キャラセリフBOX
 {
-  type: "box",
+type: "box",
 
-  layout: "vertical",
+layout: "vertical",
 
-  margin: "md",
+position: "absolute",
 
-  paddingAll: "12px",
+offsetTop: "130px",
 
-  backgroundColor: "#FFFFFF",
+offsetStart: "32px",
 
-  borderWidth: "1px",
+width: "12px",
 
-  borderColor: "#DDDDDD",
+height: "12px",
 
-  cornerRadius: "12px",
+backgroundColor: "#FFFFFF",
 
-  height: "140px",
+borderWidth: "1px",
 
-  contents: [
+borderColor: "#DDDDDD",
 
-    // タイトル
-    {
-      type: "text",
+cornerRadius: "12px",
 
-      text:
-        "「キャラ」が何か言ってる？！",
-
-      size: "xs",
-
-      color: "#999999",
-
-      weight: "bold",
-    },
-
-    // セリフ
-    {
-  type: "text",
-
-  text:
-    `「${result.characterLine}」`,
-
-  wrap: true,
-
-  size: "sm",
-
-  color: "#555555",
-
-  style: "italic",
-
-  margin: "sm",
-},
-      
-
-    // 出典ボタン
-{
-  type: "button",
-
-  style: "secondary",
-
-  color: "#EEF6FF",
-
-  height: "sm",
-
-  margin: "sm",
-
-  action: {
-    type: "uri",
-
-    label:
-      `📚 ${result.source.title}`,
-
-    uri:
-      result.source.url,
-  },
-},
-
-// 注意
-{
-  type: "text",
-
-  text:
-    "※ 空の易オリジナル再現セリフ",
-
-  size: "xs",
-
-  color: "#AAAAAA",
-
-  margin: "sm",
-},
-
-    // ▼ 吹き出ししっぽ
-{
-  type: "box",
-
-  layout: "vertical",
-
-  position: "absolute",
-
-  offsetTop: "125px",
-
-  offsetStart: "24px",
-
-  width: "18px",
-
-  height: "18px",
-
-  backgroundColor: "#FFFFFF",
-
-  borderWidth: "1px",
-
-  borderColor: "#DDDDDD",
-
-  cornerRadius: "2px",
-
-  contents: [],
+contents: [],
 },
   ],
 },
