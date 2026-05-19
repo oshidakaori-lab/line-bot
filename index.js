@@ -687,33 +687,31 @@ function buildFlex(result) {
     },
 
     // 吹き出ししっぽ
-    {
-      type: "box",
+{
+  type: "box",
 
-      layout: "vertical",
+  layout: "vertical",
 
-      position: "absolute",
+  position: "absolute",
 
-      offsetBottom: "-8px",
+  offsetBottom: "-8px",
 
-      offsetStart: "24px",
+  offsetStart: "24px",
 
-      width: "16px",
+  width: "16px",
 
-      height: "16px",
+  height: "16px",
 
-      backgroundColor: "#FFFFFF",
+  backgroundColor: "#FFFFFF",
 
-      borderWidth: "1px",
+  borderWidth: "1px",
 
-      borderColor: "#DDDDDD",
+  borderColor: "#DDDDDD",
 
-      cornerRadius: "2px",
+  cornerRadius: "2px",
 
-      rotate: "45deg",
-
-      contents: [],
-    },
+  contents: [],
+},
   ],
 },
         ],
@@ -788,7 +786,18 @@ app.post(
         "====== ERROR ======"
       );
 
-      console.log(err);
+      } catch (err) {
+
+  console.log(
+    "====== ERROR ======"
+  );
+
+  console.log(
+    JSON.stringify(err, null, 2)
+  );
+
+  res.sendStatus(500);
+}
 
       res.sendStatus(500);
     }
