@@ -307,6 +307,7 @@ ${result.weather}
 - 改行禁止
 - 俳句のように短く
 - 「空」「風」「雲」「光」「雨」など自然表現を必ず1つ含める
+-     
 `;
 
     const response =
@@ -578,22 +579,7 @@ function buildFlex(result) {
 
             margin: "md",
           },
-
-          // キャラタイトル
-{
-  type: "text",
-
-  text:
-    `🐾 「${result.character}」が何か言ってる？！`,
-
-  size: "sm",
-
-  margin: "lg",
-
-  weight: "bold",
-
-  color: "#444444",
-},
+        
 
 // キャラセリフBOX
 {
@@ -621,8 +607,8 @@ function buildFlex(result) {
     {
       type: "text",
 
-      text:
-        "「キャラ」が何か言ってる？！",
+  text:
+    `🐾 「${result.character}」が何か言ってる？！`,
 
       size: "xs",
 
