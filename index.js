@@ -613,8 +613,6 @@ function buildFlex(result) {
 
   cornerRadius: "12px",
 
-  position: "relative",
-  
   height: "140px",
 
   contents: [
@@ -635,20 +633,21 @@ function buildFlex(result) {
 
     // セリフ
     {
-      type: "text",
+  type: "text",
 
-      text:
-        `「${result.characterLine}」`,
+  text:
+    `「${result.characterLine}」`,
 
-      wrap: true,
+  wrap: true,
 
-      size: "sm",
+  size: "sm",
 
-      color: "#555555",
+  color: "#555555",
 
   style: "italic",
 
   margin: "sm",
+},
       
 
     // 出典ボタン
@@ -696,7 +695,7 @@ function buildFlex(result) {
 
   position: "absolute",
 
-  offsetBottom: "-10px",
+  offsetTop: "125px",
 
   offsetStart: "24px",
 
