@@ -635,7 +635,22 @@ function buildFlex(result) {
       margin: "sm",
     },
 
-    // 出典ボタン
+
+    // 注意
+    {
+      type: "text",
+
+      text:
+        "※ 空の易オリジナル再現セリフ",
+
+      size: "xs",
+
+      color: "#AAAAAA",
+
+      margin: "sm",
+    },
+  
+      // 出典ボタン
     {
       type: "button",
 
@@ -658,19 +673,6 @@ function buildFlex(result) {
       },
     },
 
-    // 注意
-    {
-      type: "text",
-
-      text:
-        "※ 空の易オリジナル再現セリフ",
-
-      size: "xs",
-
-      color: "#AAAAAA",
-
-      margin: "sm",
-    },
 
     // 吹き出ししっぽ
 {
