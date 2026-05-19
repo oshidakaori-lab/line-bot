@@ -786,18 +786,13 @@ app.post(
         "====== ERROR ======"
       );
 
-      } catch (err) {
-
-  console.log(
-    "====== ERROR ======"
-  );
-
-  console.log(
-    JSON.stringify(err, null, 2)
-  );
-
-  res.sendStatus(500);
-}
+      console.log(
+        JSON.stringify(
+          err,
+          null,
+          2
+        )
+      );
 
       res.sendStatus(500);
     }
