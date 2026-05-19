@@ -610,7 +610,7 @@ function buildFlex(result) {
   text:
     `🐾 「${result.character}」が何か言ってる？！`,
 
-      size: "xs",
+      size: "sm",
 
       color: "#999999",
 
@@ -672,34 +672,6 @@ function buildFlex(result) {
           result.source.url,
       },
     },
-
-
-    // 吹き出ししっぽ
-{
-  type: "box",
-
-  layout: "vertical",
-
-  position: "absolute",
-
-  offsetBottom: "-8px",
-
-  offsetStart: "24px",
-
-  width: "16px",
-
-  height: "16px",
-
-  backgroundColor: "#FFFFFF",
-
-  borderWidth: "1px",
-
-  borderColor: "#DDDDDD",
-
-  cornerRadius: "2px",
-
-  contents: [],
-},
   ],
 },
         ],
