@@ -649,9 +649,7 @@ function buildFlex(result) {
   style: "italic",
 
   margin: "sm",
-
-  flex: 1 // ←追加
-    },
+      
 
     // 出典ボタン
 {
@@ -713,8 +711,6 @@ function buildFlex(result) {
   borderColor: "#DDDDDD",
 
   cornerRadius: "2px",
-
-  rotate: "45deg",
 
   contents: [],
 },
