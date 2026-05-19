@@ -101,7 +101,7 @@ function generateCharacterLine(character) {
 
     const lines = [
       "……ヤハ。",
-      "風、来てるヤハ。",
+      "ヤハ。",
       "フゥン。",
       "……！！",
     ];
@@ -580,47 +580,140 @@ function buildFlex(result) {
           },
 
           // キャラタイトル
-          {
-            type: "text",
-
-            text:
-              `🐾 「${result.character}」が何か言ってる？！`,
-
-            size: "sm",
-
-            margin: "lg",
-
-            weight: "bold",
-
-            color: "#444444",
-          },
-
-          // キャラセリフBOX
 {
-type: "box",
+  type: "text",
 
-layout: "vertical",
+  text:
+    `🐾 「${result.character}」が何か言ってる？！`,
 
-position: "absolute",
+  size: "sm",
 
-offsetTop: "130px",
+  margin: "lg",
 
-offsetStart: "32px",
+  weight: "bold",
 
-width: "12px",
-
-height: "12px",
-
-backgroundColor: "#FFFFFF",
-
-borderWidth: "1px",
-
-borderColor: "#DDDDDD",
-
-cornerRadius: "12px",
-
-contents: [],
+  color: "#444444",
 },
+
+// キャラセリフBOX
+{
+  type: "box",
+
+  layout: "vertical",
+
+  margin: "md",
+
+  paddingAll: "12px",
+
+  backgroundColor: "#FFFFFF",
+
+  borderWidth: "1px",
+
+  borderColor: "#DDDDDD",
+
+  cornerRadius: "12px",
+
+  position: "relative",
+
+  contents: [
+
+    // タイトル
+    {
+      type: "text",
+
+      text:
+        "「キャラ」が何か言ってる？！",
+
+      size: "xs",
+
+      color: "#999999",
+
+      weight: "bold",
+    },
+
+    // セリフ
+    {
+      type: "text",
+
+      text:
+        `「${result.characterLine}」`,
+
+      wrap: true,
+
+      size: "sm",
+
+      color: "#555555",
+
+      style: "italic",
+
+      margin: "sm",
+    },
+
+    // 出典ボタン
+    {
+      type: "button",
+
+      style: "secondary",
+
+      color: "#EEF6FF",
+
+      height: "sm",
+
+      margin: "md",
+
+      action: {
+        type: "uri",
+
+        label:
+          `📚 ${result.source.title}`,
+
+        uri:
+          result.source.url,
+      },
+    },
+
+    // 注意
+    {
+      type: "text",
+
+      text:
+        "※ 空の易オリジナル再現セリフ",
+
+      size: "xs",
+
+      color: "#AAAAAA",
+
+      margin: "sm",
+    },
+
+    // 吹き出ししっぽ
+    {
+      type: "box",
+
+      layout: "vertical",
+
+      position: "absolute",
+
+      offsetBottom: "-8px",
+
+      offsetStart: "24px",
+
+      width: "16px",
+
+      height: "16px",
+
+      backgroundColor: "#FFFFFF",
+
+      borderWidth: "1px",
+
+      borderColor: "#DDDDDD",
+
+      cornerRadius: "2px",
+
+      rotate: "45deg",
+
+      contents: [],
+    },
   ],
 },
         ],
