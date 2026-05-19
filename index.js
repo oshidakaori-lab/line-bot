@@ -615,7 +615,7 @@ function buildFlex(result) {
 
   position: "relative",
   
-  height: "140px"
+  height: "140px",
 
   contents: [
 
@@ -654,76 +654,70 @@ function buildFlex(result) {
     },
 
     // 出典ボタン
-    {
-      type: "button",
+{
+  type: "button",
 
-      style: "secondary",
+  style: "secondary",
 
-      color: "#EEF6FF",
+  color: "#EEF6FF",
 
-      height: "sm",
+  height: "sm",
 
-      margin: "sm",
+  margin: "sm",
 
-      action: {
-        type: "uri",
+  action: {
+    type: "uri",
 
-        label:
-          `📚 ${result.source.title}`,
+    label:
+      `📚 ${result.source.title}`,
 
-        uri:
-          result.source.url,
-      },
-    },
+    uri:
+      result.source.url,
+  },
+},
 
-    // 注意
-    {
-      type: "text",
+// 注意
+{
+  type: "text",
 
-      text:
-        "※ 空の易オリジナル再現セリフ",
+  text:
+    "※ 空の易オリジナル再現セリフ",
 
-      size: "xs",
+  size: "xs",
 
-      color: "#AAAAAA",
+  color: "#AAAAAA",
 
-      margin: "sm",
-    },
+  margin: "sm",
+},
 
     // ▼ 吹き出ししっぽ
-    {
-      type: "box",
+{
+  type: "box",
 
-      layout: "vertical",
+  layout: "vertical",
 
-      position: "absolute",
+  position: "absolute",
 
-      offsetBottom: "-10px",
+  offsetBottom: "-10px",
 
-      offsetStart: "24px",
+  offsetStart: "24px",
 
-      width: "18px",
+  width: "18px",
 
-      height: "18px",
+  height: "18px",
 
-      backgroundColor: "#FFFFFF",
+  backgroundColor: "#FFFFFF",
 
-      borderWidth: "1px",
+  borderWidth: "1px",
 
-      borderColor: "#DDDDDD",
+  borderColor: "#DDDDDD",
 
-      cornerRadius: "2px",
+  cornerRadius: "2px",
 
-      rotate: "45deg",
-      
-      shadow: true,
-      
-      cornerRadius: "18px",
-      
-      backgroundColor: "#FFFDF7"
+  rotate: "45deg",
 
-      contents: [],
-    },
+  contents: [],
+},
   ],
 },
         ],
