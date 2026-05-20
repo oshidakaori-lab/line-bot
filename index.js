@@ -14,7 +14,38 @@ const app = express();
 
 app.use(
   "/images",
-  express.static("public/images")
+
+  express.static(
+    "public/images",
+
+    {
+      setHeaders: (
+        res,
+        path
+      ) => {
+
+        // mp4
+        if (
+          path.endsWith(".mp4")
+        ) {
+          res.set(
+            "Content-Type",
+            "video/mp4"
+          );
+        }
+
+        // gif
+        if (
+          path.endsWith(".gif")
+        ) {
+          res.set(
+            "Content-Type",
+            "image/gif"
+          );
+        }
+      },
+    }
+  )
 );
 
 // ======================
@@ -80,6 +111,7 @@ fs.createReadStream("lines.csv")
     console.log(lines.length);
 
   });
+
 
 // ======================
 // キャラ
@@ -244,25 +276,79 @@ function getWeatherIcon(weather) {
 // ======================
 function getWeatherMedia(weather) {
 
+  // 晴れ
   if (weather?.includes("晴")) {
 
     return {
-      video: "sunny.mp4",
-      preview: "sunny.jpg",
+
+      video:
+        "sunny.mp4",
+
+      preview:
+        "sunny.jpg",
     };
   }
 
+  // 雨
   if (weather?.includes("雨")) {
 
     return {
-      video: "rain.mp4",
-      preview: "rain.jpg",
+
+      video:
+        "rain.mp4",
+
+      preview:
+        "rain.jpg",
     };
   }
 
+  // 雷
+  if (weather?.includes("雷")) {
+
+    return {
+
+      video:
+        "thunder.mp4",
+
+      preview:
+        "thunder.jpg",
+    };
+  }
+
+  // 風
+  if (weather?.includes("風")) {
+
+    return {
+
+      video:
+        "wind.mp4",
+
+      preview:
+        "wind.jpg",
+    };
+  }
+
+  // 曇
+  if (weather?.includes("曇")) {
+
+    return {
+
+      video:
+        "cloudy.mp4",
+
+      preview:
+        "cloudy.jpg",
+    };
+  }
+
+  // fallback
   return {
-    video: "default.mp4",
-    preview: "default.jpg",
+
+    video:
+      "default.mp4",
+
+    preview:
+      "default.jpg",
   };
 }
 // ======================
@@ -370,6 +456,13 @@ async function generateFortune() {
         Number(l.line) ===
           Number(line)
     );
+  
+  // media取得
+const media =
+  getWeatherMedia(
+    hexagram.weather
+  );
+  
 
   // キャラ
   const character =
@@ -399,12 +492,13 @@ async function generateFortune() {
 
     bgm:
       hexagram.bgm,
+    
+    video:
+  media.video,
 
-    image:
-      getWeatherImage(
-        hexagram.weather
-      ),
-
+preview:
+  media.preview,
+    
     name:
       hexagram.name,
 
@@ -470,9 +564,28 @@ function buildFlex(result) {
     IMAGE_BASE +
     result.preview,
 
-  aspectRatio: "16:9",
+  altContent: {
 
-  aspectMode: "cover",
+    type: "image",
+
+    url:
+      IMAGE_BASE +
+      result.preview,
+
+    size: "full",
+
+    aspectRatio:
+      "16:9",
+
+    aspectMode:
+      "cover",
+  },
+
+  aspectRatio:
+    "16:9",
+
+  aspectMode:
+    "cover",
 },
 
       body: {
