@@ -460,18 +460,20 @@ function buildFlex(result) {
 
       hero: {
 
-        type: "image",
+  type: "video",
 
-        url:
-          IMAGE_BASE +
-          result.image,
+  url:
+    IMAGE_BASE +
+    result.video,
 
-        size: "full",
+  previewUrl:
+    IMAGE_BASE +
+    result.preview,
 
-        aspectRatio: "16:9",
+  aspectRatio: "16:9",
 
-        aspectMode: "cover",
-      },
+  aspectMode: "cover",
+},
 
       body: {
 
