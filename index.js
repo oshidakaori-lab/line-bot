@@ -589,13 +589,6 @@ function buildFlex(result) {
 
   aspectMode:
     "cover",
-
-  action: {
-    type: "uri",
-    uri:
-      IMAGE_BASE +
-      result.video,
-  },
 },
 
       body: {
