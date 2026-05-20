@@ -32,9 +32,16 @@ app.use(
         if (
           path.endsWith(".mp4")
         ) {
+
           res.set(
             "Content-Type",
             "video/mp4"
+          );
+
+          // 超重要
+          res.set(
+            "Accept-Ranges",
+            "bytes"
           );
         }
 
@@ -42,6 +49,7 @@ app.use(
         if (
           path.endsWith(".gif")
         ) {
+
           res.set(
             "Content-Type",
             "image/gif"
