@@ -19,6 +19,10 @@ app.use(
     "public/images",
 
     {
+      maxAge: "1d",
+
+      acceptRanges: true,
+
       setHeaders: (
         res,
         path
@@ -553,47 +557,54 @@ function buildFlex(result) {
 
     contents: {
 
-  type: "bubble",
+      type: "bubble",
 
-  hero: {
-  type: "video",
+      hero: {
+        type: "video",
 
-  url:
-    IMAGE_BASE +
-    result.video,
+        url:
+          IMAGE_BASE +
+          result.video,
 
-  previewUrl:
-    IMAGE_BASE +
-    result.preview,
+        previewUrl:
+          IMAGE_BASE +
+          result.preview,
 
-  altContent: {
-    type: "image",
+        altContent: {
+          type: "image",
 
-    url:
-      IMAGE_BASE +
-      result.preview,
+          url:
+            IMAGE_BASE +
+            result.preview,
 
-    size: "full",
+          size: "full",
 
-    aspectRatio: "16:9",
+          aspectRatio: "16:9",
 
-    aspectMode: "cover",
-  },
+          aspectMode: "cover",
+        },
 
-  aspectRatio: "16:9",
+        aspectRatio: "16:9",
 
-  aspectMode: "cover",
-},
+        aspectMode: "cover",
 
-body: {
+        action: {
+          type: "uri",
 
-    type: "box",
+          uri:
+            IMAGE_BASE +
+            result.video,
+        },
+      },
 
-    layout: "vertical",
+      body: {
 
-    contents: [
+        type: "box",
 
-          // AIメッセージ
+        layout: "vertical",
+
+        contents: [
+
           {
             type: "text",
 
@@ -610,7 +621,6 @@ body: {
               "#333333",
           },
 
-          // 卦名
           {
             type: "text",
 
@@ -624,7 +634,6 @@ body: {
             margin: "lg",
           },
 
-          // よみ
           {
             type: "text",
 
@@ -637,7 +646,6 @@ body: {
               "#888888",
           },
 
-          // 爻
           {
             type: "text",
 
@@ -651,7 +659,6 @@ body: {
             margin: "lg",
           },
 
-          // 爻emotion
           {
             type: "text",
 
@@ -666,7 +673,6 @@ body: {
               "#888888",
           },
 
-          // 天気
           {
             type: "text",
 
@@ -678,7 +684,6 @@ body: {
             margin: "lg",
           },
 
-          // emotion
           {
             type: "text",
 
@@ -694,106 +699,100 @@ body: {
 
             margin: "md",
           },
-        
 
-// キャラセリフBOX
-{
-  type: "box",
+          {
+            type: "box",
 
-  layout: "vertical",
+            layout: "vertical",
 
-  margin: "md",
+            margin: "md",
 
-  paddingAll: "12px",
+            paddingAll: "12px",
 
-  backgroundColor: "#FFFFFF",
+            backgroundColor: "#FFFFFF",
 
-  borderWidth: "1px",
+            borderWidth: "1px",
 
-  borderColor: "#DDDDDD",
+            borderColor: "#DDDDDD",
 
-  cornerRadius: "12px",
+            cornerRadius: "12px",
 
-  position: "relative",
+            position: "relative",
 
-  contents: [
+            contents: [
 
-    // タイトル
-    {
-      type: "text",
+              {
+                type: "text",
 
-  text:
-    `🐾 「${result.character}」が何か言ってる？！`,
+                text:
+                  `🐾 「${result.character}」が何か言ってる？！`,
 
-      size: "sm",
+                size: "sm",
 
-      color: "#999999",
+                color: "#999999",
 
-      weight: "bold",
-    },
+                weight: "bold",
+              },
 
-    // セリフ
-    {
-      type: "text",
+              {
+                type: "text",
 
-      text:
-        `「${result.characterLine}」`,
+                text:
+                  `「${result.characterLine}」`,
 
-      wrap: true,
+                wrap: true,
 
-      size: "sm",
+                size: "sm",
 
-      color: "#555555",
+                color: "#555555",
 
-      style: "italic",
+                style: "italic",
 
-      margin: "sm",
-    },
+                margin: "sm",
+              },
 
+              {
+                type: "text",
 
-    // 注意
-    {
-      type: "text",
+                text:
+                  "※ 空の易オリジナル再現セリフ",
 
-      text:
-        "※ 空の易オリジナル再現セリフ",
+                size: "xs",
 
-      size: "xs",
+                color: "#AAAAAA",
 
-      color: "#AAAAAA",
+                margin: "sm",
+              },
 
-      margin: "sm",
-    },
-  
-      // 出典ボタン
-    {
-      type: "button",
+              {
+                type: "button",
 
-      style: "secondary",
+                style: "secondary",
 
-      color: "#EEF6FF",
+                color: "#EEF6FF",
 
-      height: "sm",
+                height: "sm",
 
-      margin: "md",
+                margin: "md",
 
-      action: {
-        type: "uri",
+                action: {
+                  type: "uri",
 
-        label:
-          `📚 ${result.source.title}`,
+                  label:
+                    `📚 ${result.source.title}`,
 
-        uri:
-          result.source.url,
-      },
-    },
-  ],
-},
+                  uri:
+                    result.source.url,
+                },
+              },
+            ],
+          },
         ],
       },
     },
   };
 }
+
 // ======================
 // webhook
 // ======================
