@@ -556,31 +556,36 @@ function buildFlex(result) {
   type: "bubble",
 
   hero: {
-    type: "video",
+  type: "video",
+
+  url:
+    IMAGE_BASE +
+    result.video,
+
+  previewUrl:
+    IMAGE_BASE +
+    result.preview,
+
+  altContent: {
+    type: "image",
 
     url:
       IMAGE_BASE +
-      result.video,
-
-    previewUrl:
-      IMAGE_BASE +
       result.preview,
 
-    altContent: {
-      type: "image",
+    size: "full",
 
-      url:
-        IMAGE_BASE +
-        result.preview,
+    aspectRatio: "16:9",
 
-      size: "full",
+    aspectMode: "cover",
+  },
 
-      aspectRatio: "16:9",
+  aspectRatio: "16:9",
 
-      aspectMode: "cover",
-    },
+  aspectMode: "cover",
+},
 
-  body: {
+body: {
 
     type: "box",
 
