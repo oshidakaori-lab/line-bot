@@ -242,26 +242,29 @@ function getWeatherIcon(weather) {
 // ======================
 // 天気画像
 // ======================
-function getWeatherImage(weather) {
+function getWeatherMedia(weather) {
 
-  if (weather?.includes("晴"))
-    return "sunny.gif";
+  if (weather?.includes("晴")) {
 
-  if (weather?.includes("雨"))
-    return "rain.gif";
+    return {
+      video: "sunny.mp4",
+      preview: "sunny.jpg",
+    };
+  }
 
-  if (weather?.includes("雷"))
-    return "thunder.gif";
+  if (weather?.includes("雨")) {
 
-  if (weather?.includes("風"))
-    return "wind.gif";
+    return {
+      video: "rain.mp4",
+      preview: "rain.jpg",
+    };
+  }
 
-  if (weather?.includes("曇"))
-    return "cloudy.gif";
-
-  return "default.jpg";
+  return {
+    video: "default.mp4",
+    preview: "default.jpg",
+  };
 }
-
 // ======================
 // Gemini AI メッセージ生成
 // ======================
@@ -278,7 +281,7 @@ const prompt = `
 あなたは「空の易」という、
 空模様と易経を融合した占いAIです。
 
-以下の情報を元に、ちいかわタロットの世界観を基調に
+以下の情報を元に、ちいかわの世界観を基調に
 短く優しい占いメッセージを
 80文字以内で生成してください。
 
