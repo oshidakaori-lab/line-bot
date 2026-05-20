@@ -553,36 +553,17 @@ function buildFlex(result) {
 
     contents: {
 
-      type: "bubble",
+  type: "bubble",
 
-      hero: {
+  hero: {
 
-  type: "video",
+  type: "image",
 
   url:
     IMAGE_BASE +
-    result.video,
-
-  previewUrl:
-    IMAGE_BASE +
     result.preview,
 
-  altContent: {
-
-    type: "image",
-
-    url:
-      IMAGE_BASE +
-      result.preview,
-
-    size: "full",
-
-    aspectRatio:
-      "16:9",
-
-    aspectMode:
-      "cover",
-  },
+  size: "full",
 
   aspectRatio:
     "16:9",
@@ -591,13 +572,13 @@ function buildFlex(result) {
     "cover",
 },
 
-      body: {
+  body: {
 
-        type: "box",
+    type: "box",
 
-        layout: "vertical",
+    layout: "vertical",
 
-        contents: [
+    contents: [
 
           // AIメッセージ
           {
