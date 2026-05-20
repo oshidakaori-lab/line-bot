@@ -568,42 +568,38 @@ function buildFlex(result) {
       type: "bubble",
 
       hero: {
-        type: "video",
+  type: "video",
 
-        url:
-          IMAGE_BASE +
-          result.video,
+  url:
+    IMAGE_BASE +
+    result.video,
 
-        previewUrl:
-          IMAGE_BASE +
-          result.preview,
+  altContent: {
+    type: "image",
 
-        altContent: {
-          type: "image",
+    url:
+      IMAGE_BASE +
+      result.preview,
 
-          url:
-            IMAGE_BASE +
-            result.preview,
+    size: "full",
 
-          size: "full",
+    aspectRatio: "16:9",
 
-          aspectRatio: "16:9",
+    aspectMode: "cover",
+  },
 
-          aspectMode: "cover",
-        },
+  aspectRatio: "16:9",
 
-        aspectRatio: "16:9",
+  aspectMode: "cover",
 
-        aspectMode: "cover",
+  action: {
+    type: "uri",
 
-        action: {
-          type: "uri",
-
-          uri:
-            IMAGE_BASE +
-            result.video,
-        },
-      },
+    uri:
+      IMAGE_BASE +
+      result.video,
+  },
+},
 
       body: {
 
