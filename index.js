@@ -405,7 +405,10 @@ ${result.weather}
       );
 
     const text =
-      response.response.text();
+  response.response
+    .text()
+    .replace(/\n/g, "")
+    .slice(0, 80);
 
     return text.trim();
 
@@ -586,6 +589,13 @@ function buildFlex(result) {
 
   aspectMode:
     "cover",
+
+  action: {
+    type: "uri",
+    uri:
+      IMAGE_BASE +
+      result.video,
+  },
 },
 
       body: {
