@@ -40,7 +40,32 @@ app.use(
 // ======================
 // 画像・動画のベースURL
 // ======================
-const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
+const MEDIA = {
+  sunny: {
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsunny.mp4?alt=media&token=bb0ed639-4358-421d-bd62-c211018b3a22",
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fwind.jpg?alt=media&token=c381dd33-2b6b-435a-9c2b-f0416be28282"
+  },
+  
+  cloudy: {
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fcloudy.mp4?alt=media&token=ef78cca7-d262-42ca-9f98-be95a624cf24",
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fcloudy.jpg?alt=media&token=116c8eaa-e901-48a3-bf76-4f2bc1d636ff"
+  },
+  
+  wind: {
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fwind.mp4?alt=media&token=944e3e66-047c-44ac-b25b-614b0e9b6148",
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fwind.jpg?alt=media&token=c381dd33-2b6b-435a-9c2b-f0416be28282"
+  },
+  
+  thunder: {
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fthunder.mp4?alt=media&token=fca7f02b-7ab8-4399-a214-4aee326b85b2",
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fthunder.jpg?alt=media&token=93b9579b-2d9f-4ccd-8aae-24ef611cce43"
+  },
+
+  rain: {
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Frain.mp4?alt=media&token=c4e62a8e-c5cb-4bd6-bb2a-c2a7d52f5ae2",
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Frain.jpg?alt=media&token=471eb40e-7425-418d-a820-a1450cd4e736"
+  }
+};
 
 // ======================
 // LINE 初期化
@@ -104,12 +129,28 @@ function getWeatherIcon(weather) {
 
 // 天気文字から動画ファイル名を紐付け
 function getWeatherMedia(weather) {
-  if (weather?.includes("晴")) return { video: "sunny.mp4", preview: "sunny.jpg" };
-  if (weather?.includes("雨")) return { video: "rain.mp4", preview: "rain.jpg" };
-  if (weather?.includes("雷")) return { video: "thunder.mp4", preview: "thunder.jpg" };
-  if (weather?.includes("風")) return { video: "wind.mp4", preview: "wind.jpg" };
-  if (weather?.includes("曇")) return { video: "cloudy.mp4", preview: "cloudy.jpg" };
-  return { video: "default.mp4", preview: "default.jpg" };
+
+  if (weather?.includes("晴")) {
+    return MEDIA.sunny;
+  }
+
+  if (weather?.includes("雨")) {
+    return MEDIA.rain;
+  }
+
+  if (weather?.includes("雷")) {
+    return MEDIA.thunder;
+  }
+
+  if (weather?.includes("風")) {
+    return MEDIA.wind;
+  }
+
+  if (weather?.includes("曇")) {
+    return MEDIA.cloudy;
+  }
+
+  return MEDIA.sunny;
 }
 
 // ======================
@@ -176,9 +217,9 @@ function generateFortune() {
 // Flex Message ビルダー（完全動画対応版）
 // ======================
 function buildFlex(result) {
-  const videoUrl = `${IMAGE_BASE}${result.video}`.replace(/([^:]\/)\/+/g, "$1");
-  const previewUrl = `${IMAGE_BASE}${result.preview}`.replace(/([^:]\/)\/+/g, "$1");
-
+  const videoUrl = result.video;
+  const previewUrl = result.preview;
+  
   return {
     type: "flex",
     altText: "空の易",
@@ -186,23 +227,27 @@ function buildFlex(result) {
       type: "bubble",
       // 動画エリア設定
       hero: {
-        type: "video",
-        url: videoUrl,
-        altContent: {
-          type: "image",
-          url: previewUrl,
-          size: "full",
-          aspectRatio: "16:9",
-          aspectMode: "cover"
-        },
-        width: 16,
-        height: 9,
-        action: {
-          type: "uri",
-          label: "動画を再生",
-          uri: videoUrl
-        }
-      },
+  type: "video",
+  url: videoUrl,
+
+  previewUrl: previewUrl,
+
+  altContent: {
+    type: "image",
+    url: previewUrl,
+    size: "full",
+    aspectRatio: "16:9",
+    aspectMode: "cover"
+  },
+
+  aspectRatio: "16:9",
+
+  action: {
+    type: "uri",
+    label: "再生",
+    uri: videoUrl
+  }
+},
       body: {
         type: "box",
         layout: "vertical",
