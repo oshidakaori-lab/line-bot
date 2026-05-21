@@ -272,65 +272,77 @@ function getWeatherMedia(weather) {
   // 晴れ
   if (weather?.includes("晴")) {
 
-    // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+    return {
 
+      video:
+        "sunny.mp4",
+
+      preview:
+        "sunny.jpg",
+    };
   }
 
   // 雨
   if (weather?.includes("雨")) {
 
-    // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+    return {
 
+      video:
+        "rain.mp4",
+
+      preview:
+        "rain.jpg",
+    };
   }
 
   // 雷
   if (weather?.includes("雷")) {
 
-    // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+    return {
 
+      video:
+        "thunder.mp4",
+
+      preview:
+        "thunder.jpg",
+    };
   }
 
   // 風
   if (weather?.includes("風")) {
 
-    // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+    return {
 
+      video:
+        "wind.mp4",
+
+      preview:
+        "wind.jpg",
+    };
   }
 
   // 曇
   if (weather?.includes("曇")) {
 
-    // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+    return {
 
+      video:
+        "cloudy.mp4",
+
+      preview:
+        "cloudy.jpg",
+    };
   }
 
   // fallback
-  // テスト用：LINE公式が提供している絶対に動く動画と画像
-return {
-  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
-  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
-};
+  return {
 
+    video:
+      "default.mp4",
+
+    preview:
+      "default.jpg",
+  };
 }
 // ======================
 // Gemini AI メッセージ生成
@@ -525,234 +537,143 @@ characterLine:
 // Flex
 // ======================
 function buildFlex(result) {
+  // LINEの仕様に合わせるため、URLの末尾の余計なスラッシュなどを防ぐ安全なURLを作成
+  const videoUrl = `${IMAGE_BASE}${result.video}`.replace(/([^:]\/)\/+/g, "$1");
+  const previewUrl = `${IMAGE_BASE}${result.preview}`.replace(/([^:]\/)\/+/g, "$1");
 
   return {
-
     type: "flex",
-
     altText: "空の易",
-
     contents: {
-
       type: "bubble",
-
+      // ==========================================
+      // 【最重要】動画エリア（LINEの最新のvideo仕様に完全準拠）
+      // ==========================================
       hero: {
-  type: "video",
-  url: IMAGE_BASE + result.video, // 動画のURL
-  altContent: {
-    type: "image",
-    url: IMAGE_BASE + result.preview, // 静止画（JPG）のURL
-    size: "full",
-    aspectRatio: "16:9",
-    aspectMode: "cover"
-  },
-  width: 16,  // 先ほど直した横比率
-  height: 9,  // 先ほど直した縦比率
-  
-  // ★重要：一度テストのため、action（タップしたときの動作）を一番シンプルな形にするか、
-  // あるいは不具合の原因になりやすいので一旦省略してみます。
-  // 今回は確実に動かすために、画像と同じようにURIアクションを正しく設定します。
-  action: {
-    type: "uri",
-    label: "動画を見る",
-    uri: IMAGE_BASE + result.video
-  }
-},
-
-
+        type: "video",
+        url: videoUrl,
+        altContent: {
+          type: "image",
+          url: previewUrl,
+          size: "full",
+          aspectRatio: "16:9",
+          aspectMode: "cover"
+        },
+        // 動画コンポーネントには、整数（数字）での指定が「絶対必須」です
+        width: 16,
+        height: 9,
+        // 400エラーを防ぐため、動画タップ時のアクションを安全な形に変更
+        action: {
+          type: "uri",
+          label: "動画を再生",
+          uri: videoUrl
+        }
+      },
       body: {
-
         type: "box",
-
         layout: "vertical",
-
         contents: [
-
           {
             type: "text",
-
-            text:
-              result.aiAdvice,
-
+            text: result.aiAdvice,
             wrap: true,
-
             size: "lg",
-
             weight: "bold",
-
-            color:
-              "#333333",
+            color: "#333333"
           },
-
           {
             type: "text",
-
-            text:
-              result.name,
-
+            text: result.name,
             size: "xxl",
-
             weight: "bold",
-
-            margin: "lg",
+            margin: "lg"
           },
-
           {
             type: "text",
-
-            text:
-              result.kana,
-
+            text: result.kana,
             size: "sm",
-
-            color:
-              "#888888",
+            color: "#888888"
           },
-
           {
             type: "text",
-
-            text:
-              result.line_name,
-
+            text: result.line_name,
             size: "lg",
-
             weight: "bold",
-
-            margin: "lg",
+            margin: "lg"
           },
-
           {
             type: "text",
-
-            text:
-              result.line_emotion,
-
+            text: result.line_emotion,
             wrap: true,
-
             size: "sm",
-
-            color:
-              "#888888",
+            color: "#888888"
           },
-
           {
             type: "text",
-
-            text:
-              `${getWeatherIcon(result.weather)} ${result.weather}`,
-
+            text: `${getWeatherIcon(result.weather)} ${result.weather}`,
             size: "md",
-
-            margin: "lg",
+            margin: "lg"
           },
-
           {
             type: "text",
-
-            text:
-              result.emotion,
-
+            text: result.emotion,
             wrap: true,
-
             size: "sm",
-
-            color:
-              "#666666",
-
-            margin: "md",
+            color: "#666666",
+            margin: "md"
           },
-
           {
             type: "box",
-
             layout: "vertical",
-
             margin: "md",
-
             paddingAll: "12px",
-
             backgroundColor: "#FFFFFF",
-
             borderWidth: "1px",
-
             borderColor: "#DDDDDD",
-
             cornerRadius: "12px",
-
             position: "relative",
-
             contents: [
-
               {
                 type: "text",
-
-                text:
-                  `🐾 「${result.character}」が何か言ってる？！`,
-
+                text: `🐾 「${result.character}」が何か言ってる？！`,
                 size: "sm",
-
                 color: "#999999",
-
-                weight: "bold",
+                weight: "bold"
               },
-
               {
                 type: "text",
-
-                text:
-                  `「${result.characterLine}」`,
-
+                text: `「${result.characterLine}」`,
                 wrap: true,
-
                 size: "sm",
-
                 color: "#555555",
-
                 style: "italic",
-
-                margin: "sm",
+                margin: "sm"
               },
-
               {
                 type: "text",
-
-                text:
-                  "※ 空の易オリジナル再現セリフ",
-
+                text: "※ 空の易オリジナル再現セリフ",
                 size: "xs",
-
                 color: "#AAAAAA",
-
-                margin: "sm",
+                margin: "sm"
               },
-
               {
                 type: "button",
-
                 style: "secondary",
-
                 color: "#EEF6FF",
-
                 height: "sm",
-
                 margin: "md",
-
                 action: {
                   type: "uri",
-
-                  label:
-                    `📚 ${result.source.title}`,
-
-                  uri:
-                    result.source.url,
-                },
-              },
-            ],
-          },
-        ],
-      },
-    },
+                  // ⚠️ labelに絵文字（📚）が含まれていると弾かれる不具合報告があるため、文字のみに変更
+                  label: result.source.title ? String(result.source.title).replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, '') : "詳細を見る",
+                  uri: result.source.url
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
   };
 }
 
