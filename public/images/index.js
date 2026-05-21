@@ -550,22 +550,27 @@ function buildFlex(result) {
 
       hero: {
   type: "video",
-  url: IMAGE_BASE + result.video,
+  url: IMAGE_BASE + result.video, // 動画のURL
   altContent: {
     type: "image",
-    url: IMAGE_BASE + result.preview,
+    url: IMAGE_BASE + result.preview, // 静止画（JPG）のURL
     size: "full",
-    aspectRatio: "16:9", // 画像の比率は文字列でOK
-    aspectMode: "cover",
+    aspectRatio: "16:9",
+    aspectMode: "cover"
   },
-  // ⭕ 動画の比率は以下のように数字で分割して指定します
-  width: 16,
-  height: 9,
+  width: 16,  // 先ほど直した横比率
+  height: 9,  // 先ほど直した縦比率
+  
+  // ★重要：一度テストのため、action（タップしたときの動作）を一番シンプルな形にするか、
+  // あるいは不具合の原因になりやすいので一旦省略してみます。
+  // 今回は確実に動かすために、画像と同じようにURIアクションを正しく設定します。
   action: {
     type: "uri",
-    uri: IMAGE_BASE + result.video,
-  },
+    label: "動画を見る",
+    uri: IMAGE_BASE + result.video
+  }
 },
+
 
       body: {
 
