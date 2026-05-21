@@ -524,11 +524,18 @@ characterLine:
       "",
   };
 
-  // Gemini生成
-  result.aiAdvice =
-    await generateAIAdvice(
-      result
-    );
+  // Gemini生成（エラーが起きても止まらないように安全ガードを挟む）
+  try {
+    result.aiAdvice = await generateAIAdvice(result);
+  } catch (e) {
+    console.log("Gemini呼出エラーのため予備テキストを使用します");
+    result.aiAdvice = `${result.weather}の空が静かに揺れています。`;
+  }
+
+  // もし何らかの理由でaiAdviceが空っぽ、またはundefinedだった場合の最終防衛線
+  if (!result.aiAdvice) {
+    result.aiAdvice = `${result.weather}の空が静かに揺れています。`;
+  }
 
   return result;
 }
