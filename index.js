@@ -2,549 +2,180 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
+const OpenAI = require("openai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
-// Gemini
-const {
-  GoogleGenerativeAI,
-} = require("@google/generative-ai");
-
 const app = express();
 
+// ======================
+// 【超重要】動画・画像の配信設定
+// ======================
 app.use(
   "/images",
   express.static(
     "public/images",
     {
       maxAge: "1d",
-      acceptRanges: true,
+      acceptRanges: true, // 動画ストリーミング再生に必須
       setHeaders: (res, path) => {
         // mp4動画の設定
         if (path.endsWith(".mp4")) {
           res.set("Content-Type", "video/mp4");
-          res.set("Accept-Ranges", "bytes"); // 超重要：これがないとスマホで再生できません
+          res.set("Accept-Ranges", "bytes"); // スマホ再生の命綱
         }
-
-        // gif画像の設定
-        if (path.endsWith(".gif")) {
-          res.set("Content-Type", "image/gif");
-        }
-
-        // ★追加：jpg画像の設定（ここが抜けていました！）
+        // jpg画像の設定
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
           res.set("Content-Type", "image/jpeg");
+        }
+        // gif画像の設定（予備）
+        if (path.endsWith(".gif")) {
+          res.set("Content-Type", "image/gif");
         }
       },
     }
   )
 );
 
+// ======================
+// 画像・動画のベースURL
+// ======================
+const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
 
 // ======================
-// Gemini 初期化
-// ======================
-const genAI =
-  new GoogleGenerativeAI(
-    process.env.GEMINI_API_KEY
-  );
-
-// ======================
-// 画像URL
-// ======================
-const IMAGE_BASE =
-  "https://line-bot-v2rk.onrender.com/images/";
-
-// ======================
-// LINE
+// LINE 初期化
 // ======================
 const config = {
-  channelSecret:
-    process.env.LINE_CHANNEL_SECRET,
-
-  channelAccessToken:
-    process.env.LINE_CHANNEL_ACCESS_TOKEN,
+  channelSecret: process.env.LINE_CHANNEL_SECRET,
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
-
-const client =
-  new line.Client(config);
+const client = new line.Client(config);
 
 // ======================
-// CSV
+// OpenAI 初期化（回数制限なし！）
+// ======================
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// ======================
+// CSV 読み込み
 // ======================
 const hexagrams = [];
 const lines = [];
 
-// 卦CSV
 fs.createReadStream("hexagrams.csv")
   .pipe(csv())
-  .on("data", (data) => {
+  .on("data", (data) => { hexagrams.push(data); })
+  .on("end", () => { console.log("卦CSV読込完了:", hexagrams.length); });
 
-    hexagrams.push(data);
-
-  })
-  .on("end", () => {
-
-    console.log("卦CSV読込完了");
-    console.log(hexagrams.length);
-
-  });
-
-// 爻CSV
 fs.createReadStream("lines.csv")
   .pipe(csv())
-  .on("data", (data) => {
-
-    lines.push(data);
-
-  })
-  .on("end", () => {
-
-    console.log("爻CSV読込完了");
-    console.log(lines.length);
-
-  });
-
+  .on("data", (data) => { lines.push(data); })
+  .on("end", () => { console.log("爻CSV読込完了:", lines.length); });
 
 // ======================
-// キャラ
+// キャラクター設定
 // ======================
-const characters = [
-  "ちいかわ",
-  "ハチワレ",
-  "うさぎ",
-  "モモンガ",
-];
+const characters = ["ちいかわ", "ハチワレ", "うさぎ", "モモンガ"];
 
-// ======================
-// キャラセリフ
-// ======================
 function generateCharacterLine(character) {
-
-  // うさぎ
-  if (character === "うさぎ") {
-
-    const lines = [
-      "……ヤハ。",
-      "ヤハ。",
-      "フゥン。",
-      "……！！",
-    ];
-
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
-  }
-
-  // ハチワレ
-  if (character === "ハチワレ") {
-
-    const lines = [
-      "なんとかなりそう。",
-      "大丈夫だといいね。",
-      "不思議な空だね。",
-      "ちょっと安心した。",
-    ];
-
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
-  }
-
-  // モモンガ
-  if (character === "モモンガ") {
-
-    const lines = [
-      "最高じゃ〜ん。",
-      "今日はイイ感じ。",
-      "運命って感じする。",
-      "空、キレイじゃん。",
-    ];
-
-    return lines[
-      Math.floor(
-        Math.random() *
-        lines.length
-      )
-    ];
-  }
-
-  // ちいかわ
-  const lines = [
-    "……。",
-    "ちょっとこわい…。",
-    "でも、進みたい…。",
-    "空、見てる…。",
-  ];
-
-  return lines[
-    Math.floor(
-      Math.random() *
-      lines.length
-    )
-  ];
+  if (character === "うさぎ") return ["……ヤハ。", "ヤハ。", "フゥン。", "……！！"][Math.floor(Math.random() * 4)];
+  if (character === "ハチワレ") return ["なんとかなりそう。", "大丈夫だといいね。", "不思議な空だね。", "ちょっと安心した。"][Math.floor(Math.random() * 4)];
+  if (character === "モモンガ") return ["最高じゃ〜ん。", "今日はイイ感じ。", "運命って感じする。", "空、キレイじゃん。"][Math.floor(Math.random() * 4)];
+  return ["……。", "ちょっとこわい…。", "でも、進みたい…。", "空、見てる…。"][Math.floor(Math.random() * 4)];
 }
 
-// ======================
-// キャラ出典リンク
-// ======================
 function getCharacterSource(character) {
-
-  // ちいかわ公式
-  if (character === "ちいかわ") {
-
-    return {
-      title:
-        "ちいかわ公式",
-
-      url:
-        "https://twitter.com/ngnchiikawa",
-    };
-  }
-
-  // ハチワレ
-  if (character === "ハチワレ") {
-
-    return {
-      title:
-        "ハチワレ登場回",
-
-      url:
-        "https://twitter.com/ngnchiikawa",
-    };
-  }
-
-  // うさぎ
-  if (character === "うさぎ") {
-
-    return {
-      title:
-        "うさぎおすすめ回",
-
-      url:
-        "https://twitter.com/ngnchiikawa",
-    };
-  }
-
-  // モモンガ
   return {
-
-    title:
-      "モモンガおすすめ回",
-
-    url:
-      "https://twitter.com/ngnchiikawa",
+    title: character === "ちいかわ" ? "ちいかわ公式" : `${character}登場回`,
+    url: "https://twitter.com/ngnchiikawa",
   };
 }
 
 function getWeatherIcon(weather) {
-
-  if (weather?.includes("晴"))
-    return "☀️";
-
-  if (weather?.includes("雨"))
-    return "🌧️";
-
-  if (weather?.includes("雷"))
-    return "⛈️";
-
-  if (weather?.includes("風"))
-    return "🌪️";
-
-  if (weather?.includes("曇"))
-    return "☁️";
-
+  if (weather?.includes("晴")) return "☀️";
+  if (weather?.includes("雨")) return "🌧️";
+  if (weather?.includes("雷")) return "⛈️";
+  if (weather?.includes("風")) return "🌪️";
+  if (weather?.includes("曇")) return "☁️";
   return "✨";
 }
 
-
-// ======================
-// 天気画像
-// ======================
+// 天気文字から動画ファイル名を紐付け
 function getWeatherMedia(weather) {
-
-  // 晴れ
-  if (weather?.includes("晴")) {
-
-    return {
-
-      video:
-        "sunny.mp4",
-
-      preview:
-        "sunny.jpg",
-    };
-  }
-
-  // 雨
-  if (weather?.includes("雨")) {
-
-    return {
-
-      video:
-        "rain.mp4",
-
-      preview:
-        "rain.jpg",
-    };
-  }
-
-  // 雷
-  if (weather?.includes("雷")) {
-
-    return {
-
-      video:
-        "thunder.mp4",
-
-      preview:
-        "thunder.jpg",
-    };
-  }
-
-  // 風
-  if (weather?.includes("風")) {
-
-    return {
-
-      video:
-        "wind.mp4",
-
-      preview:
-        "wind.jpg",
-    };
-  }
-
-  // 曇
-  if (weather?.includes("曇")) {
-
-    return {
-
-      video:
-        "cloudy.mp4",
-
-      preview:
-        "cloudy.jpg",
-    };
-  }
-
-  // fallback
-  return {
-
-    video:
-      "default.mp4",
-
-    preview:
-      "default.jpg",
-  };
+  if (weather?.includes("晴")) return { video: "sunny.mp4", preview: "sunny.jpg" };
+  if (weather?.includes("雨")) return { video: "rain.mp4", preview: "rain.jpg" };
+  if (weather?.includes("雷")) return { video: "thunder.mp4", preview: "thunder.jpg" };
+  if (weather?.includes("風")) return { video: "wind.mp4", preview: "wind.jpg" };
+  if (weather?.includes("曇")) return { video: "cloudy.mp4", preview: "cloudy.jpg" };
+  return { video: "default.mp4", preview: "default.jpg" };
 }
+
 // ======================
-// Gemini AI メッセージ生成
+// OpenAI メッセージ生成
 // ======================
 async function generateAIAdvice(result) {
-
   try {
+    const prompt = `
+あなたは「空の易」という、空模様と易経を融合した占いAIです。
+以下の情報を元に、ちいかわの世界観を基調にした短く優しい占いメッセージを、日本語のみ・1文・改行禁止の「80文字以内」で生成してください。
+「空」「風」「雲」「光」「雨」など自然表現を必ず1つ含めてください。
 
-    const model =
-      genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
-      });
-
-const prompt = `
-あなたは「空の易」という、
-空模様と易経を融合した占いAIです。
-
-以下の情報を元に、ちいかわの世界観を基調に
-短く優しい占いメッセージを
-80文字以内で生成してください。
-
-【卦】
-${result.name}
-
-【感情】
-${result.emotion}
-
-【意味】
-${result.meaning}
-
-【爻】
-${result.line_name}
-
-【天気】
-${result.weather}
-    
-
-条件:
-- やさしい
-- 不安を煽らない
-- 空の描写を入れる
-- 日本語のみ
-- 1文のみ
-- 改行禁止
-- 俳句のように短く
-- 「空」「風」「雲」「光」「雨」など自然表現を必ず1つ含める
--     
+卦: ${result.name}
+意味: ${result.meaning}
+爻: ${result.line_name}
+天気: ${result.weather}
 `;
 
-    const response =
-      await model.generateContent(
-        prompt
-      );
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+    });
 
-    const text =
-  response.response
-    .text()
-    .replace(/\n/g, "")
-    .slice(0, 80);
-
-    return text.trim();
-
+    return completion.choices[0].message.content.replace(/\n/g, "").slice(0, 80).trim();
   } catch (err) {
-
-    console.log(
-      "Gemini Error:"
-    );
-
-    console.log(err.message);
-
-    // fallback
+    console.log("OpenAI Error:", err.message);
     return `${result.weather}の空が静かに揺れています。`;
   }
 }
 
 // ======================
-// 占い生成
+// 占いデータ生成
 // ======================
-async function generateFortune() {
+function generateFortune() {
+  if (hexagrams.length === 0 || lines.length === 0) return null;
 
-  if (
-    hexagrams.length === 0 ||
-    lines.length === 0
-  ) {
-    return null;
-  }
+  const hexagram = hexagrams[Math.floor(Math.random() * hexagrams.length)];
+  const line = Math.floor(Math.random() * 6) + 1;
+  const selectedLine = lines.find(l => Number(l.hexagram_id) === Number(hexagram.id) && Number(l.line) === Number(line));
+  const media = getWeatherMedia(hexagram.weather);
+  const character = characters[Math.floor(Math.random() * characters.length)];
 
-  // ランダム卦
-  const hexagram =
-    hexagrams[
-      Math.floor(
-        Math.random() *
-        hexagrams.length
-      )
-    ];
-
-  // ランダム爻
-  const line =
-    Math.floor(Math.random() * 6) + 1;
-
-  // 爻検索
-  const selectedLine =
-    lines.find(
-      (l) =>
-        Number(l.hexagram_id) ===
-          Number(hexagram.id) &&
-        Number(l.line) ===
-          Number(line)
-    );
-  
-  // media取得
-const media =
-  getWeatherMedia(
-    hexagram.weather
-  );
-  
-
-  // キャラ
-  const character =
-    characters[
-      Math.floor(
-        Math.random() *
-        characters.length
-      )
-    ];
-
-  const result = {
-
-    weather:
-      hexagram.weather,
-
-    emotion:
-      hexagram.emotion,
-
-    meaning:
-      hexagram.meaning,
-
-    rarity:
-      hexagram.rarity,
-
-    color:
-      hexagram.color,
-
-    bgm:
-      hexagram.bgm,
-    
-    video:
-  media.video,
-
-preview:
-  media.preview,
-    
-    name:
-      hexagram.name,
-
-    kana:
-      hexagram.kana,
-
+  return {
+    weather: hexagram.weather,
+    emotion: hexagram.emotion,
+    meaning: hexagram.meaning,
+    rarity: hexagram.rarity,
+    color: hexagram.color,
+    bgm: hexagram.bgm,
+    video: media.video,
+    preview: media.preview,
+    name: hexagram.name,
+    kana: hexagram.kana,
     character,
-
-characterLine:
-  generateCharacterLine(
-    character
-  ),
-    
-    source:
-  getCharacterSource(
-    character
-  ),
-
+    characterLine: generateCharacterLine(character),
+    source: getCharacterSource(character),
     line,
-
-    line_name:
-      selectedLine?.line_name ||
-      "爻",
-
-    line_emotion:
-      selectedLine?.line_emotion ||
-      "",
+    line_name: selectedLine?.line_name || "爻",
+    line_emotion: selectedLine?.line_emotion || "",
   };
-
-  // Gemini生成（エラーが起きても止まらないように安全ガードを挟む）
-  try {
-    result.aiAdvice = await generateAIAdvice(result);
-  } catch (e) {
-    console.log("Gemini呼出エラーのため予備テキストを使用します");
-    result.aiAdvice = `${result.weather}の空が静かに揺れています。`;
-  }
-
-  // もし何らかの理由でaiAdviceが空っぽ、またはundefinedだった場合の最終防衛線
-  if (!result.aiAdvice) {
-    result.aiAdvice = `${result.weather}の空が静かに揺れています。`;
-  }
-
-  return result;
 }
 
 // ======================
-// Flex
+// Flex Message ビルダー（完全動画対応版）
 // ======================
 function buildFlex(result) {
-  // LINEの仕様に合わせるため、URLの末尾の余計なスラッシュなどを防ぐ安全なURLを作成
   const videoUrl = `${IMAGE_BASE}${result.video}`.replace(/([^:]\/)\/+/g, "$1");
   const previewUrl = `${IMAGE_BASE}${result.preview}`.replace(/([^:]\/)\/+/g, "$1");
 
@@ -553,9 +184,7 @@ function buildFlex(result) {
     altText: "空の易",
     contents: {
       type: "bubble",
-      // ==========================================
-      // 【最重要】動画エリア（LINEの最新のvideo仕様に完全準拠）
-      // ==========================================
+      // 動画エリア設定
       hero: {
         type: "video",
         url: videoUrl,
@@ -566,10 +195,8 @@ function buildFlex(result) {
           aspectRatio: "16:9",
           aspectMode: "cover"
         },
-        // 動画コンポーネントには、整数（数字）での指定が「絶対必須」です
         width: 16,
         height: 9,
-        // 400エラーを防ぐため、動画タップ時のアクションを安全な形に変更
         action: {
           type: "uri",
           label: "動画を再生",
@@ -580,55 +207,13 @@ function buildFlex(result) {
         type: "box",
         layout: "vertical",
         contents: [
-          {
-            type: "text",
-            text: result.aiAdvice,
-            wrap: true,
-            size: "lg",
-            weight: "bold",
-            color: "#333333"
-          },
-          {
-            type: "text",
-            text: result.name,
-            size: "xxl",
-            weight: "bold",
-            margin: "lg"
-          },
-          {
-            type: "text",
-            text: result.kana,
-            size: "sm",
-            color: "#888888"
-          },
-          {
-            type: "text",
-            text: result.line_name,
-            size: "lg",
-            weight: "bold",
-            margin: "lg"
-          },
-          {
-            type: "text",
-            text: result.line_emotion,
-            wrap: true,
-            size: "sm",
-            color: "#888888"
-          },
-          {
-            type: "text",
-            text: `${getWeatherIcon(result.weather)} ${result.weather}`,
-            size: "md",
-            margin: "lg"
-          },
-          {
-            type: "text",
-            text: result.emotion,
-            wrap: true,
-            size: "sm",
-            color: "#666666",
-            margin: "md"
-          },
+          { type: "text", text: result.aiAdvice, wrap: true, size: "lg", weight: "bold", color: "#333333" },
+          { type: "text", text: result.name, size: "xxl", weight: "bold", margin: "lg" },
+          { type: "text", text: result.kana, size: "sm", color: "#888888" },
+          { type: "text", text: result.line_name, size: "lg", weight: "bold", margin: "lg" },
+          { type: "text", text: result.line_emotion, wrap: true, size: "sm", color: "#888888" },
+          { type: "text", text: `${getWeatherIcon(result.weather)} ${result.weather}`, size: "md", margin: "lg" },
+          { type: "text", text: result.emotion, wrap: true, size: "sm", color: "#666666", margin: "md" },
           {
             type: "box",
             layout: "vertical",
@@ -638,31 +223,10 @@ function buildFlex(result) {
             borderWidth: "1px",
             borderColor: "#DDDDDD",
             cornerRadius: "12px",
-            position: "relative",
             contents: [
-              {
-                type: "text",
-                text: `🐾 「${result.character}」が何か言ってる？！`,
-                size: "sm",
-                color: "#999999",
-                weight: "bold"
-              },
-              {
-                type: "text",
-                text: `「${result.characterLine}」`,
-                wrap: true,
-                size: "sm",
-                color: "#555555",
-                style: "italic",
-                margin: "sm"
-              },
-              {
-                type: "text",
-                text: "※ 空の易オリジナル再現セリフ",
-                size: "xs",
-                color: "#AAAAAA",
-                margin: "sm"
-              },
+              { type: "text", text: `🐾 「${result.character}」が何か言ってる？！`, size: "sm", color: "#999999", weight: "bold" },
+              { type: "text", text: `「${result.characterLine}」`, wrap: true, size: "sm", color: "#555555", style: "italic", margin: "sm" },
+              { type: "text", text: "※ 空の易オリジナル再現セリフ", size: "xs", color: "#AAAAAA", margin: "sm" },
               {
                 type: "button",
                 style: "secondary",
@@ -671,8 +235,7 @@ function buildFlex(result) {
                 margin: "md",
                 action: {
                   type: "uri",
-                  // ⚠️ labelに絵文字（📚）が含まれていると弾かれる不具合報告があるため、文字のみに変更
-                  label: result.source.title ? String(result.source.title).replace(/[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]/g, '') : "詳細を見る",
+                  label: "詳細を見る",
                   uri: result.source.url
                 }
               }
@@ -685,93 +248,35 @@ function buildFlex(result) {
 }
 
 // ======================
-// webhook
+// Webhook ハンドラ
 // ======================
-app.post(
-  "/callback",
+app.post("/callback", line.middleware(config), async (req, res) => {
+  try {
+    const events = req.body.events;
+    for (const event of events) {
+      if (event.type !== "message" || event.message.type !== "text") continue;
 
-  line.middleware(config),
-
-  async (req, res) => {
-
-    try {
-
-      const events =
-        req.body.events;
-
-      for (const event of events) {
-
-        if (
-          event.type !== "message"
-        ) {
-          continue;
-        }
-
-        if (
-          event.message.type !==
-          "text"
-        ) {
-          continue;
-        }
-
-        const result =
-          await generateFortune();
-
-        if (!result) {
-
-          await client.replyMessage(
-            event.replyToken,
-            {
-              type: "text",
-
-              text:
-                "空を読み込み中です…☁️",
-            }
-          );
-
-          continue;
-        }
-
-        console.log(result);
-
-        const flex =
-          buildFlex(result);
-
-        await client.replyMessage(
-          event.replyToken,
-          flex
-        );
+      const result = generateFortune();
+      if (!result) {
+        await client.replyMessage(event.replyToken, { type: "text", text: "空を読み込み中です…☁️" });
+        continue;
       }
 
-      res.sendStatus(200);
+      // OpenAIで占いテキストを生成
+      result.aiAdvice = await generateAIAdvice(result);
 
-    } catch (err) {
+      console.log("送信データチェック:", result);
 
-      console.log(
-        "====== ERROR ======"
-      );
-
-      console.log(
-        JSON.stringify(
-          err,
-          null,
-          2
-        )
-      );
-
-      res.sendStatus(500);
+      const flex = buildFlex(result);
+      await client.replyMessage(event.replyToken, flex);
     }
+    res.sendStatus(200);
+  } catch (err) {
+    console.log("====== ERROR ======");
+    console.log(err);
+    res.sendStatus(500);
   }
-);
-
-// ======================
-// 起動
-// ======================
-const PORT =
-  process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-
-  console.log("起動成功");
-
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => { console.log("起動成功、ポート:", PORT); });
