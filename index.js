@@ -14,51 +14,32 @@ const app = express();
 
 app.use(
   "/images",
-
   express.static(
     "public/images",
-
     {
       maxAge: "1d",
-
       acceptRanges: true,
-
-      setHeaders: (
-        res,
-        path
-      ) => {
-
-        // mp4
-        if (
-          path.endsWith(".mp4")
-        ) {
-
-          res.set(
-            "Content-Type",
-            "video/mp4"
-          );
-
-          // 超重要
-          res.set(
-            "Accept-Ranges",
-            "bytes"
-          );
+      setHeaders: (res, path) => {
+        // mp4動画の設定
+        if (path.endsWith(".mp4")) {
+          res.set("Content-Type", "video/mp4");
+          res.set("Accept-Ranges", "bytes"); // 超重要：これがないとスマホで再生できません
         }
 
-        // gif
-        if (
-          path.endsWith(".gif")
-        ) {
+        // gif画像の設定
+        if (path.endsWith(".gif")) {
+          res.set("Content-Type", "image/gif");
+        }
 
-          res.set(
-            "Content-Type",
-            "image/gif"
-          );
+        // ★追加：jpg画像の設定（ここが抜けていました！）
+        if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
+          res.set("Content-Type", "image/jpeg");
         }
       },
     }
   )
 );
+
 
 // ======================
 // Gemini 初期化
@@ -291,77 +272,65 @@ function getWeatherMedia(weather) {
   // 晴れ
   if (weather?.includes("晴")) {
 
-    return {
+    // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-      video:
-        "sunny.mp4",
-
-      preview:
-        "sunny.jpg",
-    };
   }
 
   // 雨
   if (weather?.includes("雨")) {
 
-    return {
+    // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-      video:
-        "rain.mp4",
-
-      preview:
-        "rain.jpg",
-    };
   }
 
   // 雷
   if (weather?.includes("雷")) {
 
-    return {
+    // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-      video:
-        "thunder.mp4",
-
-      preview:
-        "thunder.jpg",
-    };
   }
 
   // 風
   if (weather?.includes("風")) {
 
-    return {
+    // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-      video:
-        "wind.mp4",
-
-      preview:
-        "wind.jpg",
-    };
   }
 
   // 曇
   if (weather?.includes("曇")) {
 
-    return {
+    // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-      video:
-        "cloudy.mp4",
-
-      preview:
-        "cloudy.jpg",
-    };
   }
 
   // fallback
-  return {
+  // テスト用：LINE公式が提供している絶対に動く動画と画像
+return {
+  video: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_video.mp4",
+  preview: "https://clova-sirius.s3.ap-northeast-1.amazonaws.com/test_image.jpg"
+};
 
-    video:
-      "default.mp4",
-
-    preview:
-      "default.jpg",
-  };
 }
 // ======================
 // Gemini AI メッセージ生成
@@ -569,37 +538,27 @@ function buildFlex(result) {
 
       hero: {
   type: "video",
-
-  url:
-    IMAGE_BASE +
-    result.video,
-
+  url: IMAGE_BASE + result.video, // 動画のURL
   altContent: {
     type: "image",
-
-    url:
-      IMAGE_BASE +
-      result.preview,
-
+    url: IMAGE_BASE + result.preview, // 静止画（JPG）のURL
     size: "full",
-
     aspectRatio: "16:9",
-
-    aspectMode: "cover",
+    aspectMode: "cover"
   },
-
-  aspectRatio: "16:9",
-
-  aspectMode: "cover",
-
+  width: 16,  // 先ほど直した横比率
+  height: 9,  // 先ほど直した縦比率
+  
+  // ★重要：一度テストのため、action（タップしたときの動作）を一番シンプルな形にするか、
+  // あるいは不具合の原因になりやすいので一旦省略してみます。
+  // 今回は確実に動かすために、画像と同じようにURIアクションを正しく設定します。
   action: {
     type: "uri",
-
-    uri:
-      IMAGE_BASE +
-      result.video,
-  },
+    label: "動画を見る",
+    uri: IMAGE_BASE + result.video
+  }
 },
+
 
       body: {
 
