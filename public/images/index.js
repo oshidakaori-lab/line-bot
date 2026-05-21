@@ -550,35 +550,20 @@ function buildFlex(result) {
 
       hero: {
   type: "video",
-
-  url:
-    IMAGE_BASE +
-    result.video,
-
+  url: IMAGE_BASE + result.video,
   altContent: {
     type: "image",
-
-    url:
-      IMAGE_BASE +
-      result.preview,
-
+    url: IMAGE_BASE + result.preview,
     size: "full",
-
-    aspectRatio: "16:9",
-
+    aspectRatio: "16:9", // 画像の比率は文字列でOK
     aspectMode: "cover",
   },
-
-  aspectRatio: "16:9",
-
-  aspectMode: "cover",
-
+  // ⭕ 動画の比率は以下のように数字で分割して指定します
+  width: 16,
+  height: 9,
   action: {
     type: "uri",
-
-    uri:
-      IMAGE_BASE +
-      result.video,
+    uri: IMAGE_BASE + result.video,
   },
 },
 
