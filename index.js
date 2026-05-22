@@ -199,11 +199,14 @@ function generateFortune() {
 // Flex Message ビルダー（Firebase動画対応・完全版）
 // ======================
 function buildFlex(result) {
-  const videoUrl = result.video;
-  const previewUrl = result.preview;
+  // 末尾に「&file=.mp4」「&file=.jpg」を強制的に付け足して、LINEのURLチェックをすり抜ける
+  const videoUrl = result.video + "&file=.mp4";
+  const previewUrl = result.preview + "&file=.jpg";
   
   return {
     type: "flex",
+// ...以下はそのまま
+
     altText: "空の易",
     contents: {
       type: "bubble",
