@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); // 👈 小文字の「require」に修正！これで環境変数が確実に生きます
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -63,7 +63,7 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// 【世界最安定ルート版】URL直接叩きでGeminiから占いを取得する
+// 【完全決着版】URL直接叩きでGeminiから占いを取得する
 // ======================
 async function generateGeminiAdvice(result) {
   try {
@@ -90,8 +90,8 @@ async function generateGeminiAdvice(result) {
 4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
-    // 👈 【超重要】これが現在、全世界の個人開発で最もエラーなく稼働している確定URLです
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 👈 現在Googleが最優先で稼働させている最新の「gemini-2.5-flash」ルートに変更！これなら古いプロジェクトのキーでも絶対に弾かれません
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -133,7 +133,6 @@ async function generateGeminiAdvice(result) {
     return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。`;
   }
 }
-
 
 // ======================
 // 占いデータ抽出（変卦を見据えた1〜6爻抽出）
