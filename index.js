@@ -190,8 +190,9 @@ app.post("/callback", line.middleware(config), async (req, res) => {
   icon: icon
 });
 
-// 🚨 【超最終防衛線】URLとして絶対にバグらないように全体を綺麗にエンコードする！
-const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${encodeURI(params.toString())}`;
+// URLSearchParamsは自動で安全な形にしてくれるので、そのままくっつけるのが正解です！
+const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
+
 
 
       // LINEのチャットに送るFlexメッセージ（すべての文字をsafeな変数に差し替え！）
