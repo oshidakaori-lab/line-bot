@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config(); // 👈 小文字の「require」に修正して、環境変数を確実に有効化！
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -75,7 +75,7 @@ async function generateGeminiAdvice(result) {
 【3人の様子（CSVデータ）】
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
-·うさぎ: 「${result.usagi_line}」
+・うさぎ: 「${result.usagi_line}」
 
 【出力ルール】
 1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
@@ -160,24 +160,29 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       const icon = getWeatherIcon(result.weather);
 
       // 🔮 占い結果をリクエストパラメータに変換して、HTMLに送るURLを作る
+      const safeAdvice = (result.aiAdvice || "今は無理せずゆっくり過ごすといいぞ。").replace(/[\n\r]/g, " ").trim();
+      const safeChiikawa = (result.chiikawa_line || "わッ…！").replace(/[\n\r]/g, " ").trim();
+      const safeHachiware = (result.hachiware_line || "なんとなんとかなる？").replace(/[\n\r]/g, " ").trim();
+      const safeUsagi = (result.usagi_line || "ヤハ！").replace(/[\n\r]/g, " ").trim();
+
       const params = new URLSearchParams({
-        name: result.name,
-        kana: result.kana,
-        weather: result.weather,
-        emotion: result.emotion,
-        line_name: result.line_name,
-        line_emotion: result.line_emotion,
-        advice: result.aiAdvice,
-        chiikawa: result.chiikawa_line,
-        hachiware: result.hachiware_line,
-        usagi: result.usagi_line,
+        name: result.name || "易の気配",
+        kana: result.kana || "えきのけはい",
+        weather: result.weather || "曇り",
+        emotion: result.emotion || "静寂",
+        line_name: result.line_name || "初爻",
+        line_emotion: result.line_emotion || "移り変わる気配",
+        advice: safeAdvice,
+        chiikawa: safeChiikawa,
+        hachiware: safeHachiware,
+        usagi: safeUsagi,
         video: videoUrl,
         icon: icon
       });
 
       const webPageUrl = `${BASE_URL}/index.html?${params.toString()}`;
 
-      // 👈 LINEのチャットには、ボタン付きの美しいFlexメッセージカードを送る
+      // LINEのチャットに送るFlexメッセージ
       const messages = [
         {
           type: "flex",
@@ -208,11 +213,11 @@ app.post("/callback", line.middleware(config), async (req, res) => {
                 {
                   type: "button",
                   style: "primary",
-                  color: "#4682B4", // 綺麗で落ち着いたスチールブルー
+                  color: "#4682B4",
                   action: {
                     type: "uri",
                     label: "シネマティック画面で見る 🌌",
-                    uri: webPageUrl // 👈 今は一旦、ブラウザが開くURLを設定（次のステップでLIFF化します！）
+                    uri: webPageUrl
                   }
                 }
               ]
