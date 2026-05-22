@@ -9,7 +9,7 @@ const csv = require("csv-parser");
 const app = express();
 
 // ======================
-// 【超重要】動画・画像の配信設定（Renderで動画を再生させる命綱）
+// 動画・画像の配信設定（Render）
 // ======================
 app.use(
   "/images",
@@ -17,18 +17,15 @@ app.use(
     "public/images",
     {
       maxAge: "1d",
-      acceptRanges: true, // 動画ストリーミング再生に必須
+      acceptRanges: true, 
       setHeaders: (res, path) => {
-        // mp4動画の設定
         if (path.endsWith(".mp4")) {
           res.set("Content-Type", "video/mp4");
-          res.set("Accept-Ranges", "bytes"); // スマホ再生に絶対必要
+          res.set("Accept-Ranges", "bytes"); // スマホ再生の命綱
         }
-        // jpg画像の設定
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
           res.set("Content-Type", "image/jpeg");
         }
-        // gif画像の設定
         if (path.endsWith(".gif")) {
           res.set("Content-Type", "image/gif");
         }
@@ -37,9 +34,7 @@ app.use(
   )
 );
 
-// ======================
-// 【変更】動画・画像のベースURL（あなたのRenderサーバーのURL）
-// ======================
+// あなたのRenderサーバーのURL
 const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
 
 // ======================
@@ -57,8 +52,6 @@ const client = new line.Client(config);
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-console.log("OPENAI KEY EXISTS:", !!process.env.OPENAI_API_KEY);
 
 // ======================
 // CSV 読み込み
@@ -88,13 +81,6 @@ function generateCharacterLine(character) {
   return ["……。", "ちょっとこわい…。", "でも、進みたい…。", "空、見てる…。"][Math.floor(Math.random() * 4)];
 }
 
-function getCharacterSource(character) {
-  return {
-    title: character === "ちいかわ" ? "ちいかわ公式" : `${character}登場回`,
-    url: "https://twitter.com/ngnchiikawa",
-  };
-}
-
 function getWeatherIcon(weather) {
   if (weather?.includes("晴")) return "☀️";
   if (weather?.includes("雨")) return "🌧️";
@@ -104,7 +90,6 @@ function getWeatherIcon(weather) {
   return "✨";
 }
 
-// 【変更】FirebaseのURLではなく、元のシンプルなファイル名に戻します
 function getWeatherMedia(weather) {
   if (weather?.includes("晴")) return { video: "sunny.mp4", preview: "sunny.jpg" };
   if (weather?.includes("雨")) return { video: "rain.mp4", preview: "rain.jpg" };
@@ -132,13 +117,12 @@ async function generateAIAdvice(result) {
 
     const completion = await openai.chat.completions.create({  
       model: "gpt-4o-mini",  
-      messages: [{ role: "user", content: prompt }],  
+      messages: [{ role: "user", content: prompt }],
     });  
 
     return completion.choices[0].message.content.replace(/\n/g, "").slice(0, 80).trim();
 
   } catch (err) {
-    console.log("OpenAI Error:", err.message);
     return `${result.weather}の空が静かに揺れています。`;
   }
 }
@@ -159,93 +143,15 @@ function generateFortune() {
     weather: hexagram.weather,
     emotion: hexagram.emotion,
     meaning: hexagram.meaning,
-    rarity: hexagram.rarity,
-    color: hexagram.color,
-    bgm: hexagram.bgm,
     video: media.video,
     preview: media.preview,
     name: hexagram.name,
     kana: hexagram.kana,
     character,
     characterLine: generateCharacterLine(character),
-    source: getCharacterSource(character),
     line,
     line_name: selectedLine?.line_name || "爻",
     line_emotion: selectedLine?.line_emotion || "",
-  };
-}
-
-// ======================
-// Flex Message ビルダー（Renderローカル配信・LINE公式準拠版）
-// ======================
-function buildFlex(result) {
-  // RenderのURLとファイル名を綺麗に結合（末尾が .mp4 / .jpg で綺麗に終わる）
-  const videoUrl = `${IMAGE_BASE}${result.video}`;
-  const previewUrl = `${IMAGE_BASE}${result.preview}`;
-  
-  return {
-    type: "flex",
-    altText: "空の易",
-    contents: {
-      type: "bubble",
-      hero: {
-        type: "video",
-        url: videoUrl,
-        altContent: {
-          type: "image",
-          url: previewUrl,
-          size: "full",
-          aspectRatio: "16:9",
-          aspectMode: "cover"
-        },
-        width: 16,
-        height: 9,
-        action: {
-          type: "uri",
-          uri: videoUrl
-        }
-      },
-      body: {
-        type: "box",
-        layout: "vertical",
-        contents: [
-          { type: "text", text: result.aiAdvice, wrap: true, size: "lg", weight: "bold", color: "#333333" },
-          { type: "text", text: result.name, size: "xxl", weight: "bold", margin: "lg" },
-          { type: "text", text: result.kana, size: "sm", color: "#888888" },
-          { type: "text", text: result.line_name, size: "lg", weight: "bold", margin: "lg" },
-          { type: "text", text: result.line_emotion, wrap: true, size: "sm", color: "#888888" },
-          { type: "text", text: `${getWeatherIcon(result.weather)} ${result.weather}`, size: "md", margin: "lg" },
-          { type: "text", text: result.emotion, wrap: true, size: "sm", color: "#666666", margin: "md" },
-          {
-            type: "box",
-            layout: "vertical",
-            margin: "md",
-            paddingAll: "12px",
-            backgroundColor: "#FFFFFF",
-            borderWidth: "1px",
-            borderColor: "#DDDDDD",
-            cornerRadius: "12px",
-            contents: [
-              { type: "text", text: `🐾 「${result.character}」が何か言ってる？！`, size: "sm", color: "#999999", weight: "bold" },
-              { type: "text", text: `「${result.characterLine}」`, wrap: true, size: "sm", color: "#555555", style: "italic", margin: "sm" },
-              { type: "text", text: "※ 空の易オリジナル再現セリフ", size: "xs", color: "#AAAAAA", margin: "sm" },
-              {
-                type: "button",
-                style: "secondary",
-                color: "#EEF6FF",
-                height: "sm",
-                margin: "md",
-                action: {
-                  type: "uri",
-                  label: "詳細を見る",
-                  uri: result.source.url
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
   };
 }
 
@@ -267,16 +173,35 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       // OpenAIで占いテキストを生成  
       result.aiAdvice = await generateAIAdvice(result);  
 
-      console.log("送信データチェック:", result);  
+      const videoUrl = `${IMAGE_BASE}${result.video}`;
+      const previewUrl = `${IMAGE_BASE}${result.preview}`;
 
-      const flex = buildFlex(result);  
-      await client.replyMessage(event.replyToken, flex);  
+      // ==========================================
+      // 【超確実】LINE公式の「動画」と「テキスト」を2連続で送る形式
+      // ==========================================
+      const messages = [
+        // 1通目: 動画メッセージ（LINEの公式機能なので100%エラーにならない）
+        {
+          type: "video",
+          originalContentUrl: videoUrl,
+          previewImageUrl: previewUrl
+        },
+        // 2通目: 占いの結果テキスト
+        {
+          type: "text",
+          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}\n\n🔮 卦：${result.name} (${result.kana})\n✨ 爻：${result.line_name}\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ${result.character}「${result.characterLine}」`
+        }
+      ];
+
+      console.log("送信するURLチェック:", { videoUrl, previewUrl });  
+
+      await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
 
   } catch (err) {
     console.log("====== ERROR ======");
-    console.log(err);
+    console.log(err.response ? err.response.data : err.message);
     res.sendStatus(500);
   }
 });
