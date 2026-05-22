@@ -139,7 +139,7 @@ function generateFortune() {
 }
 
 // ======================
-// Webhook ハンドラ
+// Webhook ハンドラ（超絶安全ガード強化版）
 // ======================
 app.post("/callback", line.middleware(config), async (req, res) => {
   try {
@@ -153,25 +153,35 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
+      // Geminiからアドバイスを取得（失敗したらハフムシャが入る）
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
       const icon = getWeatherIcon(result.weather);
 
-      // 🔮 占い結果をリクエストパラメータに変換して、HTMLに送るURLを作る
-      const safeAdvice = (result.aiAdvice || "今は無理せずゆっくり過ごすといいぞ。").replace(/[\n\r]/g, " ").trim();
-      const safeChiikawa = (result.chiikawa_line || "わッ…！").replace(/[\n\r]/g, " ").trim();
-      const safeHachiware = (result.hachiware_line || "なんとなんとかなる？").replace(/[\n\r]/g, " ").trim();
-      const safeUsagi = (result.usagi_line || "ヤハ！").replace(/[\n\r]/g, " ").trim();
+      // 🚨 【最強の安全ガード】改行（\n や \r）や、LINEを狂わせる文字を徹底的にスペースへ置換！
+      const cleanText = (str) => {
+        if (!str) return "";
+        return str.replace(/[\r\n\t\f\v]/g, " ").replace(/\\/g, "/").trim();
+      };
+
+      const safeAdvice = cleanText(result.aiAdvice || "今は無理せずゆっくり過ごすといいぞ。");
+      const safeChiikawa = cleanText(result.chiikawa_line || "わッ…！");
+      const safeHachiware = cleanText(result.hachiware_line || "なんとかなりそう？");
+      const safeUsagi = cleanText(result.usagi_line || "ヤハ！");
+      const safeLineName = cleanText(result.line_name || "初爻");
+      const safeLineEmotion = cleanText(result.line_emotion || "移り変わる気配");
+      const safeWeather = cleanText(result.weather || "曇り");
+      const safeKana = cleanText(result.kana || "えきのけはい");
 
       const params = new URLSearchParams({
         name: result.name || "易の気配",
-        kana: result.kana || "えきのけはい",
-        weather: result.weather || "曇り",
+        kana: safeKana,
+        weather: safeWeather,
         emotion: result.emotion || "静寂",
-        line_name: result.line_name || "初爻",
-        line_emotion: result.line_emotion || "移り変わる気配",
+        line_name: safeLineName,
+        line_emotion: safeLineEmotion,
         advice: safeAdvice,
         chiikawa: safeChiikawa,
         hachiware: safeHachiware,
@@ -180,9 +190,10 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         icon: icon
       });
 
+      // LIFFのURLを組み立て（末尾の /index.html は削った状態）
       const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
 
-      // LINEのチャットに送るFlexメッセージ
+      // LINEのチャットに送るFlexメッセージ（すべての文字をsafeな変数に差し替え！）
       const messages = [
         {
           type: "flex",
@@ -200,9 +211,9 @@ app.post("/callback", line.middleware(config), async (req, res) => {
               type: "box",
               layout: "vertical",
               contents: [
-                { type: "text", text: `【空の易】${icon} ${result.weather}`, weight: "bold", size: "sm", color: "#888888" },
-                { type: "text", text: `${result.name} (${result.kana})`, weight: "bold", size: "xl", margin: "md" },
-                { type: "text", text: `${result.line_name}（${result.line_emotion}）`, size: "md", color: "#555555", margin: "sm" }
+                { type: "text", text: `【空の易】${icon} ${safeWeather}`, weight: "bold", size: "sm", color: "#888888" },
+                { type: "text", text: `${result.name} (${safeKana})`, weight: "bold", size: "xl", margin: "md" },
+                { type: "text", text: `${safeLineName}（${safeLineEmotion}）`, size: "md", color: "#555555", margin: "sm" }
               ]
             },
             footer: {
