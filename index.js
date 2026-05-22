@@ -43,7 +43,7 @@ app.use(
 const MEDIA = {
   sunny: {
     video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsunny.mp4?alt=media&token=bb0ed639-4358-421d-bd62-c211018b3a22",
-    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fwind.jpg?alt=media&token=c381dd33-2b6b-435a-9c2b-f0416be28282"
+    preview: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsunny.jpg?alt=media&token=6d7b9405-2c63-4de3-bfef-0e40fc79350d"
   },
   
   cloudy: {
@@ -81,10 +81,10 @@ const client = new line.Client(config);
 // ======================
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
-console.log("OPENAI KEY EXISTS:", !!process.env.OPENAI_API_KEY);
+console.log("OPENAI KEY EXISTS:", !!process.env.GEMINI_API_KEY);
 
 // ======================
 // CSV 読み込み
@@ -228,12 +228,11 @@ function buildFlex(result) {
     altText: "空の易",
     contents: {
       type: "bubble",
+      
       // 動画エリア設定
       hero: {
   type: "video",
   url: videoUrl,
-
-  previewUrl: previewUrl,
 
   altContent: {
     type: "image",
