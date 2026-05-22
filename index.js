@@ -6,7 +6,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
-const app = report || express(); // 既存のExpressインスタンスがあればそちらを優先
+const app = express();
 
 // ======================
 // 動画・画像の配信設定（Render）
@@ -95,7 +95,14 @@ async function generateGeminiAdvice(result) {
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const response = await model.generateContent(prompt);
-    const text = response.response.text();
+    
+    // エラーが起きたAPIのレスポンス取得方法を安全に修正
+    let text = "";
+    if (response && response.response) {
+      text = typeof response.response.text === "function" ? response.response.text() : response.response.text;
+    } else if (response && response.text) {
+      text = typeof response.text === "function" ? response.text() : response.text;
+    }
 
     return text.replace(/\n/g, "").slice(0, 120).trim();
 
@@ -128,7 +135,6 @@ function generateFortune() {
     meaning: hexagram.meaning,
     line_num: lineNum,
     
-    // 爻データがあれば採用、なければ見守り目線用デフォルト
     line_name: selectedLine ? selectedLine.line_name : `${lineNum}爻`,
     line_emotion: selectedLine ? selectedLine.line_emotion : "移り変わる気配",
     chiikawa_line: selectedLine ? selectedLine.chiikawa_line : "わッ…！",
@@ -161,7 +167,6 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
 
-      // LINEへの送信（テキストメッセージ側も世界観を統一）
       const messages = [
         {
           type: "video",
