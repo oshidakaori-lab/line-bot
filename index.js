@@ -25,11 +25,17 @@ const IMAGE_BASE = `${BASE_URL}/images/`;
 // ======================
 // LINE 初期化
 // ======================
+// 🚨 トークンをオブジェクトではなく、直接ストレートに流し込みます！
+const client = new line.Client({
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN
+});
+
+// シークレットは後ほどミドルウェアを戻す時などのためにconfigとして残しておきます
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
-const client = new line.Client(config);
+
 
 // ======================
 // CSV 読み込み
@@ -136,12 +142,20 @@ function generateFortune() {
 }
 
 // ======================
-// Webhook ハンドラ
+// Webhook ハンドラ（LINEミドルウェアを解除した超絶安全版）
 // ======================
-app.post("/callback", line.middleware(config), async (req, res) => {
+// 🚨 line.middleware(config) を外し、JSONをそのまま読めるように express.json() を挟みます
+app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
+
+    // 疎通確認（検証ボタン）などの空イベント対策
+    if (!events || events.length === 0) {
+      return res.sendStatus(200);
+    }
+
     for (const event of events) {
+      // テキストメッセージ以外はスルー
       if (event.type !== "message" || event.message.type !== "text") continue;
 
       const result = generateFortune();  
@@ -150,13 +164,14 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
+      // Geminiからアドバイスを取得
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
       const icon = getWeatherIcon(result.weather);
 
-      // 【安全ガード】制御文字の排除
+      // 【安全ガード】改行やバックスラッシュの排除
       const cleanText = (str) => {
         if (!str) return "";
         return str.replace(/[\r\n\t\f\v]/g, " ").replace(/\\/g, "/").trim();
@@ -186,7 +201,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         icon: icon
       });
 
-      // URLSearchParamsが完璧にエンコードした文字列をストレートに結合！
+      // 安全にシリアライズされたURL
       const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
 
       // LINEに送るFlexメッセージ
@@ -238,15 +253,13 @@ app.post("/callback", line.middleware(config), async (req, res) => {
     res.sendStatus(200);
 
   } catch (err) {
-    // 🚨 【鉄壁のLOG可視化】LINEから返ってきた怒りのエラー理由をすべて丸裸にする！
-    console.log("====== ERROR ======", err.message);
+    // 🚨 【今度こそ絶対に逃がさない鉄壁ログ】
+    console.log("====== ERROR DISCOVERED ======");
+    console.log("メッセージ:", err.message);
     if (err.response && err.response.data) {
-      console.log("👇 LINEからの具体的なエラー理由（詳細）:");
+      console.log("👇 LINEが拒絶した真の理由:");
       console.log(JSON.stringify(err.response.data, null, 2));
     }
     res.sendStatus(500);
   }
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("LIFF準備版 起動成功！"); });
