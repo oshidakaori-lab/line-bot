@@ -160,7 +160,8 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
-      const previewUrl = `${IMAGE_BASE}${result.preview}`;
+const previewUrl = `${IMAGE_BASE}sunny.jpg`; // 👈 CSVを無視して、絶対に存在するsunny.jpgを強制指定！
+
       const icon = getWeatherIcon(result.weather);
 
       const cleanText = (str) => {
