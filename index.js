@@ -196,20 +196,20 @@ function generateFortune() {
 }
 
 // ======================
-// Flex Message ビルダー（Firebase動画対応・完全版）
+// Flex Message ビルダー（LINE仕様完全準拠版）
 // ======================
 function buildFlex(result) {
-  // 末尾に「&file=.mp4」「&file=.jpg」を強制的に付け足して、LINEのURLチェックをすり抜ける
-  const videoUrl = result.video + "&file=.mp4";
-  const previewUrl = result.preview + "&file=.jpg";
+  const videoUrl = result.video;
+  const previewUrl = result.preview;
   
   return {
     type: "flex",
-// ...以下はそのまま
-
     altText: "空の易",
     contents: {
       type: "bubble",
+      // ==========================================
+      // 【400エラー対策】動画エリアのactionを修正
+      // ==========================================
       hero: {
         type: "video",
         url: videoUrl,
@@ -224,7 +224,7 @@ function buildFlex(result) {
         height: 9,
         action: {
           type: "uri",
-          label: "動画を再生",
+          // ⚠️ videoのactionには「label」を書いてはいけないルールなので削除しました！
           uri: videoUrl
         }
       },
@@ -271,6 +271,7 @@ function buildFlex(result) {
     }
   };
 }
+
 
 // ======================
 // Webhook ハンドラ
