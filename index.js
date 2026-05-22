@@ -180,7 +180,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         icon: icon
       });
 
-      const webPageUrl = `${BASE_URL}/index.html?${params.toString()}`;
+      const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
 
       // LINEのチャットに送るFlexメッセージ
       const messages = [
