@@ -6,7 +6,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
-const app = express();
+const app = report || express(); // 既存のExpressインスタンスがあればそちらを優先
 
 // ======================
 // 動画・画像の配信設定（Render）
@@ -19,7 +19,7 @@ app.use(
       maxAge: "1d",
       acceptRanges: true, 
       setHeaders: (res, path) => {
-        if (path.endsWith(".mp4")) res.set("Content-Type", "video/mp4"); res.set("Accept-Ranges", "bytes");
+        if (path.endsWith(".mp4")) { res.set("Content-Type", "video/mp4"); res.set("Accept-Ranges", "bytes"); }
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) res.set("Content-Type", "image/jpeg");
         if (path.endsWith(".gif")) res.set("Content-Type", "image/gif");
       },
@@ -48,12 +48,12 @@ const lines = [];
 fs.createReadStream("hexagrams.csv")
   .pipe(csv())
   .on("data", (data) => { hexagrams.push(data); })
-  .on("end", () => { console.log("ちいかわ特化・卦CSV読込完了:", hexagrams.length); });
+  .on("end", () => { console.log("シネマティック卦CSV読込完了:", hexagrams.length); });
 
 fs.createReadStream("lines.csv")
   .pipe(csv())
   .on("data", (data) => { lines.push(data); })
-  .on("end", () => { console.log("ちいかわ特化・爻CSV読込完了:", lines.length); });
+  .on("end", () => { console.log("爻CSV読込完了:", lines.length); });
 
 function getWeatherIcon(weather) {
   if (weather?.includes("晴")) return "☀️";
@@ -65,64 +65,60 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// Geminiによる占いメッセージ生成
+// Geminiによる「鎧さんの見守り占い」生成
 // ======================
 async function generateGeminiAdvice(result) {
   try {
     const prompt = `
-あなたは「空の易」という、空模様と易経を融合した占いAIです。
-以下のちいかわ達の掛け合いや、卦と爻の意味、空気感をベースにして、ちいかわの世界観に寄り添った短く優しい占いメッセージを生成してください。
+あなたは、ちいかわ達（ちいかわ、ハチワレ、うさぎ）を少し離れたところから優しく見守る「鎧さん」のような存在であり、同時に「空の易」の占い師です。
+
+以下の【今回の占いデータ】と【3人の様子】を読み解き、彼らがこの空模様の中でどれほど仲良く寄り添い合っているか（仲良しすぎて微笑ましい空気感）を描写しつつ、ユーザーへ向けた「大人としての優しいアドバイス（ひとこと）」で総括する文章を作ってください。
 
 【今回の占いデータ】
-本卦(メインの卦): ${result.name} (${result.kana})
-得た爻: ${result.line_name} (${result.line_emotion})
-天気: ${result.weather}
-全体の雰囲気: ${result.emotion}
-詳細な意味: ${result.meaning}
+・本卦（メインの象徴）: ${result.name} (${result.kana})
+・天気と全体の情緒: ${result.weather} / ${result.emotion}
+・この卦が持つ本来の意味: ${result.meaning}
+・引いた爻（現在の詳細な状態）: ${result.line_name} (${result.line_emotion})
 
-【キャラクターたちの様子】
-ちいかわ: 「${result.chiikawa_line}」
-ハチワレ: 「${result.hachiware_line}」
-うさぎ: 「${result.usagi_line}」
+【3人の様子（CSVデータ）】
+・ちいかわ: 「${result.chiikawa_line}」
+・ハチワレ: 「${result.hachiware_line}」
+・うさぎ: 「${result.usagi_line}」
+※もし上記が「わッ…！」などのデフォルト値だった場合は、この卦の情緒（例: ${result.emotion}）に合わせて、3人がチャリメラを食べたり寄り添ったりして仲良く過ごしているシーンを自由に想像して膨らませてください。
 
 【出力ルール】
-・ちいかわの世界観をベースにした、優しくて少し不穏さもある、励ましの言葉にしてください。
-・日本語のみ、1文、改行禁止で「80文字以内」で出力してください。
-・「空」「風」「雲」「光」「雨」「雷」などの自然表現を必ずどれか1つ文章に含めてください。
-・AIとしての言葉として出力し、「ちいかわ:」などのキャラ名は文頭につけないでください。
+1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
+2. 最後に、「鎧さん」の口調（「〜だぞ」「〜するといい」「〜だな」など）で、ユーザーの心に寄り添うアドバイス的ひとことで締めくくってください。
+3. 日本語のみ、全体で「120文字以内」、改行はせず1つの文章（塊）として出力してください。
+4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const response = await model.generateContent(prompt);
     const text = response.response.text();
 
-    return text.replace(/\n/g, "").slice(0, 80).trim();
+    return text.replace(/\n/g, "").slice(0, 120).trim();
 
   } catch (err) {
     console.log("Gemini Error:", err.message);
-    return `${result.weather}の空を見上げて、みんなでチャリメラを食べよう。`;
+    return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、あたたかいものでも食べてゆっくり過ごすといいぞ。`;
   }
 }
 
 // ======================
-// 占いデータ抽出（変卦対応を見据えた1〜6爻の完全抽出）
+// 占いデータ抽出（変卦を見据えた1〜6爻抽出）
 // ======================
 function generateFortune() {
   if (hexagrams.length === 0 || lines.length === 0) return null;
 
-  // 1. 本卦（現在の状態）をランダムに決定
   const hexagram = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-  
-  // 2. 爻（1〜6）をランダムに選ぶ（易経の初爻〜上爻に準拠）
   const lineNum = Math.floor(Math.random() * 6) + 1; 
 
-  // 3. lines.csv から「同じHexagram_id」かつ「同じline番号」のものを探す
   const selectedLine = lines.find(
     (l) => Number(l.Hexagram_id) === Number(hexagram.id) && Number(l.line) === lineNum
   );
 
-  // デバッグ用ログ：ここが将来「変卦」を計算するときのベースになります
-  console.log(`【易経ログ】本卦ID: ${hexagram.id} (${hexagram.name}) / 得爻: ${lineNum}爻目`);
+  console.log(`【易経ログ】本卦: ${hexagram.name} / 得爻: ${lineNum}爻目`);
 
   return {
     name: hexagram.name,
@@ -130,9 +126,9 @@ function generateFortune() {
     weather: hexagram.weather,
     emotion: hexagram.emotion,
     meaning: hexagram.meaning,
-    
-    // 爻のデータを安全にセット（万が一CSVに未登録ならデフォルト値）
     line_num: lineNum,
+    
+    // 爻データがあれば採用、なければ見守り目線用デフォルト
     line_name: selectedLine ? selectedLine.line_name : `${lineNum}爻`,
     line_emotion: selectedLine ? selectedLine.line_emotion : "移り変わる気配",
     chiikawa_line: selectedLine ? selectedLine.chiikawa_line : "わッ…！",
@@ -159,13 +155,13 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
-      // Geminiで占いテキストを生成
+      // Geminiで「見守り＆鎧さん総括」テキストを生成
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
 
-      // LINEに送るメッセージを構築（本卦と爻を綺麗に並べる）
+      // LINEへの送信（テキストメッセージ側も世界観を統一）
       const messages = [
         {
           type: "video",
@@ -174,11 +170,11 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         },
         {
           type: "text",
-          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 本卦：${result.name} (${result.kana})\n✨ 得爻：${result.line_name}（${result.line_emotion}）\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ちいかわ「${result.chiikawa_line}」\n🐾 ハチワレ「${result.hachiware_line}」\n🐾 うさぎ「${result.usagi_line}」`
+          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 本卦：${result.name} (${result.kana})\n✨ 得爻：${result.line_name}（${result.line_emotion}）\n\n💬 鎧さんの見守り助言：\n${result.aiAdvice}`
         }
       ];
 
-      console.log("Gemini爻表示版 送信データ:", result);  
+      console.log("Gemini鎧さん見守り版 送信データ:", result);  
       await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
@@ -191,4 +187,4 @@ app.post("/callback", line.middleware(config), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("Gemini爻表示版 起動成功！"); });
+app.listen(PORT, () => { console.log("Gemini鎧さん見守り版 起動成功！"); });
