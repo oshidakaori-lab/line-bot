@@ -15,7 +15,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Hiragino Kaku Gothic ProN, クギノ, meiryo, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Hiragino Kaku Gothic ProN, sans-serif;
             background-color: #000;
             color: #fff;
         }
@@ -30,18 +30,17 @@
             width: auto;
             height: auto;
             z-index: -100;
-            background-size: cover;
             object-fit: cover;
         }
 
-        /* 画面全体のオーバーレイ（少し暗くして文字を見やすくする） */
+        /* 画面全体のオーバーレイ（文字の視認性を上げる） */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.25);
             z-index: -99;
         }
 
@@ -56,82 +55,84 @@
             padding: 20px;
         }
 
-        /* 動画で見せてくれた「美しい半透明カード」の再現 */
+        /* 美しい半透明カード（グラスモフィズム） */
         .fortune-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 24px;
-            padding: 30px 24px;
+            padding: 28px 22px;
             width: 100%;
-            max-width: 360px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
             text-align: center;
         }
 
         .weather-info {
-            font-size: 14pt;
+            font-size: 1.1rem;
             font-weight: 500;
             letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             opacity: 0.9;
         }
 
         .hexagram-title {
-            font-size: 24pt;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 4px;
             letter-spacing: 0.03em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .hexagram-sub {
-            font-size: 11pt;
-            opacity: 0.8;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            opacity: 0.75;
+            margin-bottom: 16px;
         }
 
         .divider {
             height: 1px;
-            background: rgba(255, 255, 255, 0.25);
-            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 12px 0;
             width: 100%;
         }
 
         /* 鎧さんの見守り助言エリア */
         .advice-box {
             text-align: left;
-            font-size: 11pt;
+            font-size: 0.95rem;
             line-height: 1.6;
-            margin: 15px 0;
-            background: rgba(0, 0, 0, 0.15);
+            margin: 16px 0;
+            background: rgba(0, 0, 0, 0.2);
             padding: 14px;
             border-radius: 14px;
-            border-left: 4px solid rgba(255, 255, 255, 0.4);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
         }
 
         .advice-label {
-            font-size: 9pt;
+            font-size: 0.75rem;
             font-weight: bold;
             opacity: 0.6;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: 0.05em;
         }
 
         /* ちいかわ達のセリフエリア */
         .character-box {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 16px;
-            padding: 12px 16px;
+            padding: 14px 16px;
             text-align: left;
-            font-size: 10pt;
-            line-height: 1.5;
-            opacity: 0.9;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            opacity: 0.95;
         }
 
         .char-line {
-            margin-bottom: 4px;
+            margin-bottom: 6px;
+            text-indent: -0.5em;
+            padding-left: 0.5em;
         }
         .char-line:last-child {
             margin-bottom: 0;
@@ -140,7 +141,7 @@
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="video-background" id="bg-video">
+    <video autoplay muted loop playsinline id="video-background">
         <source src="" type="video/mp4" id="video-source">
     </video>
     <div class="overlay"></div>
@@ -156,18 +157,15 @@
             <div class="advice-box">
                 <div class="advice-label">💬 鎧さんの見守り助言</div>
                 <div id="advice-text">3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。</div>
-            }</div>
-
-            <div class="character-box">
-                <div class="char-line" id="chiikawa-text">ちいかわ：ちょっとこわい…</div>
-                <div class="char-line" id="hachiware-text">ハチワレ：なんとかなりそう？</div>
-                <div class="char-line" id="usagi-text">うさぎ：ヤハ！</div>
+            </div> <div class="character-box">
+                <div class="char-line" id="chiikawa-text">ちいかわ：「ちょっとこわい…」</div>
+                <div class="char-line" id="hachiware-text">ハチワレ：「なんとかなりそう？」</div>
+                <div class="char-line" id="usagi-text">うさぎ：「ヤハ！」</div>
             </div>
         </div>
     </div>
 
     <script>
-        // URLの後ろについたデータを解析して画面を書き換える
         const urlParams = new URLSearchParams(window.location.search);
         
         if(urlParams.has('name')) {
