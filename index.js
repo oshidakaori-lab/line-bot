@@ -81,10 +81,10 @@ const client = new line.Client(config);
 // ======================
 
 const openai = new OpenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
-console.log("OPENAI KEY EXISTS:", !!process.env.GEMINI_API_KEY);
+console.log("OPENAI KEY EXISTS:", !!process.env.OPENAI_API_KEY);
 
 // ======================
 // CSV 読み込み
