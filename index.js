@@ -1,4 +1,4 @@
-require("dotenv").config(); // 👈 小文字の「require」に修正して、環境変数を確実に有効化！
+require("dotenv").config(); // 👈 小文字の「require」で確実に有効化
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -8,7 +8,7 @@ const path = require("path");
 
 const app = express();
 
-// 静的ファイルの配信設定（画像・動画、そしてHTML画面）
+// 静的ファイルの配信設定
 app.use(express.static("public", {
   maxAge: "1d",
   acceptRanges: true,
@@ -57,31 +57,28 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// URL直接叩きでGeminiから占いを取得する
+// Geminiから占いを取得
 // ======================
 async function generateGeminiAdvice(result) {
   try {
     const prompt = `
 あなたは、ちいかわ達（ちいかわ、ハチワレ、うさぎ）を少し離れたところから優しく見守る「鎧さん」のような存在であり、同時に「空の易」の占い師です。
-
 以下の【今回の占いデータ】と【3人の様子】を読み解き、彼らがこの空模様の中でどれほど仲良く寄り添い合っているか（仲良しすぎて微笑ましい空気感）を描写しつつ、ユーザーへ向けた「大人としての優しいアドバイス（ひとこと）」で総括する文章を作ってください。
 
 【今回の占いデータ】
-・本卦（メインの象徴）: ${result.name} (${result.kana})
+・本卦: ${result.name} (${result.kana})
 ・天気と全体の情緒: ${result.weather} / ${result.emotion}
-・この卦が持つ本来の意味: ${result.meaning}
-・引いた爻（現在の詳細な状態）: ${result.line_name} (${result.line_emotion})
+・引いた爻: ${result.line_name} (${result.line_emotion})
 
-【3人の様子（CSVデータ）】
+【3人の様子】
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
 ・うさぎ: 「${result.usagi_line}」
 
 【出力ルール】
-1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
+1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ってお互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
 2. 最後に、「鎧さん」の口調（「〜だぞ」「〜するといい」「〜だな」など）で、ユーザーの心に寄り添うアドバイス的ひとことで締めくくってください。
-3. 日本語のみ、全体で「120文字以内」、改行はせず1つの文章（塊）として出力してください。
-4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
+3. 日本語のみ、全体で「120文字以内」、改行はせず1つの文章として出力してください。文字装飾やキャラクター名は絶対に付けないでください。
 `;
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
@@ -139,7 +136,7 @@ function generateFortune() {
 }
 
 // ======================
-// Webhook ハンドラ（超絶安全ガード強化版）
+// Webhook ハンドラ
 // ======================
 app.post("/callback", line.middleware(config), async (req, res) => {
   try {
@@ -153,14 +150,13 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
-      // Geminiからアドバイスを取得（失敗したらハフムシャが入る）
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
       const icon = getWeatherIcon(result.weather);
 
-      // 🚨 【最強の安全ガード】改行（\n や \r）や、LINEを狂わせる文字を徹底的にスペースへ置換！
+      // 【安全ガード】制御文字の排除
       const cleanText = (str) => {
         if (!str) return "";
         return str.replace(/[\r\n\t\f\v]/g, " ").replace(/\\/g, "/").trim();
@@ -176,26 +172,24 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       const safeKana = cleanText(result.kana || "えきのけはい");
 
       const params = new URLSearchParams({
-  name: result.name || "易の気配",
-  kana: safeKana,
-  weather: safeWeather,
-  emotion: result.emotion || "静寂",
-  line_name: safeLineName,
-  line_emotion: safeLineEmotion,
-  advice: safeAdvice,
-  chiikawa: safeChiikawa,
-  hachiware: safeHachiware,
-  usagi: safeUsagi,
-  video: videoUrl,
-  icon: icon
-});
+        name: result.name || "易の気配",
+        kana: safeKana,
+        weather: safeWeather,
+        emotion: result.emotion || "静寂",
+        line_name: safeLineName,
+        line_emotion: safeLineEmotion,
+        advice: safeAdvice,
+        chiikawa: safeChiikawa,
+        hachiware: safeHachiware,
+        usagi: safeUsagi,
+        video: videoUrl,
+        icon: icon
+      });
 
-// URLSearchParamsは自動で安全な形にしてくれるので、そのままくっつけるのが正解です！
-const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
+      // URLSearchParamsが完璧にエンコードした文字列をストレートに結合！
+      const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
 
-
-
-      // LINEのチャットに送るFlexメッセージ（すべての文字をsafeな変数に差し替え！）
+      // LINEに送るFlexメッセージ
       const messages = [
         {
           type: "flex",
@@ -244,7 +238,12 @@ const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()
     res.sendStatus(200);
 
   } catch (err) {
+    // 🚨 【鉄壁のLOG可視化】LINEから返ってきた怒りのエラー理由をすべて丸裸にする！
     console.log("====== ERROR ======", err.message);
+    if (err.response && err.response.data) {
+      console.log("👇 LINEからの具体的なエラー理由（詳細）:");
+      console.log(JSON.stringify(err.response.data, null, 2));
+    }
     res.sendStatus(500);
   }
 });
