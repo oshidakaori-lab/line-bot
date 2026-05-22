@@ -1,32 +1,26 @@
-require("dotenv").config(); // 👈 小文字の「require」に修正！これで環境変数が確実に生きます
+require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
+const path = require("path");
 
 const app = express();
 
-// ======================
-// 動画・画像の配信設定（Render）
-// ======================
-app.use(
-  "/images",
-  express.static(
-    "public/images",
-    {
-      maxAge: "1d",
-      acceptRanges: true, 
-      setHeaders: (res, path) => {
-        if (path.endsWith(".mp4")) { res.set("Content-Type", "video/mp4"); res.set("Accept-Ranges", "bytes"); }
-        if (path.endsWith(".jpg") || path.endsWith(".jpeg")) res.set("Content-Type", "image/jpeg");
-        if (path.endsWith(".gif")) res.set("Content-Type", "image/gif");
-      },
-    }
-  )
-);
+// 静的ファイルの配信設定（画像・動画、そしてHTML画面）
+app.use(express.static("public", {
+  maxAge: "1d",
+  acceptRanges: true,
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".mp4")) { res.set("Content-Type", "video/mp4"); res.set("Accept-Ranges", "bytes"); }
+    if (filePath.endsWith(".jpg") || filePath.endsWith(".jpeg")) res.set("Content-Type", "image/jpeg");
+    if (filePath.endsWith(".gif")) res.set("Content-Type", "image/gif");
+  }
+}));
 
-const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
+const BASE_URL = "https://line-bot-v2rk.onrender.com";
+const IMAGE_BASE = `${BASE_URL}/images/`;
 
 // ======================
 // LINE 初期化
@@ -63,7 +57,7 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// 【完全決着版】URL直接叩きでGeminiから占いを取得する
+// URL直接叩きでGeminiから占いを取得する
 // ======================
 async function generateGeminiAdvice(result) {
   try {
@@ -81,7 +75,7 @@ async function generateGeminiAdvice(result) {
 【3人の様子（CSVデータ）】
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
-・うさぎ: 「${result.usagi_line}」
+·うさぎ: 「${result.usagi_line}」
 
 【出力ルール】
 1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
@@ -90,41 +84,19 @@ async function generateGeminiAdvice(result) {
 4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
-    // 👈 現在Googleが最優先で稼働させている最新の「gemini-2.5-flash」ルートに変更！これなら古いプロジェクトのキーでも絶対に弾かれません
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
 
     const rawText = await response.text();
+    let data = JSON.parse(rawText);
     
-    if (!rawText) {
-      throw new Error("Google APIから何もデータが返ってきませんでした");
-    }
+    if (data.error) throw new Error(data.error.message);
 
-    let data;
-    try {
-      data = JSON.parse(rawText);
-    } catch (parseErr) {
-      console.log("⚠️ GoogleからJSONではないデータが返ってきました：", rawText);
-      throw new Error("APIのレスポンスがJSON形式ではありませんでした。");
-    }
-    
-    if (data.error) {
-      console.log("⚠️ Google APIがエラーを返しています：", JSON.stringify(data.error));
-      throw new Error(`Google API Error: ${data.error.message}`);
-    }
-
-    if (!data.candidates || data.candidates.length === 0) {
-      console.log("⚠️ candidatesが見つかりません。データ：", JSON.stringify(data));
-      throw new Error("APIレスポンスの構造にcandidatesが含まれていません。");
-    }
-    
     const text = data.candidates[0].content.parts[0].text;
     return text.replace(/\n/g, "").slice(0, 120).trim();
 
@@ -135,7 +107,7 @@ async function generateGeminiAdvice(result) {
 }
 
 // ======================
-// 占いデータ抽出（変卦を見据えた1〜6爻抽出）
+// 占いデータ抽出
 // ======================
 function generateFortune() {
   if (hexagrams.length === 0 || lines.length === 0) return null;
@@ -146,8 +118,6 @@ function generateFortune() {
   const selectedLine = lines.find(
     (l) => Number(l.Hexagram_id) === Number(hexagram.id) && Number(l.line) === lineNum
   );
-
-  console.log(`【易経ログ】本卦: ${hexagram.name} / 得爻: ${lineNum}爻目`);
 
   return {
     name: hexagram.name,
@@ -183,35 +153,83 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
-      // Geminiで「見守り＆鎧さん総括」テキストを生成
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
+      const icon = getWeatherIcon(result.weather);
 
+      // 🔮 占い結果をリクエストパラメータに変換して、HTMLに送るURLを作る
+      const params = new URLSearchParams({
+        name: result.name,
+        kana: result.kana,
+        weather: result.weather,
+        emotion: result.emotion,
+        line_name: result.line_name,
+        line_emotion: result.line_emotion,
+        advice: result.aiAdvice,
+        chiikawa: result.chiikawa_line,
+        hachiware: result.hachiware_line,
+        usagi: result.usagi_line,
+        video: videoUrl,
+        icon: icon
+      });
+
+      const webPageUrl = `${BASE_URL}/index.html?${params.toString()}`;
+
+      // 👈 LINEのチャットには、ボタン付きの美しいFlexメッセージカードを送る
       const messages = [
         {
-          type: "video",
-          originalContentUrl: videoUrl,
-          previewImageUrl: previewUrl
-        },
-        {
-          type: "text",
-          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 本卦：${result.name} (${result.kana})\n✨ 得爻：${result.line_name}（${result.line_emotion}）\n\n💬 鎧さんの見守り助言：\n${result.aiAdvice}`
+          type: "flex",
+          altText: `【空の易】占いが出たぞ：${result.name}`,
+          contents: {
+            type: "bubble",
+            hero: {
+              type: "image",
+              url: previewUrl,
+              size: "full",
+              aspectRatio: "20:13",
+              aspectMode: "cover"
+            },
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                { type: "text", text: `【空の易】${icon} ${result.weather}`, weight: "bold", size: "sm", color: "#888888" },
+                { type: "text", text: `${result.name} (${result.kana})`, weight: "bold", size: "xl", margin: "md" },
+                { type: "text", text: `${result.line_name}（${result.line_emotion}）`, size: "md", color: "#555555", margin: "sm" }
+              ]
+            },
+            footer: {
+              type: "box",
+              layout: "vertical",
+              spacing: "sm",
+              contents: [
+                {
+                  type: "button",
+                  style: "primary",
+                  color: "#4682B4", // 綺麗で落ち着いたスチールブルー
+                  action: {
+                    type: "uri",
+                    label: "シネマティック画面で見る 🌌",
+                    uri: webPageUrl // 👈 今は一旦、ブラウザが開くURLを設定（次のステップでLIFF化します！）
+                  }
+                }
+              ]
+            }
+          }
         }
       ];
 
-      console.log("Gemini直叩き版 送信データ:", result);  
       await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
 
   } catch (err) {
-    console.log("====== ERROR ======");
-    console.log(err.message);
+    console.log("====== ERROR ======", err.message);
     res.sendStatus(500);
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("Gemini直叩き版 起動成功！"); });
+app.listen(PORT, () => { console.log("LIFF準備版 起動成功！"); });
