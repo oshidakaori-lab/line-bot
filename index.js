@@ -63,7 +63,7 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// 【完全防御＆原因暴き版】URL直接叩きでGeminiから占いを取得する
+// 【URL＆モデル名最新化版】URL直接叩きでGeminiから占いを取得する
 // ======================
 async function generateGeminiAdvice(result) {
   try {
@@ -81,7 +81,7 @@ async function generateGeminiAdvice(result) {
 【3人の様子（CSVデータ）】
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
-・うさぎ: 「${result.usagi_line}」
+ bag: 「${result.usagi_line}」
 
 【出力ルール】
 1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
@@ -90,7 +90,8 @@ async function generateGeminiAdvice(result) {
 4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 👈 URLを「v1beta」から正式版の「v1」に変更し、モデル名に「-latest」を付与します
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -100,32 +101,27 @@ async function generateGeminiAdvice(result) {
       })
     });
 
-    // 👈 ここが最大のポイント！最初にjsonではなく「生のテキスト」として一度100%受け取ります
     const rawText = await response.text();
     
-    // 生のテキストがそもそも空っぽだったらエラーにする
     if (!rawText) {
-      throw new Error("Google APIから何もデータが返ってきませんでした（完全な空っぽです）");
+      throw new Error("Google APIから何もデータが返ってきませんでした");
     }
 
-    // テキストをJSONに変換してみる
     let data;
     try {
       data = JSON.parse(rawText);
     } catch (parseErr) {
-      // もしJSONじゃなかったら、返ってきた生テキストをログに出して終了する
-      console.log("⚠️ GoogleからJSONではない謎のデータが返ってきました！：", rawText);
+      console.log("⚠️ GoogleからJSONではないデータが返ってきました：", rawText);
       throw new Error("APIのレスポンスがJSON形式ではありませんでした。");
     }
     
-    // JSONの中身にエラー情報が含まれているか徹底チェック
     if (data.error) {
       console.log("⚠️ Google APIがエラーを返しています：", JSON.stringify(data.error));
       throw new Error(`Google API Error: ${data.error.message}`);
     }
 
     if (!data.candidates || data.candidates.length === 0) {
-      console.log("⚠️ candidatesが見つかりません。返ってきたデータ：", JSON.stringify(data));
+      console.log("⚠️ candidatesが見つかりません。データ：", JSON.stringify(data));
       throw new Error("APIレスポンスの構造にcandidatesが含まれていません。");
     }
     
@@ -133,9 +129,8 @@ async function generateGeminiAdvice(result) {
     return text.replace(/\n/g, "").slice(0, 120).trim();
 
   } catch (err) {
-    // 👈 ここで「Cannot read properties...」が起きるのを完全に阻止して、エラーメッセージを出します
     console.log("🚨 [Gemini通信エラー最終防衛線]:", err.message);
-    return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、あたたかいものでも食べてゆっくり過ごすといいぞ。`;
+    return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、おいしいものでも食べてゆっくり過ごすといいぞ。`;
   }
 }
 
