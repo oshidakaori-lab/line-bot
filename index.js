@@ -1,4 +1,4 @@
-require("dotenv").config(); // 👈 小文字の「require」で確実に有効化
+require("dotenv").config(); // 環境変数の読み込み
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -8,7 +8,7 @@ const path = require("path");
 
 const app = express();
 
-// 静的ファイルの配信設定
+// 静的ファイルの配信設定（画像・動画）
 app.use(express.static("public", {
   maxAge: "1d",
   acceptRanges: true,
@@ -23,19 +23,13 @@ const BASE_URL = "https://line-bot-v2rk.onrender.com";
 const IMAGE_BASE = `${BASE_URL}/images/`;
 
 // ======================
-// LINE 初期化
+// LINE 初期化（一番確実な方法に戻します）
 // ======================
-// 🚨 トークンをオブジェクトではなく、直接ストレートに流し込みます！
-const client = new line.Client({
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN
-});
-
-// シークレットは後ほどミドルウェアを戻す時などのためにconfigとして残しておきます
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
-
+const client = new line.Client(config);
 
 // ======================
 // CSV 読み込み
@@ -69,7 +63,7 @@ async function generateGeminiAdvice(result) {
   try {
     const prompt = `
 あなたは、ちいかわ達（ちいかわ、ハチワレ、うさぎ）を少し離れたところから優しく見守る「鎧さん」のような存在であり、同時に「空の易」の占い師です。
-以下の【今回の占いデータ】と【3人の様子】を読み解き、彼らがこの空模様の中でどれほど仲良く寄り添い合っているか（仲良しすぎて微笑ましい空気感）を描写しつつ、ユーザーへ向けた「大人としての優しいアドバイス（ひとこと）」で総括する文章を作ってください。
+以下の【今回の占いデータ】と【3人の様子】を読み解き、彼らがこの空模様の中でどれほど仲良く寄り添い合っているかを描写しつつ、ユーザーへ向けた「大人としての優しいアドバイス」で総括する文章を作ってください。
 
 【今回の占いデータ】
 ・本卦: ${result.name} (${result.kana})
@@ -142,36 +136,33 @@ function generateFortune() {
 }
 
 // ======================
-// Webhook ハンドラ（LINEミドルウェアを解除した超絶安全版）
+// Webhook ハンドラ
 // ======================
-// 🚨 line.middleware(config) を外し、JSONをそのまま読めるように express.json() を挟みます
-app.post("/callback", express.json(), async (req, res) => {
+app.post("/callback", line.middleware(config), async (req, res) => {
   try {
     const events = req.body.events;
 
-    // 疎通確認（検証ボタン）などの空イベント対策
-    if (!events || events.length === 0) {
+    // 🚨 LINEの「検証」ボタン対策：イベントが空っぽならここで即座に成功を返す
+    if (!events || events.length === 0 || (events[0] && events[0].replyToken === "00000000000000000000000000000000")) {
+      console.log("✅ LINEの検証システム（または空の通信）を正常に受け流しました");
       return res.sendStatus(200);
     }
 
     for (const event of events) {
-      // テキストメッセージ以外はスルー
       if (event.type !== "message" || event.message.type !== "text") continue;
 
       const result = generateFortune();  
-      if (!result) {  
+      if (!result) {
         await client.replyMessage(event.replyToken, { type: "text", text: "空を読み込み中です…☁️" });  
         continue;  
       }  
 
-      // Geminiからアドバイスを取得
       result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
       const icon = getWeatherIcon(result.weather);
 
-      // 【安全ガード】改行やバックスラッシュの排除
       const cleanText = (str) => {
         if (!str) return "";
         return str.replace(/[\r\n\t\f\v]/g, " ").replace(/\\/g, "/").trim();
@@ -201,10 +192,9 @@ app.post("/callback", express.json(), async (req, res) => {
         icon: icon
       });
 
-      // 安全にシリアライズされたURL
+      // 自動で安全に繋がります
       const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
 
-      // LINEに送るFlexメッセージ
       const messages = [
         {
           type: "flex",
@@ -253,13 +243,15 @@ app.post("/callback", express.json(), async (req, res) => {
     res.sendStatus(200);
 
   } catch (err) {
-    // 🚨 【今度こそ絶対に逃がさない鉄壁ログ】
     console.log("====== ERROR DISCOVERED ======");
     console.log("メッセージ:", err.message);
     if (err.response && err.response.data) {
-      console.log("👇 LINEが拒絶した真の理由:");
       console.log(JSON.stringify(err.response.data, null, 2));
     }
     res.sendStatus(500);
   }
 });
+
+// 🚨 サーバーを起動し続けるための命綱
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => { console.log("LIFF準備版 起動成功！"); });
