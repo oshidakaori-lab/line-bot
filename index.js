@@ -232,7 +232,10 @@ function buildFlex(result) {
       // 動画エリア設定
       hero: {
   type: "video",
+
   url: videoUrl,
+
+  previewUrl: previewUrl,
 
   altContent: {
     type: "image",
@@ -243,13 +246,14 @@ function buildFlex(result) {
   },
 
   aspectRatio: "16:9",
+  aspectMode: "cover",
 
   action: {
     type: "uri",
     label: "再生",
     uri: videoUrl
   }
-},
+}
       body: {
         type: "box",
         layout: "vertical",
