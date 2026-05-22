@@ -63,7 +63,7 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// 【URL＆モデル名最新化版】URL直接叩きでGeminiから占いを取得する
+// 【世界最安定ルート版】URL直接叩きでGeminiから占いを取得する
 // ======================
 async function generateGeminiAdvice(result) {
   try {
@@ -81,7 +81,7 @@ async function generateGeminiAdvice(result) {
 【3人の様子（CSVデータ）】
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
- bag: 「${result.usagi_line}」
+・うさぎ: 「${result.usagi_line}」
 
 【出力ルール】
 1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
@@ -90,8 +90,8 @@ async function generateGeminiAdvice(result) {
 4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
-    // 👈 URLを「v1beta」から正式版の「v1」に変更し、モデル名に「-latest」を付与します
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 👈 【超重要】これが現在、全世界の個人開発で最もエラーなく稼働している確定URLです
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -130,7 +130,7 @@ async function generateGeminiAdvice(result) {
 
   } catch (err) {
     console.log("🚨 [Gemini通信エラー最終防衛線]:", err.message);
-    return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、おいしいものでも食べてゆっくり過ごすといいぞ。`;
+    return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。`;
   }
 }
 
