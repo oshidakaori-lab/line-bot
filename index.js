@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const { GoogleGenerativeAI } = require("@google/generative-ai"); // ハイフンなしの公式パッケージに修正
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -19,40 +19,28 @@ app.use(
       maxAge: "1d",
       acceptRanges: true, 
       setHeaders: (res, path) => {
-        if (path.endsWith(".mp4")) {
-          res.set("Content-Type", "video/mp4");
-          res.set("Accept-Ranges", "bytes");
-        }
-        if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
-          res.set("Content-Type", "image/jpeg");
-        }
-        if (path.endsWith(".gif")) {
-          res.set("Content-Type", "image/gif");
-        }
+        if (path.endsWith(".mp4")) res.set("Content-Type", "video/mp4"); res.set("Accept-Ranges", "bytes");
+        if (path.endsWith(".jpg") || path.endsWith(".jpeg")) res.set("Content-Type", "image/jpeg");
+        if (path.endsWith(".gif")) res.set("Content-Type", "image/gif");
       },
     }
   )
 );
 
-// あなたのRenderサーバーのURL
 const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
 
 // ======================
-// LINE 初期化
+// LINE & Gemini 初期化
 // ======================
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
 const client = new line.Client(config);
-
-// ======================
-// Gemini API 初期化（完全無料枠）
-// ======================
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ======================
-// CSV 読み込み（新カラム・爻対応版）
+// CSV 読み込み
 // ======================
 const hexagrams = [];
 const lines = [];
@@ -86,10 +74,10 @@ async function generateGeminiAdvice(result) {
 以下のちいかわ達の掛け合いや、卦と爻の意味、空気感をベースにして、ちいかわの世界観に寄り添った短く優しい占いメッセージを生成してください。
 
 【今回の占いデータ】
-卦名: ${result.name} (${result.kana})
-爻名: ${result.line_name} (${result.line_emotion})
+本卦(メインの卦): ${result.name} (${result.kana})
+得た爻: ${result.line_name} (${result.line_emotion})
 天気: ${result.weather}
-今回の全体の雰囲気: ${result.emotion}
+全体の雰囲気: ${result.emotion}
 詳細な意味: ${result.meaning}
 
 【キャラクターたちの様子】
@@ -104,36 +92,37 @@ async function generateGeminiAdvice(result) {
 ・AIとしての言葉として出力し、「ちいかわ:」などのキャラ名は文頭につけないでください。
 `;
 
-    // 無料で最速の Gemini 1.5 Flash を呼び出し
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const response = await model.generateContent(prompt);
-    const text = response.text; // 最新の取得方法に修正
+    const text = response.response.text();
 
     return text.replace(/\n/g, "").slice(0, 80).trim();
 
   } catch (err) {
     console.log("Gemini Error:", err.message);
-    // エラーが起きたことが分かりやすいように、仮の文字を変更します
     return `${result.weather}の空を見上げて、みんなでチャリメラを食べよう。`;
   }
 }
 
 // ======================
-// 占いデータ抽出（ちいかわ新CSV完全準拠・卦と爻の合体）
+// 占いデータ抽出（変卦対応を見据えた1〜6爻の完全抽出）
 // ======================
 function generateFortune() {
   if (hexagrams.length === 0 || lines.length === 0) return null;
 
-  // 1. ランダムに1つの卦を引く
+  // 1. 本卦（現在の状態）をランダムに決定
   const hexagram = hexagrams[Math.floor(Math.random() * hexagrams.length)];
   
-  // 2. ランダムに爻（0〜6）を選ぶ（0は卦全体の意味、1〜6は各爻）
-  const lineNum = Math.floor(Math.random() * 7); 
+  // 2. 爻（1〜6）をランダムに選ぶ（易経の初爻〜上爻に準拠）
+  const lineNum = Math.floor(Math.random() * 6) + 1; 
 
-  // 3. lines.csv から該当する爻のデータを引っ張ってくる
+  // 3. lines.csv から「同じHexagram_id」かつ「同じline番号」のものを探す
   const selectedLine = lines.find(
     (l) => Number(l.Hexagram_id) === Number(hexagram.id) && Number(l.line) === lineNum
   );
+
+  // デバッグ用ログ：ここが将来「変卦」を計算するときのベースになります
+  console.log(`【易経ログ】本卦ID: ${hexagram.id} (${hexagram.name}) / 得爻: ${lineNum}爻目`);
 
   return {
     name: hexagram.name,
@@ -141,12 +130,15 @@ function generateFortune() {
     weather: hexagram.weather,
     emotion: hexagram.emotion,
     meaning: hexagram.meaning,
-    // 爻のデータがあれば上書き、なければ卦のデータを使う
-    line_name: selectedLine ? selectedLine.line_name : "卦",
-    line_emotion: selectedLine ? selectedLine.line_emotion : hexagram.emotion,
-    chiikawa_line: selectedLine ? selectedLine.chiikawa_line : hexagram.chiikawa_line,
-    hachiware_line: selectedLine ? selectedLine.hachiware_line : hexagram.hachiware_line,
-    usagi_line: selectedLine ? selectedLine.usagi_line : hexagram.usagi_line,
+    
+    // 爻のデータを安全にセット（万が一CSVに未登録ならデフォルト値）
+    line_num: lineNum,
+    line_name: selectedLine ? selectedLine.line_name : `${lineNum}爻`,
+    line_emotion: selectedLine ? selectedLine.line_emotion : "移り変わる気配",
+    chiikawa_line: selectedLine ? selectedLine.chiikawa_line : "わッ…！",
+    hachiware_line: selectedLine ? selectedLine.hachiware_line : "なんとかなりそう？",
+    usagi_line: selectedLine ? selectedLine.usagi_line : "ヤハ！",
+    
     video: hexagram.image?.replace(".jpg", ".mp4") || "sunny.mp4", 
     preview: hexagram.image || "sunny.jpg"
   };
@@ -173,7 +165,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
 
-      // LINEに送るメッセージを構築（新CSVの3人全員のセリフを並べるリッチ版！）
+      // LINEに送るメッセージを構築（本卦と爻を綺麗に並べる）
       const messages = [
         {
           type: "video",
@@ -182,11 +174,11 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         },
         {
           type: "text",
-          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 卦：${result.name} (${result.kana})\n✨ 状態：${result.line_name} — ${result.line_emotion}\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ちいかわ「${result.chiikawa_line}」\n🐾 ハチワレ「${result.hachiware_line}」\n🐾 うさぎ「${result.usagi_line}」`
+          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 本卦：${result.name} (${result.kana})\n✨ 得爻：${result.line_name}（${result.line_emotion}）\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ちいかわ「${result.chiikawa_line}」\n🐾 ハチワレ「${result.hachiware_line}」\n🐾 うさぎ「${result.usagi_line}」`
         }
       ];
 
-      console.log("Gemini完全版 送信データ:", result);  
+      console.log("Gemini爻表示版 送信データ:", result);  
       await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
@@ -199,4 +191,4 @@ app.post("/callback", line.middleware(config), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("Gemini完全版 起動成功！"); });
+app.listen(PORT, () => { console.log("Gemini爻表示版 起動成功！"); });
