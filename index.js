@@ -1,4 +1,4 @@
-require("dotenv").config();
+jrequire("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
@@ -218,83 +218,82 @@ line_emotion: selectedLine?.line_emotion || "",
 }
 
 // ======================
-// Flex Message ビルダー（完全動画対応版）
+// Flex Message ビルダー（Firebase動画・完全対応版）
 // ======================
 function buildFlex(result) {
-const videoUrl = result.video;
-const previewUrl = result.preview;
+  const videoUrl = result.video;
+  const previewUrl = result.preview;
+  
+  return {
+    type: "flex",
+    altText: "空の易",
+    contents: {
+      type: "bubble",
+      // ==========================================
+      // 【完全修正】動画エリア（LINE公式仕様）
+      // ==========================================
+      hero: {
+        type: "video",
+        url: videoUrl,             // Firebaseの動画URL
+        altContent: {
+          type: "image",
+          url: previewUrl,         // Firebaseの画像URL
+          size: "full",
+          aspectRatio: "16:9",
+          aspectMode: "cover"
+        },
+        width: 16,                 // 必須：横の比率（数字）
+        height: 9,                 // 必須：縦の比率（数字）
+        action: {
+          type: "uri",
+          label: "動画を再生",
+          uri: videoUrl
+        }
+      },
+      body: {
+        type: "box",
+        layout: "vertical",
+        contents: [
+          { type: "text", text: result.aiAdvice, wrap: true, size: "lg", weight: "bold", color: "#333333" },
+          { type: "text", text: result.name, size: "xxl", weight: "bold", margin: "lg" },
+          { type: "text", text: result.kana, size: "sm", color: "#888888" },
+          { type: "text", text: result.line_name, size: "lg", weight: "bold", margin: "lg" },
+          { type: "text", text: result.line_emotion, wrap: true, size: "sm", color: "#888888" },
+          { type: "text", text: `${getWeatherIcon(result.weather)} ${result.weather}`, size: "md", margin: "lg" },
+          { type: "text", text: result.emotion, wrap: true, size: "sm", color: "#666666", margin: "md" },
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "md",
+            paddingAll: "12px",
+            backgroundColor: "#FFFFFF",
+            borderWidth: "1px",
+            borderColor: "#DDDDDD",
+            cornerRadius: "12px",
+            contents: [
+              { type: "text", text: `🐾 「${result.character}」が何か言ってる？！`, size: "sm", color: "#999999", weight: "bold" },
+              { type: "text", text: `「${result.characterLine}」`, wrap: true, size: "sm", color: "#555555", style: "italic", margin: "sm" },
+              { type: "text", text: "※ 空の易オリジナル再現セリフ", size: "xs", color: "#AAAAAA", margin: "sm" },
+              {
+                type: "button",
+                style: "secondary",
+                color: "#EEF6FF",
+                height: "sm",
+                margin: "md",
+                action: {
+                  type: "uri",
+                  label: "詳細を見る",
+                  uri: result.source.url
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+}
 
-return {
-type: "flex",
-altText: "空の易",
-contents: {
-type: "bubble",
-// 動画エリア設定
-hero: {
-type: "video",
-url: videoUrl,
-
-previewUrl: previewUrl,
-
-altContent: {
-type: "image",
-url: previewUrl,
-size: "full",
-aspectRatio: "16:9",
-aspectMode: "cover"
-},
-
-aspectRatio: "16:9",
-
-action: {
-type: "uri",
-label: "再生",
-uri: videoUrl
-}
-},
-body: {
-type: "box",
-layout: "vertical",
-contents: [
-{ type: "text", text: result.aiAdvice, wrap: true, size: "lg", weight: "bold", color: "#333333" },
-{ type: "text", text: result.name, size: "xxl", weight: "bold", margin: "lg" },
-{ type: "text", text: result.kana, size: "sm", color: "#888888" },
-{ type: "text", text: result.line_name, size: "lg", weight: "bold", margin: "lg" },
-{ type: "text", text: result.line_emotion, wrap: true, size: "sm", color: "#888888" },
-{ type: "text", text: ${getWeatherIcon(result.weather)} ${result.weather}, size: "md", margin: "lg" },
-{ type: "text", text: result.emotion, wrap: true, size: "sm", color: "#666666", margin: "md" },
-{
-type: "box",
-layout: "vertical",
-margin: "md",
-paddingAll: "12px",
-backgroundColor: "#FFFFFF",
-borderWidth: "1px",
-borderColor: "#DDDDDD",
-cornerRadius: "12px",
-contents: [
-{ type: "text", text: 🐾 「${result.character}」が何か言ってる？！, size: "sm", color: "#999999", weight: "bold" },
-{ type: "text", text: 「${result.characterLine}」, wrap: true, size: "sm", color: "#555555", style: "italic", margin: "sm" },
-{ type: "text", text: "※ 空の易オリジナル再現セリフ", size: "xs", color: "#AAAAAA", margin: "sm" },
-{
-type: "button",
-style: "secondary",
-color: "#EEF6FF",
-height: "sm",
-margin: "md",
-action: {
-type: "uri",
-label: "詳細を見る",
-uri: result.source.url
-}
-}
-]
-}
-]
-}
-}
-};
-}
 
 // ======================
 // Webhook ハンドラ
