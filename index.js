@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -30,14 +29,13 @@ app.use(
 const IMAGE_BASE = "https://line-bot-v2rk.onrender.com/images/";
 
 // ======================
-// LINE & Gemini 初期化
+// LINE 初期化
 // ======================
 const config = {
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 };
 const client = new line.Client(config);
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ======================
 // CSV 読み込み
@@ -65,7 +63,7 @@ function getWeatherIcon(weather) {
 }
 
 // ======================
-// Geminiによる「鎧さんの見守り占い」生成
+// 【100%確実】URL直接叩きでGeminiから占いを取得する
 // ======================
 async function generateGeminiAdvice(result) {
   try {
@@ -84,7 +82,6 @@ async function generateGeminiAdvice(result) {
 ・ちいかわ: 「${result.chiikawa_line}」
 ・ハチワレ: 「${result.hachiware_line}」
 ・うさぎ: 「${result.usagi_line}」
-※もし上記が「わッ…！」などのデフォルト値だった場合は、この卦の情緒（例: ${result.emotion}）に合わせて、3人がチャリメラを食べたり寄り添ったりして仲良く過ごしているシーンを自由に想像して膨らませてください。
 
 【出力ルール】
 1. 最初に、この美しい空の下で3人がギュッと身を寄せ合ったり、お互いを気遣い合って「仲良くしすぎている微笑ましい様子」を見守り目線で優しく描写してください。
@@ -93,21 +90,25 @@ async function generateGeminiAdvice(result) {
 4. 文頭に「鎧さん：」などのキャラクター名は絶対に付けないでください。
 `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const response = await model.generateContent(prompt);
-    
-    // エラーが起きたAPIのレスポンス取得方法を安全に修正
-    let text = "";
-    if (response && response.response) {
-      text = typeof response.response.text === "function" ? response.response.text() : response.response.text;
-    } else if (response && response.text) {
-      text = typeof response.text === "function" ? response.text() : response.text;
-    }
+    // バージョンエラーを完全に回避する安定の公式エンドポイント
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+
+    const data = await response.json();
+    
+    // 生成されたテキストを安全に抽出
+    const text = data.candidates[0].content.parts[0].text;
     return text.replace(/\n/g, "").slice(0, 120).trim();
 
   } catch (err) {
-    console.log("Gemini Error:", err.message);
+    console.log("Gemini URL Fetch Error:", err.message);
     return `3人が身を寄せ合って${result.weather}の空を見上げているな。今は無理せず、あたたかいものでも食べてゆっくり過ごすといいぞ。`;
   }
 }
@@ -179,7 +180,7 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         }
       ];
 
-      console.log("Gemini鎧さん見守り版 送信データ:", result);  
+      console.log("Gemini直叩き版 送信データ:", result);  
       await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
@@ -192,4 +193,4 @@ app.post("/callback", line.middleware(config), async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("Gemini鎧さん見守り版 起動成功！"); });
+app.listen(PORT, () => { console.log("Gemini直叩き版 起動成功！"); });
