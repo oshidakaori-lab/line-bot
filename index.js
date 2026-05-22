@@ -253,7 +253,9 @@ function buildFlex(result) {
     label: "再生",
     uri: videoUrl
   }
-}
+}, // ← これ超重要！！！！
+
+body: {
       body: {
         type: "box",
         layout: "vertical",
