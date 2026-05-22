@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const line = require("@line/bot-sdk");
-const OpenAI = require("openai");
+const { GoogleGenerativeAI } = require("@google-generative-ai/generative-ai"); // 確実に動くGeminiパッケージ
 const fs = require("fs");
 const csv = require("csv-parser");
 
@@ -21,7 +21,7 @@ app.use(
       setHeaders: (res, path) => {
         if (path.endsWith(".mp4")) {
           res.set("Content-Type", "video/mp4");
-          res.set("Accept-Ranges", "bytes"); // スマホ再生の命綱
+          res.set("Accept-Ranges", "bytes");
         }
         if (path.endsWith(".jpg") || path.endsWith(".jpeg")) {
           res.set("Content-Type", "image/jpeg");
@@ -47,39 +47,19 @@ const config = {
 const client = new line.Client(config);
 
 // ======================
-// OpenAI 初期化
+// Gemini API 初期化（完全無料枠）
 // ======================
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ======================
-// CSV 読み込み
+// CSV 読み込み（新カラム対応版）
 // ======================
 const hexagrams = [];
-const lines = [];
 
 fs.createReadStream("hexagrams.csv")
   .pipe(csv())
   .on("data", (data) => { hexagrams.push(data); })
-  .on("end", () => { console.log("卦CSV読込完了:", hexagrams.length); });
-
-fs.createReadStream("lines.csv")
-  .pipe(csv())
-  .on("data", (data) => { lines.push(data); })
-  .on("end", () => { console.log("爻CSV読込完了:", lines.length); });
-
-// ======================
-// キャラクター設定
-// ======================
-const characters = ["ちいかわ", "ハチワレ", "うさぎ", "モモンガ"];
-
-function generateCharacterLine(character) {
-  if (character === "うさぎ") return ["……ヤハ。", "ヤハ。", "フゥン。", "……！！"][Math.floor(Math.random() * 4)];
-  if (character === "ハチワレ") return ["なんとかなりそう。", "大丈夫だといいね。", "不思議な空だね。", "ちょっと安心した。"][Math.floor(Math.random() * 4)];
-  if (character === "モモンガ") return ["最高じゃ〜ん。", "今日はイイ感じ。", "運命って感じする。", "空、キレイじゃん。"][Math.floor(Math.random() * 4)];
-  return ["……。", "ちょっとこわい…。", "でも、進みたい…。", "空、見てる…。"][Math.floor(Math.random() * 4)];
-}
+  .on("end", () => { console.log("ちいかわ特化・卦CSV読込完了:", hexagrams.length); });
 
 function getWeatherIcon(weather) {
   if (weather?.includes("晴")) return "☀️";
@@ -90,68 +70,65 @@ function getWeatherIcon(weather) {
   return "✨";
 }
 
-function getWeatherMedia(weather) {
-  if (weather?.includes("晴")) return { video: "sunny.mp4", preview: "sunny.jpg" };
-  if (weather?.includes("雨")) return { video: "rain.mp4", preview: "rain.jpg" };
-  if (weather?.includes("雷")) return { video: "thunder.mp4", preview: "thunder.jpg" };
-  if (weather?.includes("風")) return { video: "wind.mp4", preview: "wind.jpg" };
-  if (weather?.includes("曇")) return { video: "cloudy.mp4", preview: "cloudy.jpg" };
-  return { video: "sunny.mp4", preview: "sunny.jpg" };
-}
-
 // ======================
-// OpenAI メッセージ生成
+// Geminiによる占いメッセージ生成
 // ======================
-async function generateAIAdvice(result) {
+async function generateGeminiAdvice(result) {
   try {
     const prompt = `
 あなたは「空の易」という、空模様と易経を融合した占いAIです。
-以下の情報を元に、ちいかわの世界観を基調にした短く優しい占いメッセージを、日本語のみ・1文・改行禁止の「80文字以内」で生成してください。
-「空」「風」「雲」「光」「雨」など自然表現を必ず1つ含めてください。
+以下のちいかわ達の掛け合いや、卦の意味、空気感をベースにして、ちいかわの世界観に寄り添った短く優しい占いメッセージを生成してください。
 
-卦: ${result.name}
-意味: ${result.meaning}
-爻: ${result.line_name}
+【今回の占いデータ】
+卦名: ${result.name} (${result.kana})
 天気: ${result.weather}
+今回の全体の雰囲気: ${result.emotion}
+詳細な意味: ${result.meaning}
+
+【キャラクターたちの様子】
+ちいかわ: 「${result.chiikawa_line}」
+ハチワレ: 「${result.hachiware_line}」
+うさぎ: 「${result.usagi_line}」
+
+【出力ルール】
+・ちいかわの世界観をベースにした、優しくて少し不穏さもある、励ましの言葉にしてください。
+・日本語のみ、1文、改行禁止で「80文字以内」で出力してください。
+・「空」「風」「雲」「光」「雨」「雷」などの自然表現を必ずどれか1つ文章に含めてください。
 `;
 
-    const completion = await openai.chat.completions.create({  
-      model: "gpt-4o-mini",  
-      messages: [{ role: "user", content: prompt }],
-    });  
+    // 無料で最速の Gemini 1.5 Flash を呼び出し
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent(prompt);
+    const text = response.response.text();
 
-    return completion.choices[0].message.content.replace(/\n/g, "").slice(0, 80).trim();
+    return text.replace(/\n/g, "").slice(0, 80).trim();
 
   } catch (err) {
+    console.log("Gemini Error:", err.message);
     return `${result.weather}の空が静かに揺れています。`;
   }
 }
 
 // ======================
-// 占いデータ生成
+// 占いデータ抽出（ちいかわ新CSV完全準拠）
 // ======================
 function generateFortune() {
-  if (hexagrams.length === 0 || lines.length === 0) return null;
+  if (hexagrams.length === 0) return null;
 
+  // ランダムに1つの卦を引く
   const hexagram = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-  const line = Math.floor(Math.random() * 6) + 1;
-  const selectedLine = lines.find(l => Number(l.hexagram_id) === Number(hexagram.id) && Number(l.line) === Number(line));
-  const media = getWeatherMedia(hexagram.weather);
-  const character = characters[Math.floor(Math.random() * characters.length)];
 
   return {
+    name: hexagram.name,
+    kana: hexagram.kana,
     weather: hexagram.weather,
     emotion: hexagram.emotion,
     meaning: hexagram.meaning,
-    video: media.video,
-    preview: media.preview,
-    name: hexagram.name,
-    kana: hexagram.kana,
-    character,
-    characterLine: generateCharacterLine(character),
-    line,
-    line_name: selectedLine?.line_name || "爻",
-    line_emotion: selectedLine?.line_emotion || "",
+    chiikawa_line: hexagram.chiikawa_line,
+    hachiware_line: hexagram.hachiware_line,
+    usagi_line: hexagram.usagi_line,
+    video: hexagram.image?.replace(".jpg", ".mp4") || "sunny.mp4", 
+    preview: hexagram.image || "sunny.jpg"
   };
 }
 
@@ -170,41 +147,36 @@ app.post("/callback", line.middleware(config), async (req, res) => {
         continue;  
       }  
 
-      // OpenAIで占いテキストを生成  
-      result.aiAdvice = await generateAIAdvice(result);  
+      // Geminiで占いテキストを生成（無料！）
+      result.aiAdvice = await generateGeminiAdvice(result);  
 
       const videoUrl = `${IMAGE_BASE}${result.video}`;
       const previewUrl = `${IMAGE_BASE}${result.preview}`;
 
-      // ==========================================
-      // 【超確実】LINE公式の「動画」と「テキスト」を2連続で送る形式
-      // ==========================================
+      // LINEに送るメッセージを構築
       const messages = [
-        // 1通目: 動画メッセージ（LINEの公式機能なので100%エラーにならない）
         {
           type: "video",
           originalContentUrl: videoUrl,
           previewImageUrl: previewUrl
         },
-        // 2通目: 占いの結果テキスト
         {
           type: "text",
-          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}\n\n🔮 卦：${result.name} (${result.kana})\n✨ 爻：${result.line_name}\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ${result.character}「${result.characterLine}」`
+          text: `【空の易】\n${getWeatherIcon(result.weather)} ${result.weather}（${result.emotion}）\n\n🔮 卦：${result.name} (${result.kana})\n\n💌 AIの助言：\n${result.aiAdvice}\n\n🐾 ちいかわ「${result.chiikawa_line}」\n🐾 ハチワレ「${result.hachiware_line}」\n🐾 うさぎ「${result.usagi_line}」`
         }
       ];
 
-      console.log("送信するURLチェック:", { videoUrl, previewUrl });  
-
+      console.log("Gemini版 送信データ:", result);  
       await client.replyMessage(event.replyToken, messages);  
     }  
     res.sendStatus(200);
 
   } catch (err) {
     console.log("====== ERROR ======");
-    console.log(err.response ? err.response.data : err.message);
+    console.log(err.message);
     res.sendStatus(500);
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => { console.log("起動成功、ポート:", PORT); });
+app.listen(PORT, () => { console.log("Gemini×ちいかわ版 起動成功、ポート:", PORT); });
