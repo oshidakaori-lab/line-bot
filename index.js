@@ -79,9 +79,12 @@ const client = new line.Client(config);
 // ======================
 // OpenAI 初期化（回数制限なし！）
 // ======================
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+console.log("OPENAI KEY EXISTS:", !!process.env.OPENAI_API_KEY);
 
 // ======================
 // CSV 読み込み
