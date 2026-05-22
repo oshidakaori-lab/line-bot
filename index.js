@@ -176,22 +176,23 @@ app.post("/callback", line.middleware(config), async (req, res) => {
       const safeKana = cleanText(result.kana || "えきのけはい");
 
       const params = new URLSearchParams({
-        name: result.name || "易の気配",
-        kana: safeKana,
-        weather: safeWeather,
-        emotion: result.emotion || "静寂",
-        line_name: safeLineName,
-        line_emotion: safeLineEmotion,
-        advice: safeAdvice,
-        chiikawa: safeChiikawa,
-        hachiware: safeHachiware,
-        usagi: safeUsagi,
-        video: videoUrl,
-        icon: icon
-      });
+  name: result.name || "易の気配",
+  kana: safeKana,
+  weather: safeWeather,
+  emotion: result.emotion || "静寂",
+  line_name: safeLineName,
+  line_emotion: safeLineEmotion,
+  advice: safeAdvice,
+  chiikawa: safeChiikawa,
+  hachiware: safeHachiware,
+  usagi: safeUsagi,
+  video: videoUrl,
+  icon: icon
+});
 
-      // LIFFのURLを組み立て（末尾の /index.html は削った状態）
-      const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${params.toString()}`;
+// 🚨 【超最終防衛線】URLとして絶対にバグらないように全体を綺麗にエンコードする！
+const webPageUrl = `https://liff.line.me/2010170006-KZK8g4zg?${encodeURI(params.toString())}`;
+
 
       // LINEのチャットに送るFlexメッセージ（すべての文字をsafeな変数に差し替え！）
       const messages = [
