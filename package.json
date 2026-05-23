@@ -1,9 +1,7 @@
 {
   "name": "line-bot",
   "version": "1.0.0",
-  "description": "占いボット",
   "main": "index.js",
-  "type": "module", 
   "scripts": {
     "start": "node index.js"
   },
@@ -14,3 +12,4 @@
     "express": "^4.19.2"
   }
 }
+
