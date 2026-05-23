@@ -59,7 +59,7 @@ function getWeatherIcon(weather) {
 // ======================
 // Geminiから占いを取得
 // ======================
-async function generateGeminiAdvice(result) {
+//async function generateGeminiAdvice(result) {
   try {
     const prompt = `
 あなたは、ちいかわ達（ちいかわ、ハチワレ、うさぎ）を少し離れたところから優しく見守る「鎧さん」のような存在であり、同時に「空の易」の占い師です。
