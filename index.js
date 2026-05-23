@@ -242,14 +242,12 @@ app.post("/callback", express.json(), async (req, res) => {
     }  
     res.sendStatus(200);
 
-  } catch (err) {
-    console.log("====== ERROR DISCOVERED ======");
-    console.log("メッセージ:", err.message);
-    if (err.response && err.response.data) {
-      console.log(JSON.stringify(err.response.data, null, 2));
-    }
-    res.sendStatus(500);
+    } catch (err) {
+    console.log("🚨 [Gemini制限中！]:", err.message);
+    // 👇 失敗しても「成功（200）」を返して、プログラムを強制終了させない！
+    res.sendStatus(200); 
   }
+
 });
 
 // ポート10000番で完全固定
