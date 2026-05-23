@@ -136,11 +136,12 @@ function generateFortune() {
 }
 
 // ======================
-// Webhook ハンドラ
+// Webhook ハンドラ（公式ガードマン解除版）
 // ======================
-// 🚨 エラーの原因になるline.middlewareを外し、express.json()でLIFF通信もすべて優しく受け入れます！
+// 🚨 line.middleware を外し、代わりに express.json() を挟んで通信をすべて中に通します！
 app.post("/callback", express.json(), async (req, res) => {
   try {
+
     const events = req.body.events;
 
     // 検証対策
