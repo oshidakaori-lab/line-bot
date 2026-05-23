@@ -81,7 +81,8 @@ async function generateGeminiAdvice(result) {
 3. 日本語のみ、全体で「120文字以内」、改行はせず1つの文章として出力してください。文字装飾やキャラクター名は絶対に付けないでください。
 `;
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
+    // 👇 Geminiのモデルを最新に指定し、確実に呼び出します
+const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
     const response = await fetch(url, {
       method: "POST",
@@ -160,8 +161,10 @@ app.post("/callback", express.json(), async (req, res) => {
 
       result.aiAdvice = await generateGeminiAdvice(result);  
 
-      const videoUrl = `${IMAGE_BASE}${result.video}`;
-      const previewUrl = `${IMAGE_BASE}${result.preview}`;
+      // 🚨 テスト：画像を使わず、URLを直接指定する
+const videoUrl = "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg";
+const previewUrl = "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg";
+
       const icon = getWeatherIcon(result.weather);
 
       const cleanText = (str) => {
