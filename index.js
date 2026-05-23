@@ -252,7 +252,6 @@ const previewUrl = `${IMAGE_BASE}sunny.jpg`; // 👈 CSVを無視して、絶対
     res.sendStatus(500);
   }
 });
-
-// 🚨 サーバーを起動し続けるための命綱
-const PORT = process.env.PORT || 3000;
+// 🚨 ポート番号を「3000」から「10000」に直接書き換えて完全に固定します！
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => { console.log("LIFF準備版 起動成功！"); });
