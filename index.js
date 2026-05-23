@@ -1,8 +1,9 @@
-import dotenv from "dotenv";
-import express from "express";
-import line from "@line/bot-sdk";
-import fs from "fs";
-import csv from "csv-parser";
+// ❌ import express from "express"; などの import を消して、以下に書き換える
+import dotenv from "dotenv"; // これは例外的に import のままか、require("dotenv").config() に直す
+const express = require("express");
+const line = require("@line/bot-sdk");
+const fs = require("fs");
+const csv = require("csv-parser");
 
 dotenv.config();
 
