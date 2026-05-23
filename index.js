@@ -243,16 +243,21 @@ const previewUrl = "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070
 
       await client.replyMessage(event.replyToken, messages);  
     }  
+// ... （コードの途中はそのまま）
+
+// Webhook ハンドラの締めくくり部分をしっかり閉じる
     res.sendStatus(200);
 
-    } catch (err) {
-    console.log("🚨 [Gemini制限中！]:", err.message);
-    // 👇 失敗しても「成功（200）」を返して、プログラムを強制終了させない！
-    res.sendStatus(200); 
+  } catch (err) {
+    console.log("====== ERROR DISCOVERED ======");
+    console.log("メッセージ:", err.message);
+    res.sendStatus(200); // 🚨 ここで確実にLINEへ「OKだよ」と返す！
   }
-
 });
 
-// ポート10000番で完全固定
+// 🔥 ここがポイント！一番下は「ただ動かすだけ」にする！
+// ポート10000番で固定（async を使わない安全な書き方）
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => { console.log("LIFF準備版 起動成功！"); });
+app.listen(PORT, () => { 
+  console.log("LIFF準備版 起動成功！"); 
+});
