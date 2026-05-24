@@ -13,13 +13,13 @@ const client = new line.Client({
 const hexagrams = [];
 const lines = [];
 
-// 💡 CSV読み込み時に「見えないゴミ文字(BOM)」を完全に削除する設定を追加
+// CSVをそのままシンプルに読み込む
 fs.createReadStream("hexagrams.csv")
-  .pipe(csv({ mapHeaders: ({ header }) => header.replace(/^\uFEFF/, '').trim() }))
+  .pipe(csv())
   .on("data", (data) => hexagrams.push(data));
 
 fs.createReadStream("lines.csv")
-  .pipe(csv({ mapHeaders: ({ header }) => header.replace(/^\uFEFF/, '').trim() }))
+  .pipe(csv())
   .on("data", (data) => lines.push(data));
 
 // データ取得用API
@@ -30,11 +30,26 @@ app.get("/api/fortune", (req, res) => {
     return res.status(500).json({ error: "サーバーがCSVデータをまだ読み込み中です。少し待ってね！" });
   }
 
-  const h = hexagrams.find(item => String(item.id) === String(hid));
+  // 💡 補正の極意：ヘッダー名に依存せず、CSVの「絶対に1列目にある値」をIDとして確実に探す
+  const h = hexagrams.find(item => {
+    const keys = Object.keys(item);
+    if (keys.length === 0) return false;
+    const actualId = String(item[keys[0]] || '').trim(); // 1列目の値を取り出して前後の空白を消す
+    return actualId === String(hid).trim();
+  });
+
   if (!h) return res.status(404).json({ error: `占い番号「${hid}」のデータがCSVに見つかりませんでした。` });
   
-  const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-  let l = matchedLines.find(line => String(line.line_name) === String(l_name));
+  // 💡 lines.csvでも同様に1列目（hexagram_id）を安全に取得して紐付け
+  const matchedLines = lines.filter(lineItem => {
+    const keys = Object.keys(lineItem);
+    if (keys.length === 0) return false;
+    const hexIdInLine = String(lineItem[keys[0]] || '').trim();
+    const targetId = String(h[Object.keys(h)[0]] || '').trim();
+    return hexIdInLine === targetId;
+  });
+
+  let l = matchedLines.find(lineItem => String(lineItem.line_name).trim() === String(l_name).trim());
   if (!l) l = matchedLines[0] || { line_name: "全体", line_emotion: "ふんわり" };
 
   res.json({
@@ -69,15 +84,24 @@ app.post("/callback", express.json(), async (req, res) => {
       }
 
       const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+      
+      // 💡 LINE側でも1列目のIDを絶対にブレないように取得
+      const hKeys = Object.keys(h);
+      const hId = hKeys.length > 0 ? String(h[hKeys[0]]).trim() : "";
+
+      const matchedLines = lines.filter(lineItem => {
+        const keys = Object.keys(lineItem);
+        if (keys.length === 0) return false;
+        return String(lineItem[keys[0]]).trim() === hId;
+      });
       const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
 
-      const myUrl = `https://${req.get('host')}`;
-      const finalUrl = `${myUrl}?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
+      const myUrl = `https://${req.get('host')}/index.html`;
+      const finalUrl = `${myUrl}?hid=${hId}&l_name=${encodeURIComponent(l.line_name)}`;
 
       await client.replyMessage(event.replyToken, {
         type: "text",
-        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
+        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name || "占い結果"}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
         quickReply: {
           items: [
             {
