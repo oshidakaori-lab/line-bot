@@ -25,16 +25,26 @@ fs.createReadStream("lines.csv").pipe(csv()).on("data", (data) => lines.push(dat
 // 4. 関数定義
 function generateFortune() {
   if (hexagrams.length === 0) return null;
+  
+  // 卦（け）を1つ選ぶ
   const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
+  // その卦に対応する「爻（こう）」を1つ選ぶ（lines.csvから）
+  const l = lines.filter(line => line.hexagram_id === h.id)[Math.floor(Math.random() * 6)];
+
+  // これをHTMLに渡す準備完了！
   return { 
-    name: h.name, kana: h.kana, weather: h.weather || "晴れ", 
-    emotion: h.emotion || "ワクワク", icon: "☀️",
-    line_name: "初九", line_emotion: "新しい始まり",
-    advice: "焦らず、まずは深呼吸してみるのがおすすめだぞ。",
-    chiikawa: "ワァ…！", hachiware: "なんとかなれッ！", usagi: "ヤハ！",
-    video: "https://example.com/sunny.mp4" 
+    name: h.name, 
+    weather: h.weather, 
+    emotion: h.emotion,          // CSVのemotion（例：湧き立つよろこび）
+    line_emotion: l.line_emotion, // 爻の感情（例：空へ伸びていく感覚）
+    meaning: h.meaning,          // CSVのmeaning（例：「湧く」無限湧き発生ッ！）
+    advice: "今は無理せず美味しいもの食べよう！", // ここは後で好きなように変えてね
+    chiikawa: h.chiikawa_line,
+    hachiware: h.hachiware_line,
+    usagi: h.usagi_line
   };
 }
+
 
 async function getFortune(userMessage) {
     try {
@@ -75,16 +85,25 @@ app.post("/callback", express.json(), async (req, res) => {
       }).toString();
       const liffUrl = `https://liff.line.me/2010171447-1dyDX3Dk?${queryParams}`;
 
-      await client.replyMessage(event.replyToken, {
-        type: "flex",
-        altText: "占いカード",
-        contents: {
-          type: "bubble",
-          hero: { type: "image", url: "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg", size: "full", aspectMode: "cover" },
-          body: { type: "box", layout: "vertical", contents: [{ type: "text", text: result.name, weight: "bold", size: "xl" }] },
-          footer: { type: "box", layout: "vertical", contents: [{ type: "button", style: "primary", color: "#4682B4", action: { type: "uri", label: "ちいかわ、ハチワレ、うさぎ、、、鎧さんもいる？！空を見上げて何か言っているよ", uri: liffUrl } }] }
-        }
-      });
+      
+      // さっき作った generateFortune() を呼び出す
+const result = generateFortune();
+
+// URLを作る（ここが魔法の言葉！）
+const url = `https://https://line-bot-v2rk.onrender.com/index.html?name=${encodeURIComponent(result.name)}&emotion=${encodeURIComponent(result.emotion)}&line_emotion=${encodeURIComponent(result.line_emotion)}&meaning=${encodeURIComponent(result.meaning)}&advice=${encodeURIComponent(result.advice)}&chiikawa=${encodeURIComponent(result.chiikawa)}&hachiware=${encodeURIComponent(result.hachiware)}&usagi=${encodeURIComponent(result.usagi)}`;
+
+// LINEでボタンとして送る
+await client.replyMessage(event.replyToken, {
+  type: "text",
+  text: "今日の占いだよ！",
+  quickReply: {
+    items: [{
+      type: "action",
+      action: { type: "uri", label: "カードを開く", uri: url }
+    }]
+  }
+});
+      
     }
     res.sendStatus(200);
   } catch (err) {
