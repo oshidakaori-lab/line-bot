@@ -1,200 +1,85 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空の易 - 占い結果</title>
+<style>
+    /* 新しい：キモチを目立たせるバッジ風 */
+    .emotion-badge {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 8px 16px;
+        display: inline-block;
+        margin-bottom: 12px;
+        font-weight: bold;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+    .emotion-main {
+        font-size: 1.1rem;
+        color: #fff;
+    }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    .emotion-sub {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        display: block;
+        margin-top: 2px;
+    }
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            /* 読み込んだ可愛いフォントを最優先で適用 */
-            font-family: 'M PLUS Rounded 1c', sans-serif !important;
-            letter-spacing: 0.05em;
-            background-color: #000;
-            color: #fff;
-        }
+    /* 新しい：シチュエーション（meaning）エリア */
+    .meaning-box {
+        background: rgba(255, 235, 150, 0.15); /* ほんのり黄色でハイライト */
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 12px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border: 1px dashed rgba(255, 255, 255, 0.4);
+    }
+</style>
 
-        /* 背景動画の固定設置 */
-        #video-background {
-            position: fixed;
-            right: 0;
-            bottom: 0;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -100;
-            object-fit: cover;
-        }
-
-        /* 画面全体のオーバーレイ（文字の視認性を上げる） */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            z-index: -99;
-        }
-
-        /* コンテナ（上下中央配置） */
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        /* 美しい半透明カード（グラスモフィズム） */
-        .fortune-card {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            padding: 28px 22px;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
-            text-align: center;
-        }
-
-        .weather-info {
-            font-size: 1.1rem;
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            margin-bottom: 6px;
-            opacity: 0.9;
-        }
-
-        .hexagram-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 4px;
-            letter-spacing: 0.03em;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .hexagram-sub {
-            font-size: 0.9rem;
-            opacity: 0.75;
-            margin-bottom: 16px;
-        }
-
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.2);
-            margin: 12px 0;
-            width: 100%;
-        }
-
-        /* 鎧さんの見守り助言エリア */
-        .advice-box {
-            text-align: left;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 16px 0;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 14px;
-            border-radius: 14px;
-            border-left: 4px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .advice-label {
-            font-size: 0.75rem;
-            font-weight: bold;
-            opacity: 0.6;
-            margin-bottom: 6px;
-            letter-spacing: 0.05em;
-        }
-
-        /* ちいかわ達のセリフエリア */
-        .character-box {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 18px;
-            padding: 12px; /* 外側の余白を少し調整 */
-            text-align: left;
-            font-size: 0.88rem;
-            line-height: 1.6;
-            opacity: 0.95;
-        }
-
-        /* 【修正ポイント】セリフが左に寄りすぎないように内側へ余白(padding)をプラス。
-           白枠線を「極細＆ほんのり透けるやわらかい白」に変更して、ちいかわ風に。 */
-        .char-line {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 10px 14px; /* 左右に14pxの余白を作って読みやすく */
-            margin: 8px 4px; /* セリフ同士の間隔を少し広げてゆったりと */
-            border-radius: 14px; /* 角をほんのり丸く */
-            font-weight: bold;
-            border: 1px solid rgba(255, 255, 255, 0.35); /* 2pxの太線から、1pxの半透明線へ変更 */
-            text-indent: 0; /* ぶら下げインデントを解除して綺麗に整列 */
-        }
-    </style>
-</head>
-<body>
-
-    <video autoplay muted loop playsinline id="video-background">
-        <source src="" type="video/mp4" id="video-source">
-    </video>
-    <div class="overlay"></div>
-
-    <div class="container">
-        <div class="fortune-card">
-            <div class="weather-info" id="weather-text">⚡ 雷火豊 (らいかほう)</div>
-            <div class="hexagram-title" id="hexagram-name">雷火豊</div>
-            <div class="hexagram-sub" id="line-text">六二 / 増していく華やかさ</div>
-            
-            <div class="divider"></div>
-            
-            <div class="advice-box">
-                <div class="advice-label">💬 鎧さんの見守り助言</div>
-                <div id="advice-text">3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。</div>
-            </div> 
-            
-            <div class="character-box">
-                <div class="char-line" id="chiikawa-text">ちいかわ：「ちょっとこわい…」</div>
-                <div class="char-line" id="hachiware-text">ハチワレ：「なんとかなりそう？」</div>
-                <div class="char-line" id="usagi-text">うさぎ：「ヤハ！」</div>
-            </div>
-        </div>
+<div class="fortune-card">
+    <div class="weather-info" id="weather-text">⚡ 占い結果</div>
+    <div class="hexagram-title" id="hexagram-name">卦の名前</div>
+    
+    <div class="emotion-badge">
+        <span class="emotion-main">💭 <span id="emotion-text">わァ〜…ッ</span></span>
+        <span class="emotion-sub">▶︎ <span id="line-emotion-text">空へ伸びていく感覚</span></span>
+    </div>
+    
+    <div class="meaning-box" id="meaning-text">
+        ここにシチュエーションが入ります。
     </div>
 
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        
-        if(urlParams.has('name')) {
-            document.getElementById('hexagram-name').innerText = urlParams.get('name');
-            document.getElementById('weather-text').innerText = urlParams.get('icon') + " " + urlParams.get('weather') + " (" + urlParams.get('emotion') + ")";
-            document.getElementById('line-text').innerText = urlParams.get('line_name') + " / " + urlParams.get('line_emotion');
-            document.getElementById('advice-text').innerText = urlParams.get('advice');
-            
-            document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + urlParams.get('chiikawa') + "」";
-            document.getElementById('hachiware-text').innerText = "ハチワレ：「" + urlParams.get('hachiware') + "」";
-            document.getElementById('usagi-text').innerText = "うさぎ：「" + urlParams.get('usagi') + "」";
+    <div class="divider"></div>
+    
+    <div class="advice-box">
+        <div class="advice-label">💬 鎧さんの見守り助言</div>
+        <div id="advice-text">見守りテキスト</div>
+    </div> 
+    
+    <div class="character-box">
+        <div class="char-line" id="chiikawa-text">ちいかわ：「...」</div>
+        <div class="char-line" id="hachiware-text">ハチワレ：「...」</div>
+        <div class="char-line" id="usagi-text">うさぎ：「...」</div>
+    </div>
+</div>
 
-            // 動画のURLを動的にセットして再生
-            const videoSrc = urlParams.get('video');
-            document.getElementById('video-source').src = videoSrc;
-            document.getElementById('video-background').load();
-        }
-    </script>
-</body>
-</html>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if(urlParams.has('name')) {
+        document.getElementById('hexagram-name').innerText = urlParams.get('name');
+        document.getElementById('weather-text').innerText = urlParams.get('icon') + " " + urlParams.get('weather');
+        
+        // 新しく追加した部分にURLパラメータをセット
+        document.getElementById('emotion-text').innerText = urlParams.get('emotion');
+        document.getElementById('line-emotion-text').innerText = urlParams.get('line_emotion');
+        document.getElementById('meaning-text').innerText = urlParams.get('meaning');
+        
+        document.getElementById('advice-text').innerText = urlParams.get('advice');
+        document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + urlParams.get('chiikawa') + "」";
+        document.getElementById('hachiware-text').innerText = "ハチワレ：「" + urlParams.get('hachiware') + "」";
+        document.getElementById('usagi-text').innerText = "うさぎ：「" + urlParams.get('usagi') + "」";
+
+        const videoSrc = urlParams.get('video');
+        document.getElementById('video-source').src = videoSrc;
+        document.getElementById('video-background').load();
+    }
+</script>
