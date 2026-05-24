@@ -1,9 +1,11 @@
 require("dotenv").config();
 const express = require("express");
 const line = require("@line/bot-sdk");
+
 const fs = require("fs");
 const csv = require("csv-parser");
-
+// ここに追加してみたよ🐱
+const path = require("path");
 const app = express();
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
@@ -46,6 +48,10 @@ app.post("/callback", express.json(), async (req, res) => {
   } catch (err) {
     res.sendStatus(200);
   }
+});
+// ここに追加してみたよ🐱
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 app.listen(process.env.PORT || 10000);
