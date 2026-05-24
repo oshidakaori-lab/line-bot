@@ -72,7 +72,7 @@ app.post("/callback", express.json(), async (req, res) => {
       const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
       const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
 
-      const myUrl = `https://${req.get('host')}/index.html`;
+      const myUrl = `https://${req.get('host')}`;
       const finalUrl = `${myUrl}?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
 
       await client.replyMessage(event.replyToken, {
