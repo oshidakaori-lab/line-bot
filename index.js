@@ -5,6 +5,7 @@ const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // 👈ここを追加！
 
 // 2. インスタンス作成
 const app = express();
@@ -12,6 +13,8 @@ const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 
 // 3. データ読み込み
 const hexagrams = [];
@@ -33,6 +36,21 @@ function generateFortune() {
   };
 }
 
+async function getFortune(userMessage) {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `ユーザーの悩み：「${userMessage}」。これについて、易占いの結果とちいかわの世界観で回答して。
+        必ず以下のJSONのみで返して: {name, kana, weather, emotion, icon, line_name, line_emotion, advice, chiikawa, hachiware, usagi, video}`;
+        
+        const result = await model.generateContent(prompt);
+        return JSON.parse(result.response.text());
+    } catch (e) {
+        console.error("AI失敗、CSVへバックアップします:", e);
+        return generateFortune(); 
+    }
+}
+
+
 // 5. ルーティング設定（ここが真ん中に来るよ！）
 app.use(express.static("public"));
 
@@ -47,7 +65,7 @@ app.post("/callback", express.json(), async (req, res) => {
 
     for (const event of events) {
       if (event.type !== "message" || event.message.type !== "text") continue;
-      const result = generateFortune();
+      const result = await getFortune(event.message.text);
       const queryParams = new URLSearchParams({
         name: result.name, icon: result.icon, weather: result.weather,
         emotion: result.emotion, line_name: result.line_name,
