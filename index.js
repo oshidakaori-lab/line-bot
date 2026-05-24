@@ -4,7 +4,6 @@ const line = require("@line/bot-sdk");
 
 const fs = require("fs");
 const csv = require("csv-parser");
-// ここに追加してみたよ🐱
 const path = require("path");
 const app = express();
 const client = new line.Client({
@@ -49,7 +48,9 @@ app.post("/callback", express.json(), async (req, res) => {
     res.sendStatus(200);
   }
 });
-// ここに追加してみたよ🐱
+
+​app.use(express.static("public"));
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
