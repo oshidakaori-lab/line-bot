@@ -1,116 +1,120 @@
-// 1. 準備
 require("dotenv").config();
 const express = require("express");
 const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
-const { GoogleGenerativeAI } = require("@google/generative-ai"); // 👈ここを追加！
-
-// 2. インスタンス作成
 const app = express();
+
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-
-// 3. データ読み込み
+// CSVから読み込んだデータを格納する箱
 const hexagrams = [];
 const lines = [];
-fs.createReadStream("hexagrams.csv").pipe(csv()).on("data", (data) => hexagrams.push(data));
-fs.createReadStream("lines.csv").pipe(csv()).on("data", (data) => lines.push(data));
 
-// 4. 関数定義
+// サーバー起動時にCSVファイルを読み込む
+fs.createReadStream("hexagrams.csv")
+  .pipe(csv())
+  .on("data", (data) => hexagrams.push(data));
+
+fs.createReadStream("lines.csv")
+  .pipe(csv())
+  .on("data", (data) => lines.push(data));
+
+// 占いの結果を生成する関数
 function generateFortune() {
-  if (hexagrams.length === 0) return null;
+  if (hexagrams.length === 0 || lines.length === 0) return null;
   
-  // 卦（け）を1つ選ぶ
+  // 1. 64個の「卦(け)」からランダムに1つ選ぶ
   const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-  // その卦に対応する「爻（こう）」を1つ選ぶ（lines.csvから）
-  const l = lines.filter(line => line.hexagram_id === h.id)[Math.floor(Math.random() * 6)];
+  
+  // 2. 選んだ卦のIDに一致する「爻(こう)」の行だけをlines.csvから集める
+  const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+  
+  // 3. その中からさらにランダムで1つ選ぶ（通常は0〜6番目のどれか）
+  let l = matchedLines[Math.floor(Math.random() * matchedLines.length)];
+  
+  // もし爻が見つからなかったときの安全対策
+  if (!l) {
+    l = { line_name: "全体", line_emotion: "ふんわりした予感" };
+  }
 
-  // これをHTMLに渡す準備完了！
+  // 4. 新しく追加したい「meaning」や「line_emotion」もまとめて返すよ！
   return { 
     name: h.name, 
     weather: h.weather, 
-    emotion: h.emotion,          // CSVのemotion（例：湧き立つよろこび）
+    emotion: h.emotion,          // 卦の感情（例：湧き立つよろこび）
+    line_name: l.line_name,      // 爻の名前（例：九二）
     line_emotion: l.line_emotion, // 爻の感情（例：空へ伸びていく感覚）
-    meaning: h.meaning,          // CSVのmeaning（例：「湧く」無限湧き発生ッ！）
-    advice: "今は無理せず美味しいもの食べよう！", // ここは後で好きなように変えてね
-    chiikawa: h.chiikawa_line,
-    hachiware: h.hachiware_line,
-    usagi: h.usagi_line
+    meaning: h.meaning,          // 今日のシチュエーション
+    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。", // 鎧さんの助言
+    chiikawa: h.chiikawa_line || "わッ…！",
+    hachiware: h.hachiware_line || "なんとかなりそう？",
+    usagi: h.usagi_line || "ヤハ！",
+    video: "https://www.w3schools.com/html/mov_bbb.mp4" // 仮の動画URL（後でお好みの動画に変えてね）
   };
 }
 
+// 静的ファイル（index.htmlなど）を公開する設定
+app.use(express.static(__dirname));
 
-async function getFortune(userMessage) {
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-        const prompt = `ユーザーの悩み：「${userMessage}」。これについて、易占いの結果とちいかわの世界観で回答して。
-        必ず以下のJSONのみで返して: {name, kana, weather, emotion, icon, line_name, line_emotion, advice, chiikawa, hachiware, usagi, video}`;
-        
-        const result = await model.generateContent(prompt);
-        return JSON.parse(result.response.text());
-    } catch (e) {
-        console.error("AI失敗、CSVへバックアップします:", e);
-        return generateFortune(); 
-    }
-}
-
-
-// 5. ルーティング設定（ここが真ん中に来るよ！）
-app.use(express.static("public"));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
+// LINE Bot からメッセージが届いたときの処理
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
     if (!events) return res.sendStatus(200);
 
     for (const event of events) {
+      // テキストメッセージ以外は無視する
       if (event.type !== "message" || event.message.type !== "text") continue;
-      const result = await getFortune(event.message.text);
-      const queryParams = new URLSearchParams({
-        name: result.name, icon: result.icon, weather: result.weather,
-        emotion: result.emotion, line_name: result.line_name,
-        line_emotion: result.line_emotion, advice: result.advice,
-        chiikawa: result.chiikawa, hachiware: result.hachiware,
-        usagi: result.usagi, video: result.video
-      }).toString();
-      const liffUrl = `https://liff.line.me/2010171447-1dyDX3Dk?${queryParams}`;
-
       
-      // さっき作った generateFortune() を呼び出す
-const result = generateFortune();
+      // 占い結果を作る（ここでresultを作るのは1回だけに修正したよ！）
+      const result = generateFortune();
+      if (!result) {
+        await client.replyMessage(event.replyToken, {
+          type: "text",
+          text: "データがまだ準備中みたい…少し待ってからもう一度試してね！"
+        });
+        continue;
+      }
 
-// URLを作る（ここが魔法の言葉！）
-const url = `https://https://line-bot-v2rk.onrender.com/index.html?name=${encodeURIComponent(result.name)}&emotion=${encodeURIComponent(result.emotion)}&line_emotion=${encodeURIComponent(result.line_emotion)}&meaning=${encodeURIComponent(result.meaning)}&advice=${encodeURIComponent(result.advice)}&chiikawa=${encodeURIComponent(result.chiikawa)}&hachiware=${encodeURIComponent(result.hachiware)}&usagi=${encodeURIComponent(result.usagi)}`;
-
-// LINEでボタンとして送る
-await client.replyMessage(event.replyToken, {
-  type: "text",
-  text: "今日の占いだよ！",
-  quickReply: {
-    items: [{
-      type: "action",
-      action: { type: "uri", label: "カードを開く", uri: url }
-    }]
-  }
-});
+      // Render上のWebページのURLを組み立てる
+      // ※あなたのRenderのURL（https://line-bot-v2rk.onrender.com）を自動で使うようにしているよ！
+      const myUrl = `https://${req.get('host')}/index.html`;
       
+      // URLに占いの結果データを全部くっつける（URLパラメータ）
+      const finalUrl = `${myUrl}?name=${encodeURIComponent(result.name)}&weather=${encodeURIComponent(result.weather)}&emotion=${encodeURIComponent(result.emotion)}&line_name=${encodeURIComponent(result.line_name)}&line_emotion=${encodeURIComponent(result.line_emotion)}&meaning=${encodeURIComponent(result.meaning)}&advice=${encodeURIComponent(result.advice)}&chiikawa=${encodeURIComponent(result.chiikawa)}&hachiware=${encodeURIComponent(result.hachiware)}&usagi=${encodeURIComponent(result.usagi)}&video=${encodeURIComponent(result.video)}`;
+
+      // LINEにメッセージを返信する
+      await client.replyMessage(event.replyToken, {
+        type: "text",
+        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${result.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
+        quickReply: {
+          items: [
+            {
+              type: "action",
+              action: {
+                type: "uri",
+                label: "カードを開く 🃏",
+                uri: finalUrl
+              }
+            }
+          ]
+        }
+      });
     }
     res.sendStatus(200);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(200);
+  } catch (error) {
+    console.error("エラーが発生しました:", error);
+    res.sendStatus(500);
   }
 });
 
-// 6. サーバー起動（一番最後！）
-app.listen(process.env.PORT || 10000);
+// ポート10000番でサーバーを起動
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
