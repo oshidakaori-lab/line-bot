@@ -23,6 +23,11 @@ fs.createReadStream("lines.csv")
   .on("data", (data) => lines.push(data));
 
 // データ取得用API
+
+// 💡 ここを追加！：トップページにアクセスした時の対応
+app.get("/", (req, res) => {
+  res.send("<h1>空の易ボットは動いているよ！</h1><p>LINEからメッセージを送って占ってみてね🐾</p>");
+});
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   
