@@ -82,7 +82,7 @@ app.post("/callback", express.json(), async (req, res) => {
           type: "bubble",
           hero: { type: "image", url: "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg", size: "full", aspectMode: "cover" },
           body: { type: "box", layout: "vertical", contents: [{ type: "text", text: result.name, weight: "bold", size: "xl" }] },
-          footer: { type: "box", layout: "vertical", contents: [{ type: "button", style: "primary", color: "#4682B4", action: { type: "uri", label: "空を見る 🌌", uri: liffUrl } }] }
+          footer: { type: "box", layout: "vertical", contents: [{ type: "button", style: "primary", color: "#4682B4", action: { type: "uri", label: "ちいかわ、ハチワレ、うさぎ、、、鎧さんもいる？！空を見上げて何か言っているよ", uri: liffUrl } }] }
         }
       });
     }
