@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空の易 - 占い結果</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: #000; color: #fff; }
+        #video-background { position: fixed; right: 0; bottom: 0; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -100; object-fit: cover; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.25); z-index: -99; }
+        .container { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        .fortune-card { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px; box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4); text-align: center; }
+        .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
+        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .hexagram-sub { font-size: 0.9rem; opacity: 0.75; margin-bottom: 12px; }
+        .meaning-box { background: rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.25); }
+        .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
+        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.2); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.5); }
+        .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.6; margin-bottom: 6px; }
+        .character-box { background: rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.95; }
+        .char-line { margin-bottom: 6px; text-indent: -0.5em; padding-left: 0.5em; }
+        .char-line:last-child { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+
+    <video autoplay muted loop playsinline id="video-background">
+        <source src="" type="video/mp4" id="video-source">
+    </video>
+    <div class="overlay"></div>
+
+    <div class="container">
+        <div class="fortune-card">
+            <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
+            <div class="hexagram-title" id="hexagram-name">Please Wait</div>
+            <div class="hexagram-sub" id="line-text">データを集めています</div>
+            
+            <div class="meaning-box" id="meaning-text">
+                ちいかわ達が占いの準備をしているよ...
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="advice-box">
+                <div class="advice-label">💬 鎧さんの見守り助言</div>
+                <div id="advice-text">ちょっと待っててくれな。</div>
+            </div> 
+            
+            <div class="character-box">
+                <div class="char-line" id="chiikawa-text">ちいかわ：「フゥン…」</div>
+                <div class="char-line" id="hachiware-text">ハチワレ：「いま準備してるからね！」</div>
+                <div class="char-line" id="usagi-text">うさぎ：「プルルルル！」</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        if(urlParams.has('hid')) {
+            const hid = urlParams.get('hid');
+            const l_name = urlParams.get('l_name');
+            
+            fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.error || "エラーが発生しました"); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let icon = "🔮";
+                    if (data.weather.includes("雷")) icon = "⚡";
+                    else if (data.weather.includes("雨")) icon = "☔";
+                    else if (data.weather.includes("晴")) icon = "☀️";
+                    else if (data.weather.includes("曇")) icon = "☁️";
+                    else if (data.weather.includes("風")) icon = "🍃";
+                    
+                    document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
+                    document.getElementById('hexagram-name').innerText = data.name;
+                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
+                    document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
+                    document.getElementById('advice-text').innerText = data.advice;
+                    document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
+                    document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
+                    document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
+
+                    if (data.video) {
+                        document.getElementById('video-source').src = data.video;
+                        document.getElementById('video-background').load();
+                    }
+                })
+                .catch(err => {
+                    // 💡 もしエラーが起きたら、カードの中に原因を直接表示するよ！
+                    document.getElementById('hexagram-name').innerText = "😭 エラー発生";
+                    document.getElementById('meaning-text').style.color = "#ff8888";
+                    document.getElementById('meaning-text').innerText = err.message;
+                });
+        } else {
+            document.getElementById('hexagram-name').innerText = "⚠️ データ無し";
+            document.getElementById('meaning-text').innerText = "占い結果のURLに番号(hid)が含まれていないよ。LINEからもう一度開いてみてね！";
+        }
+    </script>
+</body>
+</html>
