@@ -44,6 +44,7 @@ app.post("/callback", express.json(), async (req, res) => {
 
     for (const event of events) {
       if (event.type !== "message" || event.message.type !== "text") continue;
+      
       const result = generateFortune();
       
       // URLにパラメータをくっつける
@@ -84,6 +85,7 @@ app.post("/callback", express.json(), async (req, res) => {
       });
     res.sendStatus(200);
   } catch (err) {
+    console.error(err);
     res.sendStatus(200);
   }
 });
