@@ -38,7 +38,7 @@ function generateFortune() {
 
 async function getFortune(userMessage) {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
         const prompt = `ユーザーの悩み：「${userMessage}」。これについて、易占いの結果とちいかわの世界観で回答して。
         必ず以下のJSONのみで返して: {name, kana, weather, emotion, icon, line_name, line_emotion, advice, chiikawa, hachiware, usagi, video}`;
         
