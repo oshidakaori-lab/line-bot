@@ -27,13 +27,13 @@
 <body>
 
 <video
-    id="video-background"
-    autoplay
-    muted
-    loop
-    playsinline
-    webkit-playsinline>
-</video>
+  id="video-background"
+  autoplay
+  muted
+  loop
+  playsinline
+  preload="auto"
+></video>
 
 <div class="overlay"></div>
 <div class="container">
@@ -93,122 +93,26 @@
                 document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
                 if (data.video) {
-                    const video = document.getElementById('video-background');
-                    video.src = data.video;
-                    
-                    // 🌟 念には念を！JS側からも「絶対に無音(muted)だよ！」とブラウザに約束する
-                    video.muted = true;
-                    video.setAttribute('muted', 'true');
-                    video.setAttribute('playsinline', 'true');
-                    
-                    video.load();
-                    
-                    const playPromise = video.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.catch(err => {
-                            console.log("自動再生がブロックされました。タップを待機します。");
-                            // タップしたら確実に再生させる
-                            const playOnTouch = () => {
-                                video.play();
-                                document.removeEventListener('touchstart', playOnTouch);
-                                document.removeEventListener('click', playOnTouch);
-                            };
-                            document.addEventListener('touchstart', playOnTouch, { once: true });
-                            document.addEventListener('click', playOnTouch, { once: true });
-                        });
-                    }
-                }
-            })
-            .catch(err => {
-                document.getElementById('hexagram-name').innerText = "😭 エラー発生";
-                document.getElementById('meaning-text').style.color = "#ff8888";
-                document.getElementById('meaning-text').innerText = err.message;
-            });
-    } else {
-        document.getElementById('hexagram-name').innerText = "⚠️ データ無し";
-        document.getElementById('meaning-text').innerText = "占い結果のURLに番号が含まれていないよ。LINEからもう一度開いてみてね！";
-    }
-</script>
-</body>
-</html>
-</video>
+const video = document.getElementById('video-background');
+const source = document.getElementById('video-source');
 
-<div class="overlay"></div>
-<div class="container">
-    <div class="fortune-card">
-        <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
-        <div class="hexagram-title" id="hexagram-name">Please Wait</div>
-        <div class="hexagram-sub" id="line-text">データを集めています</div>
-        
-        <div class="meaning-box" id="meaning-text">
-            ちいかわ達が占いの準備をしているよ...
-        </div>
-        
-        <div class="divider"></div>
-        
-        <div class="advice-box">
-            <div class="advice-label">💬 鎧さんの見守り助言</div>
-            <div id="advice-text">ちょっと待っててくれな。</div>
-        </div> 
-        
-        <div class="character-box">
-            <div class="char-line" id="chiikawa-text">ちいかわ：「フゥン…」</div>
-            <div class="char-line" id="hachiware-text">ハチワレ：「いま準備してるからね！」</div>
-            <div class="char-line" id="usagi-text">うさぎ：「プルルルル！」</div>
-        </div>
-    </div>
-</div>
+source.src = data.video;  
 
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    if(urlParams.has('hid')) {
-        const hid = urlParams.get('hid');
-        const l_name = urlParams.get('l_name');
-        
-        fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err.error || "エラーが発生しました"); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                let icon = "🔮";
-                if (data.weather.includes("雷")) icon = "⚡️";
-                else if (data.weather.includes("雨")) icon = "☔";
-                else if (data.weather.includes("晴")) icon = "☀️";
-                else if (data.weather.includes("曇")) icon = "☁️";
-                else if (data.weather.includes("風")) icon = "🌪️";
-                
-                document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
-                document.getElementById('hexagram-name').innerText = data.name;
-                document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
-                document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
-                document.getElementById('advice-text').innerText = data.advice;
-                document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
-                document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
-                document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
+video.muted = true;  
+video.defaultMuted = true;  
 
-                // 🌟【最重要】動画を確実に動かすための魔法陣
-                if (data.video) {
-                    const video = document.getElementById('video-background');
-                    
-                    // スマホの場合は <video> 本体に src を設定するのがルール！
-                    video.src = data.video;
-                    video.load();
-                    
-                    // 再生を試みる
-                    const playPromise = video.play();
-                    
-                    if (playPromise !== undefined) {
-                        playPromise.catch(err => {
-                            console.log("自動再生がスマホにブロックされました。");
-                            // 💡 ブロックされた場合、画面のどこかを「タップ」した瞬間に再生させる！
-                            document.addEventListener('touchstart', () => { video.play(); }, { once: true });
-                            document.addEventListener('click', () => { video.play(); }, { once: true });
-                        });
+video.setAttribute("muted", "");  
+video.setAttribute("playsinline", "");  
+video.setAttribute("autoplay", "");  
+
+video.playsInline = true;  
+video.autoplay = true;  
+
+video.load();  
+
+video.play().catch(err => {  
+    console.log("動画再生エラー:", err);  
+});
                     }
                 }
             })

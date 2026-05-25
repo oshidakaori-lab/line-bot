@@ -1,109 +1,61 @@
-require("dotenv").config();
-const express = require("express");
-const line = require("@line/bot-sdk");
-const fs = require("fs");
-const csv = require("csv-parser");
-const path = require("path");
-const app = express();
+if (data.video) {
 
-const client = new line.Client({
-  channelSecret: process.env.LINE_CHANNEL_SECRET,
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-});
+    const video = document.getElementById("video-background");
 
-const hexagrams = [];
-const lines = [];
+    // 完全リセット
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-// 💡 ゴミ文字(BOM)を完全に消し去る最強の読み込み（エラー防止のために追加！）
-const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
+    // 動画セット
+    video.src = data.video;
 
-fs.createReadStream("hexagrams.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => hexagrams.push(data));
-fs.createReadStream("lines.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => lines.push(data));
+    // iPhone / LINE対策
+    video.muted = true;
+    video.defaultMuted = true;
+    video.playsInline = true;
 
-// 1. トップページにアクセスされたら index.html を返す
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+    video.setAttribute("muted", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("playsinline", "");
 
-// 2. 占い結果API
-app.get("/api/fortune", (req, res) => {
-  const { hid, l_name } = req.query;
-  
-  const h = hexagrams.find(item => String(item.id) === String(hid));
-  if (!h) return res.status(404).json({ error: "卦が見つかりません" });
-  
-  const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-  let l = matchedLines.find(line => String(line.line_name) === String(l_name));
-  if (!l) l = matchedLines[0] || { line_name: "全体", line_emotion: "ふんわりした予感" };
+    // 読み込み開始
+    video.load();
 
-  res.json({
-    name: h.name, 
-    weather: h.weather, 
-    emotion: h.emotion,
-    line_name: l.line_name,
-    line_emotion: l.line_emotion,
-    meaning: h.meaning,
-    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line || "わッ…！",
-    hachiware: h.hachiware_line || "なんとなんとそう？",
-    usagi: h.usagi_line || "ヤハ！",
-    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674"
-  });
-});
-
-app.use(express.static(__dirname));
-
-// 3. どんなURLでも index.html に飛ばす魔法の受け皿
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// LINEのやり取り
-app.post("/callback", express.json(), async (req, res) => {
-  try {
-    const events = req.body.events;
-    if (!events) return res.sendStatus(200);
-
-    for (const event of events) {
-      if (event.type !== "message" || event.message.type !== "text") continue;
-      
-      if (hexagrams.length === 0 || lines.length === 0) {
-        await client.replyMessage(event.replyToken, { type: "text", text: "占いの準備中だよ、ちょっと待ってね！" });
-        continue;
-      }
-
-      const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-      const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
-
-      const myUrl = `https://${req.get('host')}`;
-      const finalUrl = `${myUrl}/index.html?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
-
-      await client.replyMessage(event.replyToken, {
-        type: "text",
-        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
-        quickReply: {
-          items: [
-            {
-              type: "action",
-              action: {
-                type: "uri",
-                label: "カードを開く 🃏",
-                uri: finalUrl
-              }
-            }
-          ]
+    // 読み込み完了後に再生
+    video.oncanplay = async () => {
+        try {
+            await video.play();
+            console.log("動画再生成功");
+        } catch (e) {
+            console.log("再生失敗", e);
         }
-      });
-    }
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("LINE送信エラー:", error);
-    res.sendStatus(500);
-  }
-});
+    };
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+    // 自動復帰
+    video.onpause = () => {
+        video.play().catch(() => {});
+    };
+
+    // エラー監視
+    video.onerror = (e) => {
+        console.log("動画エラー", e);
+    };
+}
+
+#video-background {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    z-index: -100;
+
+    filter:
+        brightness(0.75)
+        contrast(1.08)
+        saturate(1.1);
+
+    transform: scale(1.03);
+}
