@@ -14,11 +14,13 @@ const client = new line.Client({
 const hexagrams = [];
 const lines = [];
 
-// CSV読み込み
-fs.createReadStream("hexagrams.csv").pipe(csv()).on("data", (data) => hexagrams.push(data));
-fs.createReadStream("lines.csv").pipe(csv()).on("data", (data) => lines.push(data));
+// 💡 ゴミ文字(BOM)を完全に消し去る最強の読み込み（エラー防止のために追加！）
+const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-// 1. トップページにアクセスされたら index.html を返す設定
+fs.createReadStream("hexagrams.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => hexagrams.push(data));
+fs.createReadStream("lines.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => lines.push(data));
+
+// 1. トップページにアクセスされたら index.html を返す
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
@@ -45,21 +47,19 @@ app.get("/api/fortune", (req, res) => {
     chiikawa: h.chiikawa_line || "わッ…！",
     hachiware: h.hachiware_line || "なんとなんとそう？",
     usagi: h.usagi_line || "ヤハ！",
-    // 💡 URLの https:// が重複していたので1回に直しました
     video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674"
   });
 });
 
 app.use(express.static(__dirname));
 
-// 3. どんなURLでも index.html に飛ばす魔法の受け皿（これがあるとCannot GETを防げる！）
+// 3. どんなURLでも index.html に飛ばす魔法の受け皿
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // LINEのやり取り
 app.post("/callback", express.json(), async (req, res) => {
-
   try {
     const events = req.body.events;
     if (!events) return res.sendStatus(200);
@@ -72,17 +72,13 @@ app.post("/callback", express.json(), async (req, res) => {
         continue;
       }
 
-      // ランダムに卦と爻を選ぶ
       const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
       const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
       const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
 
-      const myUrl = `https://${req.get('host')}/index.html`;
-      
-      // 🌟【超重要】URLにはIDと爻の名前だけを乗せる（これで文字数がめちゃくちゃ短くなる！）
-      const finalUrl = `${myUrl}?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
+      const myUrl = `https://${req.get('host')}`;
+      const finalUrl = `${myUrl}/index.html?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
 
-      // LINEにボタン付きで返信する
       await client.replyMessage(event.replyToken, {
         type: "text",
         text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
