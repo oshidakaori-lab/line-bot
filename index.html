@@ -76,23 +76,25 @@
         if(urlParams.has('hid')) {
             const hid = urlParams.get('hid');
             const l_name = urlParams.get('l_name');
+            
             fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error("データの取得に失敗したよ...");
+                    return res.json();
+                })
                 .then(data => {
-                    // 🌟 ここで天気を判定して絵文字を決めるよ！
+                    // 🌟 天気絵文字の判定
                     let icon = "🔮";
-if (data.weather.includes("雷")) icon = "⚡️";
-else if (data.weather.includes("雨")) icon = "☔";
-else if (data.weather.includes("晴")) icon = "☀️";
-else if (data.weather.includes("曇")) icon = "☁️";
-else if (data.weather.includes("風")) icon = "🌪️";
-else if (data.weather.includes("雪")) icon = "❄️"; // 雪追加！
-else if (data.weather.includes("虹")) icon = "🌈"; // 虹追加！
+                    if (data.weather.includes("雷")) icon = "⚡️";
+                    else if (data.weather.includes("雨")) icon = "☔";
+                    else if (data.weather.includes("晴")) icon = "☀️";
+                    else if (data.weather.includes("曇")) icon = "☁️";
+                    else if (data.weather.includes("風")) icon = "🌪️";
+                    else if (data.weather.includes("雪")) icon = "❄️";
+                    else if (data.weather.includes("虹")) icon = "🌈";
 
-                    
-                    // 表示を更新！
+                    // 🌟 画面への反映
                     document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
-                    
                     document.getElementById('hexagram-name').innerText = data.name;
                     document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
                     document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
@@ -101,16 +103,12 @@ else if (data.weather.includes("虹")) icon = "🌈"; // 虹追加！
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
                 })
-
-                    document.getElementById('hexagram-name').innerText = data.name;
-                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
-                    document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
-                    document.getElementById('advice-text').innerText = data.advice;
-                    document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
-                    document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
-                    document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
+                .catch(err => {
+                    document.getElementById('hexagram-name').innerText = "😭 エラー";
+                    document.getElementById('meaning-text').innerText = err.message;
                 });
         }
     </script>
+
 </body>
 </html>
