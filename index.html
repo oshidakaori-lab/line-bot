@@ -25,10 +25,26 @@
 </head>
 <body>
 
-    <video autoplay muted loop playsinline id="video-background">
-        <source src="" type="video/mp4" id="video-source">
-    </video>
-    <div class="overlay"></div>
+    <video id="video-background" autoplay muted loop playsinline>
+    <source id="video-source" src="https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674" type="video/mp4">
+</video>
+<div class="overlay"></div> <style>
+    /* 動画を画面いっぱいに広げる設定 */
+    #video-background {
+        position: fixed;
+        right: 0; bottom: 0;
+        min-width: 100%; min-height: 100%;
+        width: auto; height: auto;
+        z-index: -100;
+        object-fit: cover;
+    }
+    .overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.4); /* ここを大きくすると背景が暗くなるよ */
+        z-index: -99;
+    }
+</style>
+
 
     <div class="container">
         <div class="fortune-card">
@@ -71,11 +87,11 @@
                 })
                 .then(data => {
                     let icon = "🔮";
-                    if (data.weather.includes("雷")) icon = "⚡";
+                    if (data.weather.includes("雷")) icon = "⚡️";
                     else if (data.weather.includes("雨")) icon = "☔";
                     else if (data.weather.includes("晴")) icon = "☀️";
                     else if (data.weather.includes("曇")) icon = "☁️";
-                    else if (data.weather.includes("風")) icon = "🍃";
+                    else if (data.weather.includes("風")) icon = "🌪️";
                     
                     document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
                     document.getElementById('hexagram-name').innerText = data.name;
