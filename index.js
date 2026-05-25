@@ -46,7 +46,7 @@ app.get("/api/fortune", (req, res) => {
     chiikawa: h.chiikawa_line || "わッ…！",
     hachiware: h.hachiware_line || "なんとなんとそう？",
     usagi: h.usagi_line || "ヤハ！",
-    video: "https://www.w3schools.com/html/mov_bbb.mp4" // 背景動画URL
+    video: "https://https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674" // 背景動画URL
   });
 });
 
