@@ -14,16 +14,16 @@ const client = new line.Client({
 const hexagrams = [];
 const lines = [];
 
-// CSVファイルを読み込む
-fs.createReadStream("hexagrams.csv")
-  .pipe(csv())
-  .on("data", (data) => hexagrams.push(data));
+// CSV読み込み
+fs.createReadStream("hexagrams.csv").pipe(csv()).on("data", (data) => hexagrams.push(data));
+fs.createReadStream("lines.csv").pipe(csv()).on("data", (data) => lines.push(data));
 
-fs.createReadStream("lines.csv")
-  .pipe(csv())
-  .on("data", (data) => lines.push(data));
+// 1. トップページにアクセスされたら index.html を返す設定
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
-// 🌟【新機能】HTMLから「この番号のデータをおくれ！」と言われたときに詳細を返すAPI
+// 2. 占い結果API
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   
@@ -34,26 +34,32 @@ app.get("/api/fortune", (req, res) => {
   let l = matchedLines.find(line => String(line.line_name) === String(l_name));
   if (!l) l = matchedLines[0] || { line_name: "全体", line_emotion: "ふんわりした予感" };
 
-  // ここでHTMLにすべてのデータを安全に渡すよ（URLに入り切らなかったデータもここなら無限に送れる！）
   res.json({
     name: h.name, 
     weather: h.weather, 
-    emotion: h.emotion,          // 卦の感情（ちいかわリアクションに変える列）
-    line_name: l.line_name,      // 爻の名前（例：六二）
-    line_emotion: l.line_emotion, // 爻の感情（例：なじんでいく安心）
-    meaning: h.meaning,          // 今日のシチュエーション
-    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。", // 鎧さんの助言
+    emotion: h.emotion,
+    line_name: l.line_name,
+    line_emotion: l.line_emotion,
+    meaning: h.meaning,
+    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
     chiikawa: h.chiikawa_line || "わッ…！",
     hachiware: h.hachiware_line || "なんとなんとそう？",
     usagi: h.usagi_line || "ヤハ！",
-    video: "https://https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674" // 背景動画URL
+    // 💡 URLの https:// が重複していたので1回に直しました
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674"
   });
 });
 
 app.use(express.static(__dirname));
 
-// LINE Botからメッセージが届いたとき
+// 3. どんなURLでも index.html に飛ばす魔法の受け皿（これがあるとCannot GETを防げる！）
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// LINEのやり取り
 app.post("/callback", express.json(), async (req, res) => {
+
   try {
     const events = req.body.events;
     if (!events) return res.sendStatus(200);

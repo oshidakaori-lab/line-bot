@@ -23,31 +23,29 @@
         .char-line:last-child { margin-bottom: 0; }
     </style>
 </head>
+
 <body>
 
-    <video id="video-background" autoplay muted loop playsinline>
-    <source id="video-source" src="https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674" type="video/mp4">
+<video
+id="video-background"
+autoplay
+muted
+loop
+playsinline
+webkit-playsinline
+preload="auto"
+poster="https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.jpg?alt=media">
+    <source id="video-source"
+    src="https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky.mp4?alt=media&token=98456177-ef82-41bc-8b53-75da87b85674"
+    type="video/mp4">
+    お使いのブラウザは動画の自動再生に対応していません。
 </video>
-<div class="overlay"></div> <style>
-    /* 動画を画面いっぱいに広げる設定 */
-    #video-background {
-        position: fixed;
-        right: 0; bottom: 0;
-        min-width: 100%; min-height: 100%;
-        width: auto; height: auto;
-        z-index: -100;
-        object-fit: cover;
-    }
-    .overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.4); /* ここを大きくすると背景が暗くなるよ */
-        z-index: -99;
-    }
-</style>
 
 
-    <div class="container">
-        <div class="fortune-card">
+<div class="overlay"></div>
+<div class="container">
+    
+    <div class="fortune-card">
             <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
             <div class="hexagram-title" id="hexagram-name">Please Wait</div>
             <div class="hexagram-sub" id="line-text">データを集めています</div>
@@ -68,10 +66,11 @@
                 <div class="char-line" id="hachiware-text">ハチワレ：「いま準備してるからね！」</div>
                 <div class="char-line" id="usagi-text">うさぎ：「プルルルル！」</div>
             </div>
-        </div>
-    </div>
 
-    <script>
+        </div>
+</div>
+
+<script>
         const urlParams = new URLSearchParams(window.location.search);
         
         if(urlParams.has('hid')) {
@@ -102,10 +101,28 @@
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
-                    if (data.video) {
-                        document.getElementById('video-source').src = data.video;
-                        document.getElementById('video-background').load();
-                    }
+if (data.video) {
+    const video = document.getElementById('video-background');
+    const source = document.getElementById('video-source');
+
+    source.src = data.video;
+
+    video.muted = true;
+    video.defaultMuted = true;
+
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("autoplay", "");
+
+    video.playsInline = true;
+    video.autoplay = true;
+
+    video.load();
+
+    video.play().catch(err => {
+        console.log("動画再生エラー:", err);
+    });
+}
                 })
                 .catch(err => {
                     // 💡 もしエラーが起きたら、カードの中に原因を直接表示するよ！
