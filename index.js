@@ -1,62 +1,64 @@
-// 1. 準備
 require("dotenv").config();
 const express = require("express");
 const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
-const { GoogleGenerativeAI } = require("@google/generative-ai"); // 👈ここを追加！
-
-// 2. インスタンス作成
 const app = express();
+
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-
-// 3. データ読み込み
 const hexagrams = [];
 const lines = [];
-fs.createReadStream("hexagrams.csv").pipe(csv()).on("data", (data) => hexagrams.push(data));
-fs.createReadStream("lines.csv").pipe(csv()).on("data", (data) => lines.push(data));
 
-// 4. 関数定義
-function generateFortune() {
-  if (hexagrams.length === 0) return null;
-  const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-  return { 
-    name: h.name, kana: h.kana, weather: h.weather || "晴れ", 
-    emotion: h.emotion || "ワクワク", icon: "☀️",
-    line_name: "初九", line_emotion: "新しい始まり",
-    advice: "焦らず、まずは深呼吸してみるのがおすすめだぞ。",
-    chiikawa: "ワァ…！", hachiware: "なんとかなれッ！", usagi: "ヤハ！",
-  };
-}
+// 💡 ゴミ文字(BOM)を完全に消し去る最強の読み込み（エラー防止のために追加！）
+const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-async function getFortune(userMessage) {
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-        const prompt = `ユーザーの悩み：「${userMessage}」。これについて、易占いの結果とちいかわの世界観で回答して。
-        必ず以下のJSONのみで返して: {name, kana, weather, emotion, icon, line_name, line_emotion, advice, chiikawa, hachiware, usagi, video}`;
-        
-        const result = await model.generateContent(prompt);
-        return JSON.parse(result.response.text());
-    } catch (e) {
-        console.error("AI失敗、CSVへバックアップします:", e);
-        return generateFortune(); 
-    }
-}
+fs.createReadStream("hexagrams.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => hexagrams.push(data));
+fs.createReadStream("lines.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => lines.push(data));
 
-
-// 5. ルーティング設定（ここが真ん中に来るよ！）
-app.use(express.static("public"));
-
+// 1. トップページにアクセスされたら index.html を返す
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
+// 2. 占い結果API
+app.get("/api/fortune", (req, res) => {
+  const { hid, l_name } = req.query;
+  
+  const h = hexagrams.find(item => String(item.id) === String(hid));
+  if (!h) return res.status(404).json({ error: "卦が見つかりません" });
+  
+  const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+  let l = matchedLines.find(line => String(line.line_name) === String(l_name));
+  if (!l) l = matchedLines[0] || { line_name: "全体", line_emotion: "ふんわりした予感" };
+
+  res.json({
+    name: h.name, 
+    weather: h.weather, 
+    emotion: h.emotion,
+    line_name: l.line_name,
+    line_emotion: l.line_emotion,
+    meaning: h.meaning,
+    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    chiikawa: h.chiikawa_line || "わッ…！",
+    hachiware: h.hachiware_line || "なんとなんとそう？",
+    usagi: h.usagi_line || "ヤハ！",
+    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky_1.mp4?alt=media&token=ad998496-2299-4d84-9632-b2ea80bfb822"
+  });
+});
+
+app.use(express.static(__dirname));
+
+// 3. どんなURLでも index.html に飛ばす魔法の受け皿
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// LINEのやり取り
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -64,33 +66,44 @@ app.post("/callback", express.json(), async (req, res) => {
 
     for (const event of events) {
       if (event.type !== "message" || event.message.type !== "text") continue;
-      const result = await getFortune(event.message.text);
-      const queryParams = new URLSearchParams({
-        name: result.name, icon: result.icon, weather: result.weather,
-        emotion: result.emotion, line_name: result.line_name,
-        line_emotion: result.line_emotion, advice: result.advice,
-        chiikawa: result.chiikawa, hachiware: result.hachiware,
-        usagi: result.usagi, video: result.video
-      }).toString();
-      const liffUrl = `https://liff.line.me/2010171447-1dyDX3Dk?${queryParams}`;
+      
+      if (hexagrams.length === 0 || lines.length === 0) {
+        await client.replyMessage(event.replyToken, { type: "text", text: "占いの準備中だよ、ちょっと待ってね！" });
+        continue;
+      }
+
+      const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
+      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+      const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
+
+      const myUrl = `https://${req.get('host')}`;
+      const finalUrl = `${myUrl}/?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
 
       await client.replyMessage(event.replyToken, {
-        type: "flex",
-        altText: "占いカード",
-        contents: {
-          type: "bubble",
-          hero: { type: "image", url: "https://cdn.pixabay.com/photo/2016/11/18/17/46/house-1836070_1280.jpg", size: "full", aspectMode: "cover" },
-          body: { type: "box", layout: "vertical", contents: [{ type: "text", text: result.name, weight: "bold", size: "xl" }] },
-          footer: { type: "box", layout: "vertical", contents: [{ type: "button", style: "primary", color: "#4682B4", action: { type: "uri", label: "空を見る", uri: liffUrl } }] }
+        type: "text",
+        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
+        quickReply: {
+          items: [
+            {
+              type: "action",
+              action: {
+                type: "uri",
+                label: "カードを開く 🃏",
+                uri: finalUrl
+              }
+            }
+          ]
         }
       });
     }
     res.sendStatus(200);
-  } catch (err) {
-    console.error(err);
-    res.sendStatus(200);
+  } catch (error) {
+    console.error("LINE送信エラー:", error);
+    res.sendStatus(500);
   }
 });
 
-// 6. サーバー起動（一番最後！）
-app.listen(process.env.PORT || 10000);
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
