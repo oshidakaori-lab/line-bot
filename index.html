@@ -16,15 +16,7 @@
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
-    body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08), transparent 30%),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05), transparent 25%);
-    pointer-events: none;
-}
+    
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -87,7 +79,29 @@
             fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('weather-text').innerText = "🔮 " + data.weather + " (" + data.emotion + ")";
+                    // 🌟 ここで天気を判定して絵文字を決めるよ！
+                    let icon = "🔮";
+if (data.weather.includes("雷")) icon = "⚡️";
+else if (data.weather.includes("雨")) icon = "☔";
+else if (data.weather.includes("晴")) icon = "☀️";
+else if (data.weather.includes("曇")) icon = "☁️";
+else if (data.weather.includes("風")) icon = "🌪️";
+else if (data.weather.includes("雪")) icon = "❄️"; // 雪追加！
+else if (data.weather.includes("虹")) icon = "🌈"; // 虹追加！
+
+                    
+                    // 表示を更新！
+                    document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
+                    
+                    document.getElementById('hexagram-name').innerText = data.name;
+                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
+                    document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
+                    document.getElementById('advice-text').innerText = data.advice;
+                    document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
+                    document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
+                    document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
+                })
+
                     document.getElementById('hexagram-name').innerText = data.name;
                     document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
                     document.getElementById('meaning-text').innerText = "📖 " + data.meaning;
