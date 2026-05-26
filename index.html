@@ -4,33 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>空の易 - 占い結果</title>
-    <style>
+     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-         /* 🌌 背景：画像が「最初から」「さりげなく」馴染むように設定 */
+        /* 🌌 背景：画像はぼかさず、100%綺麗にそのまま見せる！ */
         body, html {
             width: 100%; height: 100%; overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             color: #fff;
-            
-            /* 初期状態の夜空グラデーション */
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            
-            /* 🌟 ここを修正！明るくして、ぼかしを優しくしたよ */
-            filter: brightness(0.9) blur(0.08px);
-            
-            /* ぼかした時に端が白くなるのを防ぐための拡大（少し弱めました） */
-            transform: scale(1.04); 
-            
             transition: background-image 0.6s ease-in-out;
         }
-
     
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -38,21 +27,18 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 🌟 bodyを拡大・ぼかしたので、カード用のコンテナは元のサイズ・位置に固定するよ */
         .container {
-            position: fixed; top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; z-index: 10;
+            width: 100%; height: 100%; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 20px;
         }
         
-        /* 🃏 カード：呼吸するように浮かぶアニメーション */
+        /* 🃏 カード：すりガラス効果付きのダークマスクにして、白文字を100%読めるように！ */
         .fortune-card {
-            /* モックアップみたいに少しだけ透ける黒ベースにすると、すっごく高級感が出るよ */
-            background: rgba(15, 23, 42, 0.55); 
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6); text-align: center;
+            background: rgba(15, 23, 42, 0.65); /* 🌟 黒に近いネイビーを65%の濃さで敷く */
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); /* すりガラス効果 */
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center;
             animation: floatCard 6s ease-in-out infinite;
         }
         @keyframes floatCard {
@@ -62,16 +48,18 @@
         }
 
         .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
-        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-        .hexagram-sub { font-size: 0.9rem; opacity: 0.75; margin-bottom: 12px; }
-        .meaning-box { background: rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
-        .divider { height: 1px; background: rgba(255, 255, 255, 0.15); margin: 12px 0; width: 100%; }
-        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.4); }
-        .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.6; margin-bottom: 6px; }
-        .character-box { background: rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.95; }
+        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .hexagram-sub { font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
+        /* 🌟 中のボックスも少しだけ暗くして文字の読みやすさを限界までアップ */
+        .meaning-box { background: rgba(0, 0, 0, 0.25); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
+        .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
+        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.6); }
+        .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.7; margin-bottom: 6px; }
+        .character-box { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; }
         .char-line { margin-bottom: 6px; text-indent: -0.5em; padding-left: 0.5em; }
         .char-line:last-child { margin-bottom: 0; }
     </style>
+
 </head>
 
 <body>
