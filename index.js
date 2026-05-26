@@ -13,52 +13,33 @@ const client = new line.Client({
 
 const hexagrams = [];
 const lines = [];
+// 💡 重複防止用の記憶箱
+const lastFortune = new Map();
 
-// 💡 ゴミ文字(BOM)を完全に消し去る最強の読み込み（エラー防止のために追加！）
 const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
 fs.createReadStream("hexagrams.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => hexagrams.push(data));
 fs.createReadStream("lines.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => lines.push(data));
 
-// 1. トップページにアクセスされたら index.html を返す
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-// 2. 占い結果API
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
-  
   const h = hexagrams.find(item => String(item.id) === String(hid));
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
   
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-  let l = matchedLines.find(line => String(line.line_name) === String(l_name));
-  if (!l) l = matchedLines[0] || { line_name: "全体", line_emotion: "ふんわりした予感" };
+  let l = matchedLines.find(line => String(line.line_name) === String(l_name)) || { line_name: l_name };
 
   res.json({
-    name: h.name, 
-    weather: h.weather, 
-    emotion: h.emotion,
-    line_name: l.line_name,
-    line_emotion: l.line_emotion,
+    name: h.name, weather: h.weather, emotion: h.emotion,
+    line_name: l.line_name, line_emotion: l.line_emotion || "ふんわりした予感",
     meaning: h.meaning,
-    advice: "3人が身を寄せ合って空を見上げているな。今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line || "わッ…！",
-    hachiware: h.hachiware_line || "なんとなんとそう？",
-    usagi: h.usagi_line || "ヤハ！",
-    video: "https://firebasestorage.googleapis.com/v0/b/sora-no-eki-f7e5c.firebasestorage.app/o/weather%2Fsky_1.mp4?alt=media&token=ad998496-2299-4d84-9632-b2ea80bfb822"
+    advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    chiikawa: h.chiikawa_line, hachiware: h.hachiware_line, usagi: h.usagi_line
   });
 });
 
-app.use(express.static(__dirname));
-
-// 3. どんなURLでも index.html に飛ばす魔法の受け皿
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// LINEのやり取り
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -66,44 +47,33 @@ app.post("/callback", express.json(), async (req, res) => {
 
     for (const event of events) {
       if (event.type !== "message" || event.message.type !== "text") continue;
+
+      const userId = event.source.userId;
       
-      if (hexagrams.length === 0 || lines.length === 0) {
-        await client.replyMessage(event.replyToken, { type: "text", text: "占いの準備中だよ、ちょっと待ってね！" });
-        continue;
-      }
+      // 1. 重複なしで卦を選ぶ
+      let h;
+      let attempts = 0;
+      do {
+        h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
+        attempts++;
+      } while (h.id === lastFortune.get(userId) && attempts < 10);
+      lastFortune.set(userId, h.id);
 
-      const h = hexagrams[Math.floor(Math.random() * hexagrams.length)];
-      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-      const l = matchedLines[Math.floor(Math.random() * matchedLines.length)] || { line_name: "全体" };
+      // 2. 0〜6で爻を選ぶ
+      const lineIndex = Math.floor(Math.random() * 7);
+      const lName = lineIndex === 0 ? "全体" : `${lineIndex}爻`;
 
-      const myUrl = `https://${req.get('host')}`;
-      const finalUrl = `${myUrl}/?hid=${h.id}&l_name=${encodeURIComponent(l.line_name)}`;
+      const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
       await client.replyMessage(event.replyToken, {
         type: "text",
-        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
-        quickReply: {
-          items: [
-            {
-              type: "action",
-              action: {
-                type: "uri",
-                label: "カードを開く 🃏",
-                uri: finalUrl
-              }
-            }
-          ]
-        }
+        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】(${lName})\n下のボタンを押してカードを開いてみてね👇`,
+        quickReply: { items: [{ type: "action", action: { type: "uri", label: "カードを開く 🃏", uri: finalUrl } }] }
       });
     }
     res.sendStatus(200);
-  } catch (error) {
-    console.error("LINE送信エラー:", error);
-    res.sendStatus(500);
-  }
+  } catch (error) { console.error(error); res.sendStatus(500); }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.use(express.static(__dirname));
+app.listen(process.env.PORT || 10000);
