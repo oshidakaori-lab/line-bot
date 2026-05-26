@@ -7,19 +7,27 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 🌌 背景：初期状態はグラデーション、データが来たら画像がフワッと切り替わる */
+        /* 🌌 背景：画像が「最初から」「さりげなく」馴染むように設定 */
         body, html {
             width: 100%; height: 100%; overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             color: #fff;
+            
+            /* 初期状態の夜空グラデーション */
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            /* 🌟 画像背景の設定を追加 */
+            
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-            transition: background-image 0.8s ease-in-out; /* フワッと変わる魔法 */
+            
+            /* 🌟 ここがポイント：画像を暗くしてぼかす魔法（フィルター） */
+            filter: brightness(0.4) blur(10px);
+            /* ぼかした時に端が白く引き伸ばされるのを防ぐために、少しだけ拡大しておくよ */
+            transform: scale(1.08); 
+            
+            transition: background-image 0.6s ease-in-out;
         }
     
         @keyframes gradientBG {
@@ -28,12 +36,20 @@
             100% { background-position: 0% 50%; }
         }
 
-        .container { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
+        /* 🌟 bodyを拡大・ぼかしたので、カード用のコンテナは元のサイズ・位置に固定するよ */
+        .container {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; z-index: 10;
+        }
         
         /* 🃏 カード：呼吸するように浮かぶアニメーション */
         .fortune-card {
-            background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
+            /* モックアップみたいに少しだけ透ける黒ベースにすると、すっごく高級感が出るよ */
+            background: rgba(15, 23, 42, 0.55); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
             box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6); text-align: center;
             animation: floatCard 6s ease-in-out infinite;
         }
@@ -44,13 +60,13 @@
         }
 
         .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
-        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
         .hexagram-sub { font-size: 0.9rem; opacity: 0.75; margin-bottom: 12px; }
-        .meaning-box { background: rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.25); }
-        .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
-        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.3); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.5); }
+        .meaning-box { background: rgba(255, 255, 255, 0.05); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
+        .divider { height: 1px; background: rgba(255, 255, 255, 0.15); margin: 12px 0; width: 100%; }
+        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.4); }
         .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.6; margin-bottom: 6px; }
-        .character-box { background: rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.95; }
+        .character-box { background: rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; opacity: 0.95; }
         .char-line { margin-bottom: 6px; text-indent: -0.5em; padding-left: 0.5em; }
         .char-line:last-child { margin-bottom: 0; }
     </style>
@@ -88,7 +104,7 @@
                     return res.json();
                 })
                 .then(data => {
-                    // 🌟 天気絵文字の判定
+                    // 天気絵文字の判定
                     let icon = "🔮";
                     if (data.weather.includes("雷")) icon = "⚡️";
                     else if (data.weather.includes("雨")) icon = "☔";
@@ -98,7 +114,7 @@
                     else if (data.weather.includes("雪")) icon = "❄️";
                     else if (data.weather.includes("虹")) icon = "🌈";
 
-                    // 🌟 画面へのデータ反映
+                    // 画面へのデータ反映
                     document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
                     document.getElementById('hexagram-name').innerText = data.name;
                     document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
@@ -108,7 +124,7 @@
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
-                    // 🌟 背景画像の大採用！CSVに画像名があれば背景に設定
+                    // 🌟 背景画像を最初からフィルターがかかった状態でセット！
                     if (data.image) {
                         document.body.style.backgroundImage = `url('${data.image}')`;
                     }
