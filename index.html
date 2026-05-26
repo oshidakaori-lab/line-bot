@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>空の易 - 占い結果</title>
-     <style>
+    <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 🌌 背景：画像はぼかさず、100%綺麗にそのまま見せる！ */
+        /* 🌌 背景：画像は100%綺麗に見せる */
         body, html {
             width: 100%; height: 100%; overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -33,13 +33,17 @@
             padding: 20px;
         }
         
-        /* 🃏 カード：すりガラス効果付きのダークマスクにして、白文字を100%読めるように！ */
+        /* 🃏 カード：すりガラス効果。ボーダーの色の変化をなめらかにする transition を追加 */
         .fortune-card {
-            background: rgba(15, 23, 42, 0.65); /* 🌟 黒に近いネイビーを65%の濃さで敷く */
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); /* すりガラス効果 */
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2); /* 🌟 太さを少し太くして色を目立たせるよ */
+            border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center;
             animation: floatCard 6s ease-in-out infinite;
+            transition: border-color 0.8s ease-in-out, box-shadow 0.8s ease-in-out; /* 🌟 色変化をフワッとさせる */
+            position: relative;
+            overflow: hidden;
         }
         @keyframes floatCard {
             0% { transform: translateY(0px); }
@@ -48,29 +52,44 @@
         }
 
         .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
-        .hexagram-title { font-size: 2rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        
+        /* 🌟 タイトル部分：カラーに合わせて光るように transition を追加 */
+        .hexagram-title { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            margin-bottom: 4px; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            transition: color 0.8s ease-in-out, text-shadow 0.8s ease-in-out;
+        }
+        
         .hexagram-sub { font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
-        /* 🌟 中のボックスも少しだけ暗くして文字の読みやすさを限界までアップ */
         .meaning-box { background: rgba(0, 0, 0, 0.25); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
         .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
-        .advice-box { text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; border-left: 4px solid rgba(255, 255, 255, 0.6); }
+        
+        /* 🌟 鎧さんの助言ボックスのフチ（左線）もフワッと変わるようにする */
+        .advice-box { 
+            text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; 
+            background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; 
+            border-left: 4px solid rgba(255, 255, 255, 0.6); 
+            transition: border-left-color 0.8s ease-in-out;
+        }
+        
         .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.7; margin-bottom: 6px; }
         .character-box { background: rgba(0, 0, 0, 0.2); border-radius: 16px; padding: 14px 16px; text-align: left; font-size: 0.85rem; line-height: 1.6; }
         .char-line { margin-bottom: 6px; text-indent: -0.5em; padding-left: 0.5em; }
         .char-line:last-child { margin-bottom: 0; }
     </style>
-
 </head>
 
 <body>
     <div class="container">
-        <div class="fortune-card">
+        <div class="fortune-card" id="card-element">
             <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
             <div class="hexagram-title" id="hexagram-name">Please Wait</div>
             <div class="hexagram-sub" id="line-text">データを集めています</div>
             <div class="meaning-box" id="meaning-text">ちいかわ達が占いの準備をしているよ...</div>
             <div class="divider"></div>
-            <div class="advice-box">
+            <div class="advice-box" id="advice-element">
                 <div class="advice-label">💬 鎧さんの見守り助言</div>
                 <div id="advice-text">ちょっと待っててくれな。</div>
             </div> 
@@ -83,6 +102,23 @@
     </div>
 
     <script>
+        // 🌟 CSVのcolor名と、実際のきれいなカラーコードをペアにする魔法の辞書
+        const colorMap = {
+            gold: '#fbbf24',       // 黄金色
+            gray: '#94a3b8',       // 落ち着いたグレー
+            purple: '#c084fc',     // ゆめかわパープル
+            mist: '#cbd5e1',       // 朝もやミスト
+            azure: '#38bdf8',      // 青空アジュール
+            coral: '#f87171',      // 賑やかコーラル
+            leafgreen: '#4ade80',  // 新緑グリーン
+            sand: '#fba550',       // 砂漠・夕方サンド
+            indigo: '#818cf8',     // 深いインディゴ
+            plum: '#f472b6',       // 梅・ピンク系
+            teal: '#2dd4bf',       // エメラルドティール
+            electric: '#a855f7',   // ⚡️しんいらい用のビリビリパープル
+            amber: '#fbbf24',      // ❄️ごんいさん用の温かみアンバー
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.has('hid')) {
             const hid = urlParams.get('hid');
@@ -114,10 +150,27 @@
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
-                    // 🌟 背景画像を最初からフィルターがかかった状態でセット！
                     if (data.image) {
                         document.body.style.backgroundImage = `url('${data.image}')`;
                     }
+
+                    // 🌟 【新機能】テーマカラーをカードに注入するよ！
+                    // index.jsのapiから渡ってくる color を判定（なければデフォルト白）
+                    const matchedColor = colorMap[data.color] || '#ffffff';
+                    
+                    // 1. カードのフチの色を変える ＋ 影をテーマカラーでほんのり光らせる！
+                    const card = document.getElementById('card-element');
+                    card.style.borderColor = matchedColor;
+                    card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.4), 0 0 15px ${matchedColor}44`; // 末尾の44は透明度だよ
+                    
+                    // 2. 卦のタイトルの文字色を変える ＋ 文字の後ろを光らせる！
+                    const title = document.getElementById('hexagram-name');
+                    title.style.color = matchedColor;
+                    title.style.textShadow = `0 2px 10px rgba(0,0,0,0.8), 0 0 8px ${matchedColor}`;
+
+                    // 3. 鎧さんのボックスの左線の色も変える！
+                    const adviceBox = document.getElementById('advice-element');
+                    adviceBox.style.borderLeftColor = matchedColor;
                 })
                 .catch(err => {
                     document.getElementById('hexagram-name').innerText = "😭 エラー";
