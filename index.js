@@ -6,23 +6,30 @@ const csv = require("csv-parser");
 const path = require("path");
 const app = express();
 
+// 🌟 CSVではなく、新色満載の完璧な hexagrams.js を直接読み込む！
+const hexagrams = require("./hexagrams"); 
+
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
 
-const hexagrams = [];
 const lines = [];
 // 💡 重複防止用の記憶箱
 const lastFortune = new Map();
 
 const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-fs.createReadStream("hexagrams.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => hexagrams.push(data));
-fs.createReadStream("lines.csv").pipe(csv({ mapHeaders: cleanHeader })).on("data", (data) => lines.push(data));
+// lines.csv だけを読み込む（卦のデータはJS側を見るので不要！）
+fs.createReadStream("lines.csv")
+  .pipe(csv({ mapHeaders: cleanHeader }))
+  .on("data", (data) => lines.push(data));
+
+app.use(express.static(__dirname));
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
+// 🔮 占い詳細データをフロントに返すAPI
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
@@ -31,24 +38,25 @@ app.get("/api/fortune", (req, res) => {
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
   let l = matchedLines.find(line => String(line.line_name) === String(l_name)) || { line_name: l_name };
 
-    res.json({
+  res.json({
     name: h.name, 
     weather: h.weather,          // 絵文字判定のための元の天気
-    sky_name: h.sky_name,        // 【新】無雲高天などのエモい空の名前
-    emotion: h.emotion,          // 【新】無限に澄み切った高天…などの情景描写
-    emotion_type: h.emotion_type,// 【新】創造などの属性
+    sky_name: h.sky_name,        // 無雲高天などのエモい空の名前
+    emotion: h.emotion,          // 無限に澄み切った高天…などの情景描写
+    emotion_type: h.emotion_type,// 創造などの属性
     line_name: l.line_name,
     line_emotion: l.line_emotion || "ふんわりした予感",
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line, 
-    hachiware: h.hachiware_line, 
-    usagi: h.usagi_line,
+    chiikawa: h.chiikawa_line,   // 🌟 hexagrams.js のキー名と合わせているよ
+    hachiware: h.hachiware_line, // 🌟 hexagrams.js のキー名と合わせているよ
+    usagi: h.usagi_line,         // 🌟 hexagrams.js のキー名と合わせているよ
     color: h.color,
     image: h.image
   });
+}); // 👈 🌟 ここに閉じカッコが綺麗に入りました！
 
-
+// 🤖 LINEからのメッセージを受け取るコールバック
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -68,13 +76,13 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      // 🌟 2. 1〜6の数字をランダムで生み出す！（0は絶対に出ないよ）
-      const lineIndex = Math.floor(Math.random() * 6) + 1; // 1〜6のどれか
-      const lName = `${lineIndex}爻`; // 👈 ここで「1爻」〜「6爻」という文字を作るよ
+      // 2. 1〜6の数字をランダムで生み出す
+      const lineIndex = Math.floor(Math.random() * 6) + 1; 
+      const lName = `${lineIndex}爻`; 
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
-      // 🌟 1. レアリティごとに枠線（とボタン）の色を定義する！
+      // 🌟 レアリティごとに枠線（とボタン）の色を定義する！
       const rarityColors = {
         "SSR": "#fbbf24", // 黄金に輝くゴールド！
         "SR": "#38bdf8",  // 鮮やかなアジュールブルー
@@ -82,31 +90,29 @@ app.post("/callback", express.json(), async (req, res) => {
         "N": "#94a3b8"    // 落ち着いたグレー
       };
       
-      // 該当する色を取得（もし設定がなければデフォルトの白）
       const frameColor = rarityColors[h.rarity] || "#ffffff";
 
-      // 🌟 2. Flex Messageの枠組み（JSON）を作る
+      // 🌟 Flex Messageの枠組みを作る
       const flexMessage = {
         type: "flex",
-        altText: `🔮 今日の占い結果：【${h.name}】`, // 通知ポップアップ用テキスト
+        altText: `🔮 今日の占い結果：【${h.name}】`,
         contents: {
           type: "bubble",
-          size: "kilo", // 少しコンパクトで可愛いサイズ
+          size: "kilo",
           body: {
             type: "box",
             layout: "vertical",
-            // 👇 ここが魔法の部分！枠線の色と太さ、角丸を指定！
             borderColor: frameColor, 
             borderWidth: "bold",
             cornerRadius: "xl",
             paddingAll: "lg",
-            backgroundColor: "#0f172a", // Web画面に合わせた夜空のダークブルー
+            backgroundColor: "#0f172a",
             contents: [
               {
                 type: "text",
                 text: `✨ ${h.rarity} ✨`,
                 weight: "bold",
-                color: frameColor, // レアリティの文字色も枠線と同じにするよ
+                color: frameColor,
                 align: "center",
                 size: "sm"
               },
@@ -130,7 +136,7 @@ app.post("/callback", express.json(), async (req, res) => {
               {
                 type: "button",
                 style: "primary",
-                color: frameColor, // ボタンの色もレアリティカラーに統一！
+                color: frameColor,
                 margin: "lg",
                 height: "sm",
                 action: {
@@ -144,17 +150,16 @@ app.post("/callback", express.json(), async (req, res) => {
         }
       };
 
-      // 🌟 3. Flex Messageを送信！
+      // 🌟 Flex Messageを送信！
       await client.replyMessage(event.replyToken, flexMessage);
+    } // 👈 🌟 for文の閉じカッコもバッチリ！
 
     res.sendStatus(200);
-  } catch (error) { console.error(error); res.sendStatus(500); }
+  } catch (error) { 
+    console.error(error); 
+    res.sendStatus(500); 
+  }
 });
 
-    res.sendStatus(200);
-  } catch (error) { console.error(error); res.sendStatus(500); }
-});
-
-
-app.use(express.static(__dirname));
+// ポートのリッスン
 app.listen(process.env.PORT || 10000);
