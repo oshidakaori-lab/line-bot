@@ -9,17 +9,27 @@
         
         /* 🌌 背景：画像は100%綺麗に見せる */
         body, html {
-            width: 100%; height: 100%; overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            color: #fff;
-            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            transition: background-image 0.6s ease-in-out;
-        }
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    color: #fff;
+
+    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    transition: background-image 0.6s ease-in-out;
+}
     
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
