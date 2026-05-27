@@ -59,21 +59,28 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      // 2. 0〜6で爻を選ぶ
-      const lineIndex = Math.floor(Math.random() * 7);
-      const lName = lineIndex === 0 ? "全体" : `${lineIndex}爻`;
+      // 🌟 2. 1〜6の数字をランダムで生み出す！（0は絶対に出ないよ）
+      const lineIndex = Math.floor(Math.random() * 6) + 1; // 1〜6のどれか
+      const lName = `${lineIndex}爻`; // 👈 ここで「1爻」〜「6爻」という文字を作るよ
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
+      // 🌟 3. LINEに送るメッセージをスッキリ修正！
       await client.replyMessage(event.replyToken, {
         type: "text",
-        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】(${lName})\n下のボタンを押してカードを開いてみてね👇`,
+        // 【修正ポイント】以前の「(全体)」という表示を消して、綺麗に【卦の名前】（〇爻）と出るようにしたよ！
+        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】（${lName}）\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
         quickReply: { items: [{ type: "action", action: { type: "uri", label: "カードを開く 🃏", uri: finalUrl } }] }
       });
     }
     res.sendStatus(200);
   } catch (error) { console.error(error); res.sendStatus(500); }
 });
+
+    res.sendStatus(200);
+  } catch (error) { console.error(error); res.sendStatus(500); }
+});
+
 
 app.use(express.static(__dirname));
 app.listen(process.env.PORT || 10000);
