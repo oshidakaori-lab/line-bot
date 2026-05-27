@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,29 +12,24 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 🌌 背景：画像は100%綺麗に見せる */
         body, html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #fff;
 
-    font-family: 'Zen Maru Gothic', sans-serif;
-            
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+            /* 初期状態のグラデーション */
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
 
-    color: #fff;
-
-    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-
-    transition: background-image 0.6s ease-in-out;
-}
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            transition: background-image 0.6s ease-in-out;
+            position: relative;
+        }
     
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
@@ -41,66 +37,60 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* 🌟 【新設】画像の上に被せる薄黒いベール（オーバーレイ） */
+        /* これのおかげで、画像が最初から鮮やかに見えつつ、文字の邪魔をしません！ */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.45); /* 🌟 ここの 0.45（45%の濃さ）で全体の暗さを調整できるよ */
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 🌟 カードをベールより手前に出すために z-index を指定 */
         .container {
             width: 100%; height: 100%; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
             padding: 20px;
+            position: relative;
+            z-index: 10; 
         }
         
-        /* 🃏 カード：すりガラス効果。ボーダーの色の変化をなめらかにする transition を追加 */
+        /* 🃏 カード：すりガラス効果。少しだけ背景を濃くして白文字を完全ガード */
         .fortune-card {
-            background: rgba(15, 23, 42, 0.65);
+            background: rgba(15, 23, 42, 0.75); /* 75%の濃いめダークマスク */
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(255, 255, 255, 0.2); /* 🌟 太さを少し太くして色を目立たせるよ */
+            border: 2px solid rgba(255, 255, 255, 0.2); 
             border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); text-align: center;
             animation: floatCard 6s ease-in-out infinite;
-            transition: border-color 0.8s ease-in-out, box-shadow 0.8s ease-in-out; /* 🌟 色変化をフワッとさせる */
+            transition: border-color 0.8s ease-in-out, box-shadow 0.8s ease-in-out; 
             position: relative;
             overflow: hidden;
         }
-    .fortune-card::before {
-    content: "";
-    position: absolute;
-    top: -30%;
-    left: -30%;
-    width: 160%;
-    height: 160%;
-
-    background: radial-gradient(
-        circle,
-        rgba(255,255,255,0.08) 0%,
-        transparent 70%
-    );
-
-    filter: blur(20px);
-
-    animation: shineMove 8s ease-in-out infinite;
-
-    pointer-events: none;
-}
+        .fortune-card::before {
+            content: "";
+            position: absolute;
+            top: -30%; left: -30%; width: 160%; height: 160%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            filter: blur(20px);
+            animation: shineMove 8s ease-in-out infinite;
+            pointer-events: none;
+        }
         @keyframes floatCard {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
             100% { transform: translateY(0px); }
         }
-    @keyframes shineMove {
-    0% {
-        transform: translateX(-10%) translateY(-10%);
-    }
-
-    50% {
-        transform: translateX(10%) translateY(10%);
-    }
-
-    100% {
-        transform: translateX(-10%) translateY(-10%);
-    }
-}
+        @keyframes shineMove {
+            0% { transform: translateX(-10%) translateY(-10%); }
+            50% { transform: translateX(10%) translateY(10%); }
+            100% { transform: translateX(-10%) translateY(-10%); }
+        }
 
         .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
         
-        /* 🌟 タイトル部分：カラーに合わせて光るように transition を追加 */
         .hexagram-title { 
             font-size: 2rem; 
             font-weight: 700; 
@@ -110,30 +100,19 @@
         }
         
         .hexagram-sub { font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
-        .meaning-box { background: rgba(0, 0, 0, 0.25); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
+        .meaning-box { background: rgba(0, 0, 0, 0.3); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
         .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
         
-        /* 🌟 鎧さんの助言ボックスのフチ（左線）もフワッと変わるようにする */
         .advice-box { 
             text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; 
-            background: rgba(0, 0, 0, 0.4); padding: 14px; border-radius: 14px; 
+            background: rgba(0, 0, 0, 0.45); padding: 14px; border-radius: 14px; 
             border-left: 4px solid rgba(255, 255, 255, 0.6); 
             transition: border-left-color 0.8s ease-in-out;
         }
         
         .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.7; margin-bottom: 6px; }
-        .character-box {
-    transform: rotate(-1deg);
-}
-        .char-line {
-    margin-bottom: 6px;
-    padding-left: 0.5em;
-
-    font-size: 0.9rem;
-    line-height: 1.7;
-
-    opacity: 0.95;
-}
+        .character-box { transform: rotate(-1deg); }
+        .char-line { margin-bottom: 6px; padding-left: 0.5em; font-size: 0.9rem; line-height: 1.7; opacity: 0.95; }
         .char-line:last-child { margin-bottom: 0; }
     </style>
 </head>
@@ -159,21 +138,10 @@
     </div>
 
     <script>
-        // 🌟 CSVのcolor名と、実際のきれいなカラーコードをペアにする魔法の辞書
         const colorMap = {
-            gold: '#fbbf24',       // 黄金色
-            gray: '#94a3b8',       // 落ち着いたグレー
-            purple: '#c084fc',     // ゆめかわパープル
-            mist: '#cbd5e1',       // 朝もやミスト
-            azure: '#38bdf8',      // 青空アジュール
-            coral: '#f87171',      // 賑やかコーラル
-            leafgreen: '#4ade80',  // 新緑グリーン
-            sand: '#fba550',       // 砂漠・夕方サンド
-            indigo: '#818cf8',     // 深いインディゴ
-            plum: '#f472b6',       // 梅・ピンク系
-            teal: '#2dd4bf',       // エメラルドティール
-            electric: '#a855f7',   // ⚡️しんいらい用のビリビリパープル
-            amber: '#fbbf24',      // ❄️ごんいさん用の温かみアンバー
+            gold: '#fbbf24', gray: '#94a3b8', purple: '#c084fc', mist: '#cbd5e1',
+            azure: '#38bdf8', coral: '#f87171', leafgreen: '#4ade80', sand: '#fba550',
+            indigo: '#818cf8', plum: '#f472b6', teal: '#2dd4bf', electric: '#a855f7', amber: '#fbbf24',
         };
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -187,7 +155,6 @@
                     return res.json();
                 })
                 .then(data => {
-                    // 天気絵文字の判定
                     let icon = "🔮";
                     if (data.weather.includes("雷")) icon = "⚡️";
                     else if (data.weather.includes("雨")) icon = "☔";
@@ -197,7 +164,6 @@
                     else if (data.weather.includes("雪")) icon = "❄️";
                     else if (data.weather.includes("虹")) icon = "🌈";
 
-                    // 画面へのデータ反映
                     document.getElementById('weather-text').innerText = icon + " " + data.weather + " (" + data.emotion + ")";
                     document.getElementById('hexagram-name').innerText = data.name;
                     document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
@@ -211,21 +177,16 @@
                         document.body.style.backgroundImage = `url('${data.image}')`;
                     }
 
-                    // 🌟 【新機能】テーマカラーをカードに注入するよ！
-                    // index.jsのapiから渡ってくる color を判定（なければデフォルト白）
                     const matchedColor = colorMap[data.color] || '#ffffff';
                     
-                    // 1. カードのフチの色を変える ＋ 影をテーマカラーでほんのり光らせる！
                     const card = document.getElementById('card-element');
                     card.style.borderColor = matchedColor;
-                    card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.4), 0 0 15px ${matchedColor}44`; // 末尾の44は透明度だよ
+                    card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.5), 0 0 15px ${matchedColor}44`;
                     
-                    // 2. 卦のタイトルの文字色を変える ＋ 文字の後ろを光らせる！
                     const title = document.getElementById('hexagram-name');
                     title.style.color = matchedColor;
                     title.style.textShadow = `0 2px 10px rgba(0,0,0,0.8), 0 0 8px ${matchedColor}`;
 
-                    // 3. 鎧さんのボックスの左線の色も変える！
                     const adviceBox = document.getElementById('advice-element');
                     adviceBox.style.borderLeftColor = matchedColor;
                 })
