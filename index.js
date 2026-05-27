@@ -31,14 +31,23 @@ app.get("/api/fortune", (req, res) => {
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
   let l = matchedLines.find(line => String(line.line_name) === String(l_name)) || { line_name: l_name };
 
-  res.json({
-    name: h.name, weather: h.weather, emotion: h.emotion,
-    line_name: l.line_name, line_emotion: l.line_emotion || "ふんわりした予感",
+    res.json({
+    name: h.name, 
+    weather: h.weather,          // 絵文字判定のための元の天気
+    sky_name: h.sky_name,        // 【新】無雲高天などのエモい空の名前
+    emotion: h.emotion,          // 【新】無限に澄み切った高天…などの情景描写
+    emotion_type: h.emotion_type,// 【新】創造などの属性
+    line_name: l.line_name,
+    line_emotion: l.line_emotion || "ふんわりした予感",
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line, hachiware: h.hachiware_line, usagi: h.usagi_line
+    chiikawa: h.chiikawa_line, 
+    hachiware: h.hachiware_line, 
+    usagi: h.usagi_line,
+    color: h.color,
+    image: h.image
   });
-});
+
 
 app.post("/callback", express.json(), async (req, res) => {
   try {
@@ -65,14 +74,79 @@ app.post("/callback", express.json(), async (req, res) => {
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
-      // 🌟 3. LINEに送るメッセージをスッキリ修正！
-      await client.replyMessage(event.replyToken, {
-        type: "text",
-        // 【修正ポイント】以前の「(全体)」という表示を消して、綺麗に【卦の名前】（〇爻）と出るようにしたよ！
-        text: `🔮 今日の「空の易」占い結果が出たよ！\n【${h.name}】（${lName}）\n下のボタンを押して、可愛いイラストカードを開いてみてね👇`,
-        quickReply: { items: [{ type: "action", action: { type: "uri", label: "カードを開く 🃏", uri: finalUrl } }] }
-      });
-    }
+      // 🌟 1. レアリティごとに枠線（とボタン）の色を定義する！
+      const rarityColors = {
+        "SSR": "#fbbf24", // 黄金に輝くゴールド！
+        "SR": "#38bdf8",  // 鮮やかなアジュールブルー
+        "R": "#4ade80",   // 優しいリーフグリーン
+        "N": "#94a3b8"    // 落ち着いたグレー
+      };
+      
+      // 該当する色を取得（もし設定がなければデフォルトの白）
+      const frameColor = rarityColors[h.rarity] || "#ffffff";
+
+      // 🌟 2. Flex Messageの枠組み（JSON）を作る
+      const flexMessage = {
+        type: "flex",
+        altText: `🔮 今日の占い結果：【${h.name}】`, // 通知ポップアップ用テキスト
+        contents: {
+          type: "bubble",
+          size: "kilo", // 少しコンパクトで可愛いサイズ
+          body: {
+            type: "box",
+            layout: "vertical",
+            // 👇 ここが魔法の部分！枠線の色と太さ、角丸を指定！
+            borderColor: frameColor, 
+            borderWidth: "bold",
+            cornerRadius: "xl",
+            paddingAll: "lg",
+            backgroundColor: "#0f172a", // Web画面に合わせた夜空のダークブルー
+            contents: [
+              {
+                type: "text",
+                text: `✨ ${h.rarity} ✨`,
+                weight: "bold",
+                color: frameColor, // レアリティの文字色も枠線と同じにするよ
+                align: "center",
+                size: "sm"
+              },
+              {
+                type: "text",
+                text: `【${h.name}】(${lName})`,
+                weight: "bold",
+                size: "xl",
+                color: "#ffffff",
+                align: "center",
+                margin: "md"
+              },
+              {
+                type: "text",
+                text: `空模様: ${h.sky_name}`,
+                size: "xs",
+                color: "#cbd5e1",
+                align: "center",
+                margin: "sm"
+              },
+              {
+                type: "button",
+                style: "primary",
+                color: frameColor, // ボタンの色もレアリティカラーに統一！
+                margin: "lg",
+                height: "sm",
+                action: {
+                  type: "uri",
+                  label: "カードを開く 🃏",
+                  uri: finalUrl
+                }
+              }
+            ]
+          }
+        }
+      };
+
+      // 🌟 3. Flex Messageを送信！
+      await client.replyMessage(event.replyToken, flexMessage);
+
     res.sendStatus(200);
   } catch (error) { console.error(error); res.sendStatus(500); }
 });
