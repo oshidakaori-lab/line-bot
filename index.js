@@ -164,13 +164,13 @@ app.post("/callback", express.json(), async (req, res) => {
                       }
                     ]
                   },
-                  // 🃏 4. ボタン（※ボタンコンポーネントを使わず、箱と文字で自作する安全策！）
+                       // 🃏 4. ボタン（箱と文字で自作）
                   {
                     type: "box",
                     layout: "vertical",
                     margin: "xxl",
                     paddingAll: "sm",
-                    borderColor: frameColor, // 外枠の色
+                    borderColor: frameColor,
                     borderWidth: "semi-bold",
                     cornerRadius: "md",
                     action: {
@@ -182,41 +182,44 @@ app.post("/callback", express.json(), async (req, res) => {
                       {
                         type: "text",
                         text: "Open Card",
-                        color: frameColor, // 文字の色
+                        color: frameColor,
                         align: "center",
                         weight: "bold",
                         size: "sm"
-                        
-                        // 🛡 鎧さんの見守り助言エリア
-{
-  type: "box",
-  layout: "vertical",
-  margin: "xl",
-  paddingAll: "md",
-  backgroundColor: "#1e293b", // 背景より少しだけ明るいダークグレーで「囲い」を作る
-  cornerRadius: "lg",
-  borderWidth: "light",
-  borderColor: "#334155", // 控えめな枠線
-  contents: [
-    {
-      type: "text",
-      text: "🛡 鎧さんの見守り助言",
-      size: "xxs",
-      color: "#94a3b8",
-      weight: "bold",
-      margin: "none"
-    },
-    {
-      type: "text",
-      text: h.yoroi_advice, // 👈 ここにさっきのアドバイスが入る！
-      size: "sm",
-      color: "#e2e8f0",
-      wrap: true, // 長い文章も綺麗に折り返す
-      margin: "sm",
-      lineSpacing: "5px" // 行間を少し開けて、ふんわり感を出す
-    }
-  ]
-}
+                      }
+                    ]
+                  },
+                  // 🛡 5. 鎧さんの見守り助言エリア（ボタンの下に追加！）
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "xl",
+                    paddingAll: "md",
+                    backgroundColor: "#1e293b",
+                    cornerRadius: "lg",
+                    borderWidth: "light",
+                    borderColor: "#334155",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "🛡 鎧さんの見守り助言",
+                        size: "xxs",
+                        color: "#94a3b8",
+                        weight: "bold",
+                        margin: "none"
+                      },
+                      {
+                        type: "text",
+                        text: h.yoroi_advice || "今日はぼちぼちいこう。",
+                        size: "sm",
+                        color: "#e2e8f0",
+                        wrap: true,
+                        margin: "sm",
+                        lineSpacing: "5px"
+                      }
+                    ]
+                  }
+
 
                         
                       }
