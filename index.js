@@ -6,7 +6,6 @@ const csv = require("csv-parser");
 const path = require("path");
 const app = express();
 
-// 🌟 CSVではなく、新色（midnightなど）が入った完璧な hexagrams.js を直接使う！
 const hexagrams = require("./hexagrams"); 
 
 const client = new line.Client({
@@ -15,21 +14,17 @@ const client = new line.Client({
 });
 
 const lines = [];
-// 💡 重複防止用の記憶箱
 const lastFortune = new Map();
 
 const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-// lines.csv の読み込み
 fs.createReadStream("lines.csv")
   .pipe(csv({ mapHeaders: cleanHeader }))
   .on("data", (data) => lines.push(data));
 
 app.use(express.static(__dirname));
-
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-// 🔮 占い詳細データをフロントに返すAPI
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
@@ -55,7 +50,6 @@ app.get("/api/fortune", (req, res) => {
   });
 });
 
-// 🤖 LINEからのメッセージを受け取るコールバック
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -66,7 +60,6 @@ app.post("/callback", express.json(), async (req, res) => {
 
       const userId = event.source.userId;
       
-      // 1. 完全ランダム（等確率）で卦を選ぶ！
       let h;
       let attempts = 0;
       do {
@@ -75,25 +68,23 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      // 2. 1〜6の爻をランダムで選ぶ
       const lineIndex = Math.floor(Math.random() * 6) + 1; 
       const lName = `${lineIndex}爻`; 
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
-      // 🌟 レアリティごとの枠線カラー
+      // 🌟 ここにちいかわランクの色設定をしっかり入れたよ！
       const rarityColors = {
-        "SSR": "#fbbf24", // ゴールド
-        "SR": "#38bdf8",  // アジュールブルー
-        "R": "#4ade80",   // リーフグリーン
-        "N": "#94a3b8"    // グレー
+        "超・ハレハレ": "#fbbf24", // ゴールド
+        "ふんわり・ラッキー": "#38bdf8", // ブルー
+        "ぼちぼち・ホッコリ": "#4ade80", // グリーン
+        "ドタバタ・修行": "#94a3b8"      // グレー
       };
       
+      // もし rarity が見つからなかったら白になる
       const frameColor = rarityColors[h.rarity] || "#ffffff";
 
-      // 🌟 Flex Messageの作成
-            // 🌟 Flex Messageの作成（100%エラー回避版！）
-      // 🌟 Flex Messageの作成（日常フィルター導入版！）
+      // 🌟 Flex Messageの作成（エラー完全撃退版！）
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name}】が届いたよ`,
@@ -116,8 +107,6 @@ app.post("/callback", express.json(), async (req, res) => {
                   { type: "text", text: `•  ${h.rarity}  •`, weight: "bold", color: frameColor, align: "center", size: "xs" },
                   { type: "text", text: h.name, weight: "bold", size: "xxl", color: "#ffffff", align: "center", margin: "lg" },
                   { type: "text", text: lName, size: "xs", color: "#64748b", align: "center", margin: "none" },
-                  
-                  // 🌤 空模様
                   {
                     type: "box",
                     layout: "vertical",
@@ -128,8 +117,7 @@ app.post("/callback", express.json(), async (req, res) => {
                       { type: "text", text: h.sky_name, size: "md", color: "#cbd5e1", align: "center" }
                     ]
                   },
-
-                  // 📝 ちいかわたちの様子（日常フィルター）
+                  // 📝 ちいかわたちの様子
                   {
                     type: "box",
                     layout: "vertical",
@@ -137,10 +125,10 @@ app.post("/callback", express.json(), async (req, res) => {
                     paddingAll: "sm",
                     contents: [
                       { type: "text", text: "📝 今のちいかわたちの様子", size: "xxs", color: "#64748b", weight: "bold" },
-                      { type: "text", text: h.chiikawa_scene || "みんなですやすや眠っているみたい。", size: "sm", color: "#cbd5e1", wrap: true, margin: "xs", fontStyle: "italic" }
+                      // 💡 犯人はここだった！ fontStyle を style に修正したよ！
+                      { type: "text", text: h.chiikawa_scene || "みんなですやすや眠っているみたい。", size: "sm", color: "#cbd5e1", wrap: true, margin: "xs", style: "italic" }
                     ]
                   },
-
                   // 🛡 鎧さんの見守り助言
                   {
                     type: "box",
@@ -156,7 +144,6 @@ app.post("/callback", express.json(), async (req, res) => {
                       { type: "text", text: h.yoroi_advice || "今日はぼちぼちいこう。", size: "sm", color: "#e2e8f0", wrap: true, margin: "sm" }
                     ]
                   },
-
                   // 🃏 ボタン
                   {
                     type: "box",
@@ -177,9 +164,6 @@ app.post("/callback", express.json(), async (req, res) => {
           }
         }
       };
-
-
-
 
       await client.replyMessage(event.replyToken, flexMessage);
     }
