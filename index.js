@@ -101,70 +101,30 @@ app.post("/callback", express.json(), async (req, res) => {
           body: {
             type: "box",
             layout: "vertical",
-            backgroundColor: frameColor, // 枠線の色を外側の背景として敷く
-            paddingAll: "2px",           // 枠線の太さ
+            backgroundColor: frameColor,
+            paddingAll: "2px",
             cornerRadius: "xl",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                backgroundColor: "#0f172a", // 内側のメイン背景色
+                backgroundColor: "#0f172a",
                 cornerRadius: "xl",
                 paddingAll: "xl",
                 contents: [
-                  // 🪐 1. レアリティ
-                  {
-                    type: "text",
-                    text: `•  ${h.rarity}  •`,
-                    weight: "bold",
-                    color: frameColor,
-                    align: "center",
-                    size: "xs"
-                  },
-                  // 🔮 2. メインのタイトル
-                  {
-                    type: "text",
-                    text: h.name,
-                    weight: "bold",
-                    size: "xxl",
-                    color: "#ffffff",
-                    align: "center",
-                    margin: "lg"
-                  },
-                  // 爻
-                  {
-                    type: "text",
-                    text: lName,
-                    size: "xs",
-                    color: "#64748b",
-                    align: "center",
-                    margin: "none"
-                  },
-                  // 🌤 3. 空模様
+                  { type: "text", text: `•  ${h.rarity}  •`, weight: "bold", color: frameColor, align: "center", size: "xs" },
+                  { type: "text", text: h.name, weight: "bold", size: "xxl", color: "#ffffff", align: "center", margin: "lg" },
+                  { type: "text", text: lName, size: "xs", color: "#64748b", align: "center", margin: "none" },
                   {
                     type: "box",
                     layout: "vertical",
                     margin: "xxl",
                     spacing: "xs",
                     contents: [
-                      {
-                        type: "text",
-                        text: "CURRENT SKY",
-                        size: "xxs",
-                        color: "#475569",
-                        align: "center",
-                        weight: "bold"
-                      },
-                      {
-                        type: "text",
-                        text: h.sky_name,
-                        size: "md",
-                        color: "#cbd5e1",
-                        align: "center"
-                      }
+                      { type: "text", text: "CURRENT SKY", size: "xxs", color: "#475569", align: "center", weight: "bold" },
+                      { type: "text", text: h.sky_name, size: "md", color: "#cbd5e1", align: "center" }
                     ]
                   },
-                       // 🃏 4. ボタン（箱と文字で自作）
                   {
                     type: "box",
                     layout: "vertical",
@@ -173,23 +133,11 @@ app.post("/callback", express.json(), async (req, res) => {
                     borderColor: frameColor,
                     borderWidth: "semi-bold",
                     cornerRadius: "md",
-                    action: {
-                      type: "uri",
-                      label: "Open Card",
-                      uri: finalUrl
-                    },
+                    action: { type: "uri", label: "Open Card", uri: finalUrl },
                     contents: [
-                      {
-                        type: "text",
-                        text: "Open Card",
-                        color: frameColor,
-                        align: "center",
-                        weight: "bold",
-                        size: "sm"
-                      }
+                      { type: "text", text: "Open Card", color: frameColor, align: "center", weight: "bold", size: "sm" }
                     ]
                   },
-                  // 🛡 5. 鎧さんの見守り助言エリア（ボタンの下に追加！）
                   {
                     type: "box",
                     layout: "vertical",
@@ -200,22 +148,8 @@ app.post("/callback", express.json(), async (req, res) => {
                     borderWidth: "light",
                     borderColor: "#334155",
                     contents: [
-                      {
-                        type: "text",
-                        text: "🛡 鎧さんの見守り助言",
-                        size: "xxs",
-                        color: "#94a3b8",
-                        weight: "bold",
-                        margin: "none"
-                      },
-                      {
-                        type: "text",
-                        text: h.yoroi_advice || "今日はぼちぼちいこう。",
-                        size: "sm",
-                        color: "#e2e8f0",
-                        wrap: true,
-                        margin: "sm",
-                        lineSpacing: "5px"
+                      { type: "text", text: "🛡 鎧さんの見守り助言", size: "xxs", color: "#94a3b8", weight: "bold" },
+                      { type: "text", text: h.yoroi_advice || "今日はぼちぼちいこう。", size: "sm", color: "#e2e8f0", wrap: true, margin: "sm" }
                     ]
                   }
                 ]
@@ -224,6 +158,7 @@ app.post("/callback", express.json(), async (req, res) => {
           }
         }
       };
+
 
 
       await client.replyMessage(event.replyToken, flexMessage);
