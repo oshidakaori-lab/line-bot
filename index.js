@@ -44,7 +44,7 @@ app.get("/api/fortune", (req, res) => {
     sky_name: h.sky_name,
     emotion: h.emotion,
     emotion_type: h.emotion_type,
-    line_name: l.line_name || l_name, // 読み込みセーフティネットも完備！
+    line_name: l.line_name || l_name, 
     line_emotion: l.line_emotion || "静かに巡る空の気配",
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
@@ -97,80 +97,87 @@ app.post("/callback", express.json(), async (req, res) => {
         altText: `🔮 【${h.name}】が届いたよ`,
         contents: {
           type: "bubble",
-          size: "kilo",
+          // 🛠 size: "kilo" を削除して、標準の綺麗なサイズに修正！
           body: {
             type: "box",
             layout: "vertical",
-            borderColor: frameColor,
-            borderWidth: "bold",
+            backgroundColor: frameColor, // 🛠 枠線の色を「外側の背景」として敷くよ！
+            paddingAll: "2px",           // 🛠 これが枠線の「太さ」になります（細めでスタイリッシュに！）
             cornerRadius: "xl",
-            paddingAll: "xl", // 余白を広めにとって空気感を出すよ
-            backgroundColor: "#0f172a",
             contents: [
-              // 🪐 1. レアリティ（上部にふわっと浮かせる）
-              {
-                type: "text",
-                text: `•  ${h.rarity}  •`,
-                weight: "bold",
-                color: frameColor,
-                align: "center",
-                size: "xs" // 🛠 letterSpacing をきれいに削除したよ！
-              },
-              // 🔮 2. メインのタイトル
-              {
-                type: "text",
-                text: h.name,
-                weight: "bold",
-                size: "xxl",
-                color: "#ffffff",
-                align: "center",
-                margin: "lg"
-              },
-              // 爻
-              {
-                type: "text",
-                text: lName,
-                size: "xs",
-                color: "#64748b",
-                align: "center",
-                margin: "none"
-              },
-              // 🌤 3. 空模様（空間で魅せる）
               {
                 type: "box",
                 layout: "vertical",
-                margin: "xxl",
-                spacing: "xs",
+                backgroundColor: "#0f172a", // 🛠 内側のメインのダークブルー背景
+                cornerRadius: "xl",
+                paddingAll: "xl", // しっかり余白をとって空気感を出すよ
                 contents: [
+                  // 🪐 1. レアリティ（上部にふわっと浮かせる）
                   {
                     type: "text",
-                    text: "CURRENT SKY",
-                    size: "xxs",
-                    color: "#475569",
+                    text: `•  ${h.rarity}  •`,
+                    weight: "bold",
+                    color: frameColor,
                     align: "center",
-                    weight: "bold"
+                    size: "xs"
                   },
+                  // 🔮 2. メインのタイトル
                   {
                     type: "text",
-                    text: h.sky_name,
-                    size: "md",
-                    color: "#cbd5e1",
-                    align: "center"
+                    text: h.name,
+                    weight: "bold",
+                    size: "xxl",
+                    color: "#ffffff",
+                    align: "center",
+                    margin: "lg"
+                  },
+                  // 爻
+                  {
+                    type: "text",
+                    text: lName,
+                    size: "xs",
+                    color: "#64748b",
+                    align: "center",
+                    margin: "none"
+                  },
+                  // 🌤 3. 空模様（空間で魅せる）
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "xxl",
+                    spacing: "xs",
+                    contents: [
+                      {
+                        type: "text",
+                        text: "CURRENT SKY",
+                        size: "xxs",
+                        color: "#475569",
+                        align: "center",
+                        weight: "bold"
+                      },
+                      {
+                        type: "text",
+                        text: h.sky_name,
+                        size: "md",
+                        color: "#cbd5e1",
+                        align: "center"
+                      }
+                    ]
+                  },
+                  // 🃏 4. ボタン（洗練されたアウトライン風）
+                  {
+                    type: "button",
+                    style: "outline", 
+                    color: frameColor, 
+                    margin: "xxl",
+                    height: "sm",
+                    action: {
+                      type: "uri",
+                      label: "Open Card",
+                      uri: finalUrl
+                    }
                   }
                 ]
-              },
-              // 🃏 4. ボタン
-              {
-                type: "button",
-                style: "outline", 
-                color: frameColor, // 🛠 borderColor/borderWidth を削除して color に一本化！
-                margin: "xxl",
-                height: "sm",
-                action: {
-                  type: "uri",
-                  label: "Open Card",
-                  uri: finalUrl
-                }
               }
             ]
           }
