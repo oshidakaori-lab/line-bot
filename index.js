@@ -186,6 +186,39 @@ app.post("/callback", express.json(), async (req, res) => {
                         align: "center",
                         weight: "bold",
                         size: "sm"
+                        
+                        // 🛡 鎧さんの見守り助言エリア
+{
+  type: "box",
+  layout: "vertical",
+  margin: "xl",
+  paddingAll: "md",
+  backgroundColor: "#1e293b", // 背景より少しだけ明るいダークグレーで「囲い」を作る
+  cornerRadius: "lg",
+  borderWidth: "light",
+  borderColor: "#334155", // 控えめな枠線
+  contents: [
+    {
+      type: "text",
+      text: "🛡 鎧さんの見守り助言",
+      size: "xxs",
+      color: "#94a3b8",
+      weight: "bold",
+      margin: "none"
+    },
+    {
+      type: "text",
+      text: h.yoroi_advice, // 👈 ここにさっきのアドバイスが入る！
+      size: "sm",
+      color: "#e2e8f0",
+      wrap: true, // 長い文章も綺麗に折り返す
+      margin: "sm",
+      lineSpacing: "5px" // 行間を少し開けて、ふんわり感を出す
+    }
+  ]
+}
+
+                        
                       }
                     ]
                   }
