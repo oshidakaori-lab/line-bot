@@ -93,6 +93,7 @@ app.post("/callback", express.json(), async (req, res) => {
 
       // 🌟 Flex Messageの作成
             // 🌟 Flex Messageの作成（100%エラー回避版！）
+      // 🌟 Flex Messageの作成（日常フィルター導入版！）
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name}】が届いたよ`,
@@ -115,20 +116,52 @@ app.post("/callback", express.json(), async (req, res) => {
                   { type: "text", text: `•  ${h.rarity}  •`, weight: "bold", color: frameColor, align: "center", size: "xs" },
                   { type: "text", text: h.name, weight: "bold", size: "xxl", color: "#ffffff", align: "center", margin: "lg" },
                   { type: "text", text: lName, size: "xs", color: "#64748b", align: "center", margin: "none" },
+                  
+                  // 🌤 空模様
                   {
                     type: "box",
                     layout: "vertical",
-                    margin: "xxl",
+                    margin: "xl",
                     spacing: "xs",
                     contents: [
                       { type: "text", text: "CURRENT SKY", size: "xxs", color: "#475569", align: "center", weight: "bold" },
                       { type: "text", text: h.sky_name, size: "md", color: "#cbd5e1", align: "center" }
                     ]
                   },
+
+                  // 📝 ちいかわたちの様子（日常フィルター）
                   {
                     type: "box",
                     layout: "vertical",
-                    margin: "xxl",
+                    margin: "lg",
+                    paddingAll: "sm",
+                    contents: [
+                      { type: "text", text: "📝 今のちいかわたちの様子", size: "xxs", color: "#64748b", weight: "bold" },
+                      { type: "text", text: h.chiikawa_scene || "みんなですやすや眠っているみたい。", size: "sm", color: "#cbd5e1", wrap: true, margin: "xs", fontStyle: "italic" }
+                    ]
+                  },
+
+                  // 🛡 鎧さんの見守り助言
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "md",
+                    paddingAll: "md",
+                    backgroundColor: "#1e293b",
+                    cornerRadius: "lg",
+                    borderWidth: "light",
+                    borderColor: "#334155",
+                    contents: [
+                      { type: "text", text: "🛡 鎧さんの助言", size: "xxs", color: "#94a3b8", weight: "bold" },
+                      { type: "text", text: h.yoroi_advice || "今日はぼちぼちいこう。", size: "sm", color: "#e2e8f0", wrap: true, margin: "sm" }
+                    ]
+                  },
+
+                  // 🃏 ボタン
+                  {
+                    type: "box",
+                    layout: "vertical",
+                    margin: "xl",
                     paddingAll: "sm",
                     borderColor: frameColor,
                     borderWidth: "semi-bold",
@@ -137,20 +170,6 @@ app.post("/callback", express.json(), async (req, res) => {
                     contents: [
                       { type: "text", text: "Open Card", color: frameColor, align: "center", weight: "bold", size: "sm" }
                     ]
-                  },
-                  {
-                    type: "box",
-                    layout: "vertical",
-                    margin: "xl",
-                    paddingAll: "md",
-                    backgroundColor: "#1e293b",
-                    cornerRadius: "lg",
-                    borderWidth: "light",
-                    borderColor: "#334155",
-                    contents: [
-                      { type: "text", text: "🛡 鎧さんの見守り助言", size: "xxs", color: "#94a3b8", weight: "bold" },
-                      { type: "text", text: h.yoroi_advice || "今日はぼちぼちいこう。", size: "sm", color: "#e2e8f0", wrap: true, margin: "sm" }
-                    ]
                   }
                 ]
               }
@@ -158,6 +177,7 @@ app.post("/callback", express.json(), async (req, res) => {
           }
         }
       };
+
 
 
 
