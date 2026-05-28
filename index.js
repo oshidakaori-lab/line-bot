@@ -216,13 +216,6 @@ app.post("/callback", express.json(), async (req, res) => {
                         wrap: true,
                         margin: "sm",
                         lineSpacing: "5px"
-                      }
-                    ]
-                  }
-
-
-                        
-                      }
                     ]
                   }
                 ]
