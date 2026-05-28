@@ -40,7 +40,7 @@ app.get("/api/fortune", (req, res) => {
     emotion: h.emotion,
     emotion_type: h.emotion_type,
     line_name: l.line_name || l_name, 
-    line_emotion: l.line_emotion || "静かに巡る空の気配",
+    line_emotion: l.soranoeki_line_emotion || "静かに巡る空の気配",
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
     chiikawa: h.chiikawa_line, 
@@ -68,17 +68,28 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      const lineIndex = Math.floor(Math.random() * 6) + 1; 
-      const lName = `${lineIndex}爻`; 
+            // 1〜6の爻をランダムで選ぶ
+      const lineIndex = Math.floor(Math.random() * 6) + 1; // 1〜6の数字
+      const lName = `${lineIndex}爻`; // 画面表示用の「○爻」
+
+      // 🌟 新しい lines_2.csv の構造に合わせて、数字（line）で確実に探すよ！
+      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+      const l = matchedLines.find(line => String(line.line) === String(lineIndex)) || {};
+      
+      // 🌟 CSVから可愛いセリフたちを抜き出す
+      const kawaiiName = l.line_name_kawaii || lName;         // 「ぴょん，でてきた…！」
+      const chiikawaEmotion = l.chiikawa_line_emotion || "";   // 「立ち上がる力，出てきた…！」
+      const chiikawaWord = l.chiikawa_line || "";             // 「いいスタート！」
+
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
       // 🌟 ここにちいかわランクの色設定をしっかり入れたよ！
       const rarityColors = {
-        "超・ハレハレ": "#fbbf24", // ゴールド
-        "ふんわり・ラッキー": "#38bdf8", // ブルー
-        "ぼちぼち・ホッコリ": "#4ade80", // グリーン
-        "ドタバタ・修行": "#94a3b8"      // グレー
+        "超ハレバレ SSR…ってコト？！！": "#fbbf24", // ゴールド
+        "フワラッキー SR…ってコト？！": "#38bdf8", // ブルー
+        "プチホッコリ R…ってコト！？": "#4ade80", // グリーン
+        "ボチボチ N…ってコト": "#94a3b8"      // グレー
       };
       
       // もし rarity が見つからなかったら白になる
