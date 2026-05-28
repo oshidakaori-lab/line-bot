@@ -38,22 +38,22 @@ app.get("/api/fortune", (req, res) => {
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
   let l = matchedLines.find(line => String(line.line_name) === String(l_name)) || { line_name: l_name };
 
-  res.json({
+    res.json({
     name: h.name, 
     weather: h.weather,
     sky_name: h.sky_name,
     emotion: h.emotion,
     emotion_type: h.emotion_type,
-    line_name: l.line_name,
-    line_emotion: l.line_emotion || "ふんわりした予感",
+    line_name: l.line_name || l_name, // 👈 読み込みが間に合わなくても必ず「◯爻」が入る
+    line_emotion: l.line_emotion || "静かに巡る空の気配", // 👈 より世界観に合うフォールバック
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
     chiikawa: h.chiikawa_line, 
     hachiware: h.hachiware_line, 
     usagi: h.usagi_line,
     color: h.color
-    // 💡 background-imageは使わないので、imageフィールドは返さなくてOK！
   });
+
 }); // 👈 🌟 ここで綺麗に閉じました！
 
 // 🤖 LINEからのメッセージを受け取るコールバック
@@ -192,3 +192,4 @@ app.post("/callback", express.json(), async (req, res) => {
 });
 
 app.listen(process.env.PORT || 10000);
+ 
