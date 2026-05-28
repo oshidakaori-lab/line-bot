@@ -6,7 +6,7 @@ const csv = require("csv-parser");
 const path = require("path");
 const app = express();
 
-// 🌟 CSVではなく、新色満載の完璧な hexagrams.js を直接読み込む！
+// 🌟 CSVではなく、新色（midnightなど）が入った完璧な hexagrams.js を直接使う！
 const hexagrams = require("./hexagrams"); 
 
 const client = new line.Client({
@@ -20,7 +20,7 @@ const lastFortune = new Map();
 
 const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-// lines.csv だけを読み込む（卦のデータはJS側を見るので不要！）
+// lines.csv の読み込み
 fs.createReadStream("lines.csv")
   .pipe(csv({ mapHeaders: cleanHeader }))
   .on("data", (data) => lines.push(data));
@@ -40,21 +40,21 @@ app.get("/api/fortune", (req, res) => {
 
   res.json({
     name: h.name, 
-    weather: h.weather,          // 絵文字判定のための元の天気
-    sky_name: h.sky_name,        // 無雲高天などのエモい空の名前
-    emotion: h.emotion,          // 無限に澄み切った高天…などの情景描写
-    emotion_type: h.emotion_type,// 創造などの属性
+    weather: h.weather,
+    sky_name: h.sky_name,
+    emotion: h.emotion,
+    emotion_type: h.emotion_type,
     line_name: l.line_name,
     line_emotion: l.line_emotion || "ふんわりした予感",
     meaning: h.meaning,
     advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line,   // 🌟 hexagrams.js のキー名と合わせているよ
-    hachiware: h.hachiware_line, // 🌟 hexagrams.js のキー名と合わせているよ
-    usagi: h.usagi_line,         // 🌟 hexagrams.js のキー名と合わせているよ
-    color: h.color,
-    image: h.image
+    chiikawa: h.chiikawa_line, 
+    hachiware: h.hachiware_line, 
+    usagi: h.usagi_line,
+    color: h.color
+    // 💡 background-imageは使わないので、imageフィールドは返さなくてOK！
   });
-}); // 👈 🌟 ここに閉じカッコが綺麗に入りました！
+}); // 👈 🌟 ここで綺麗に閉じました！
 
 // 🤖 LINEからのメッセージを受け取るコールバック
 app.post("/callback", express.json(), async (req, res) => {
@@ -67,7 +67,7 @@ app.post("/callback", express.json(), async (req, res) => {
 
       const userId = event.source.userId;
       
-      // 1. 重複なしで卦を選ぶ
+      // 1. 完全ランダム（等確率）で卦を選ぶ！
       let h;
       let attempts = 0;
       do {
@@ -76,23 +76,23 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      // 2. 1〜6の数字をランダムで生み出す
+      // 2. 1〜6の爻をランダムで選ぶ
       const lineIndex = Math.floor(Math.random() * 6) + 1; 
       const lName = `${lineIndex}爻`; 
 
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
 
-      // 🌟 レアリティごとに枠線（とボタン）の色を定義する！
+      // 🌟 レアリティごとの枠線カラー
       const rarityColors = {
-        "SSR": "#fbbf24", // 黄金に輝くゴールド！
-        "SR": "#38bdf8",  // 鮮やかなアジュールブルー
-        "R": "#4ade80",   // 優しいリーフグリーン
-        "N": "#94a3b8"    // 落ち着いたグレー
+        "SSR": "#fbbf24", // ゴールド
+        "SR": "#38bdf8",  // アジュールブルー
+        "R": "#4ade80",   // リーフグリーン
+        "N": "#94a3b8"    // グレー
       };
       
       const frameColor = rarityColors[h.rarity] || "#ffffff";
 
-      // 🌟 Flex Messageの枠組みを作る
+      // 🌟 Flex Messageの作成
       const flexMessage = {
         type: "flex",
         altText: `🔮 今日の占い結果：【${h.name}】`,
@@ -150,9 +150,8 @@ app.post("/callback", express.json(), async (req, res) => {
         }
       };
 
-      // 🌟 Flex Messageを送信！
       await client.replyMessage(event.replyToken, flexMessage);
-    } // 👈 🌟 for文の閉じカッコもバッチリ！
+    }
 
     res.sendStatus(200);
   } catch (error) { 
@@ -161,5 +160,4 @@ app.post("/callback", express.json(), async (req, res) => {
   }
 });
 
-// ポートのリッスン
 app.listen(process.env.PORT || 10000);
