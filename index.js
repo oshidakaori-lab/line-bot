@@ -92,27 +92,27 @@ app.post("/callback", express.json(), async (req, res) => {
       const frameColor = rarityColors[h.rarity] || "#ffffff";
 
       // 🌟 Flex Messageの作成
+            // 🌟 Flex Messageの作成（100%エラー回避版！）
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name}】が届いたよ`,
         contents: {
           type: "bubble",
-          // 🛠 size: "kilo" を削除して、標準の綺麗なサイズに修正！
           body: {
             type: "box",
             layout: "vertical",
-            backgroundColor: frameColor, // 🛠 枠線の色を「外側の背景」として敷くよ！
-            paddingAll: "2px",           // 🛠 これが枠線の「太さ」になります（細めでスタイリッシュに！）
+            backgroundColor: frameColor, // 枠線の色を外側の背景として敷く
+            paddingAll: "2px",           // 枠線の太さ
             cornerRadius: "xl",
             contents: [
               {
                 type: "box",
                 layout: "vertical",
-                backgroundColor: "#0f172a", // 🛠 内側のメインのダークブルー背景
+                backgroundColor: "#0f172a", // 内側のメイン背景色
                 cornerRadius: "xl",
-                paddingAll: "xl", // しっかり余白をとって空気感を出すよ
+                paddingAll: "xl",
                 contents: [
-                  // 🪐 1. レアリティ（上部にふわっと浮かせる）
+                  // 🪐 1. レアリティ
                   {
                     type: "text",
                     text: `•  ${h.rarity}  •`,
@@ -140,7 +140,7 @@ app.post("/callback", express.json(), async (req, res) => {
                     align: "center",
                     margin: "none"
                   },
-                  // 🌤 3. 空模様（空間で魅せる）
+                  // 🌤 3. 空模様
                   {
                     type: "box",
                     layout: "vertical",
@@ -164,18 +164,30 @@ app.post("/callback", express.json(), async (req, res) => {
                       }
                     ]
                   },
-                  // 🃏 4. ボタン（洗練されたアウトライン風）
+                  // 🃏 4. ボタン（※ボタンコンポーネントを使わず、箱と文字で自作する安全策！）
                   {
-                    type: "button",
-                    style: "outline", 
-                    color: frameColor, 
+                    type: "box",
+                    layout: "vertical",
                     margin: "xxl",
-                    height: "sm",
+                    paddingAll: "sm",
+                    borderColor: frameColor, // 外枠の色
+                    borderWidth: "semi-bold",
+                    cornerRadius: "md",
                     action: {
                       type: "uri",
                       label: "Open Card",
                       uri: finalUrl
-                    }
+                    },
+                    contents: [
+                      {
+                        type: "text",
+                        text: "Open Card",
+                        color: frameColor, // 文字の色
+                        align: "center",
+                        weight: "bold",
+                        size: "sm"
+                      }
+                    ]
                   }
                 ]
               }
@@ -183,6 +195,7 @@ app.post("/callback", express.json(), async (req, res) => {
           }
         }
       };
+
 
       await client.replyMessage(event.replyToken, flexMessage);
     }
