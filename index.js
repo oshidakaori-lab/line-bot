@@ -94,61 +94,92 @@ app.post("/callback", express.json(), async (req, res) => {
 
       // 🌟 Flex Messageの作成
       const flexMessage = {
-        type: "flex",
-        altText: `🔮 今日の占い結果：【${h.name}】`,
-        contents: {
-          type: "bubble",
-          size: "kilo",
-          body: {
-            type: "box",
-            layout: "vertical",
-            borderColor: frameColor, 
-            borderWidth: "bold",
-            cornerRadius: "xl",
-            paddingAll: "lg",
-            backgroundColor: "#0f172a",
-            contents: [
-              {
-                type: "text",
-                text: `✨ ${h.rarity} ✨`,
-                weight: "bold",
-                color: frameColor,
-                align: "center",
-                size: "sm"
-              },
-              {
-                type: "text",
-                text: `【${h.name}】(${lName})`,
-                weight: "bold",
-                size: "xl",
-                color: "#ffffff",
-                align: "center",
-                margin: "md"
-              },
-              {
-                type: "text",
-                text: `空模様: ${h.sky_name}`,
-                size: "xs",
-                color: "#cbd5e1",
-                align: "center",
-                margin: "sm"
-              },
-              {
-                type: "button",
-                style: "primary",
-                color: frameColor,
-                margin: "lg",
-                height: "sm",
-                action: {
-                  type: "uri",
-                  label: "カードを開く 🃏",
-                  uri: finalUrl
-                }
-              }
-            ]
+  type: "flex",
+  altText: `🔮 【${h.name}】が届いたよ`,
+  contents: {
+    type: "bubble",
+    size: "kilo",
+    body: {
+      type: "box",
+      layout: "vertical",
+      borderColor: frameColor,
+      borderWidth: "bold",
+      cornerRadius: "xl",
+      paddingAll: "xl", // 余白を広めにとって空気感を出すよ
+      backgroundColor: "#0f172a",
+      contents: [
+        // 🪐 1. レアリティ（上部にふわっと浮かせる）
+        {
+          type: "text",
+          text: `•  ${h.rarity}  •`,
+          weight: "bold",
+          color: frameColor,
+          align: "center",
+          size: "xs",
+          letterSpacing: "md" // 文字の間隔を広げて、シンプルで洗練された印象に
+        },
+        // 🔮 2. メインのタイトル（ドーンと大きく、でもシンプルに）
+        {
+          type: "text",
+          text: h.name,
+          weight: "bold",
+          size: "xxl", // サイズを1歩大きくして存在感アップ！
+          color: "#ffffff",
+          align: "center",
+          margin: "lg"
+        },
+        // 爻（ひっそりと寄り添うように）
+        {
+          type: "text",
+          text: lName,
+          size: "xs",
+          color: "#64748b",
+          align: "center",
+          margin: "none"
+        },
+        // 🌤 3. 空模様（中央に仕切り線を入れず、空間で魅せる）
+        {
+          type: "box",
+          layout: "vertical",
+          margin: "xxl",
+          spacing: "xs",
+          contents: [
+            {
+              type: "text",
+              text: "CURRENT SKY",
+              size: "xxs",
+              color: "#475569",
+              align: "center",
+              weight: "bold"
+            },
+            {
+              type: "text",
+              text: h.sky_name,
+              size: "md",
+              color: "#cbd5e1",
+              align: "center"
+            }
+          ]
+        },
+        // 🃏 4. ボタン（ベタ塗りをやめて、軽やかなアウトラインに！）
+        {
+          type: "button",
+          style: "outline", // 👈 ここをカスタム！
+          borderColor: frameColor,
+          borderWidth: "semi-bold",
+          margin: "xxl",
+          height: "sm",
+          action: {
+            type: "uri",
+            label: "Open Card", // あえて英語にして海外のミニマルデザイン風に
+            uri: finalUrl
           }
         }
-      };
+      ]
+    }
+  }
+};
+
 
       await client.replyMessage(event.replyToken, flexMessage);
     }
