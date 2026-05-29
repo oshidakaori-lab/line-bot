@@ -18,9 +18,10 @@ const lastFortune = new Map();
 
 const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
-fs.createReadStream("lines.csv")
+fs.createReadStream("lines_3.csv") // 🌟 lines.csv から lines_3.csv に変更！
   .pipe(csv({ mapHeaders: cleanHeader }))
   .on("data", (data) => lines.push(data));
+
 
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
@@ -42,8 +43,10 @@ app.get("/api/fortune", (req, res) => {
     line_name: l.line_name || l_name, 
     line_emotion: l.soranoeki_line_emotion || "静かに巡る空の気配",
     meaning: h.meaning,
-    advice: "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    // 🌟 h.yoroi_advice があればそれを使い、なければデフォルトの言葉にする
+    advice: h.yoroi_advice || "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
     chiikawa: h.chiikawa_line, 
+
     hachiware: h.hachiware_line, 
     usagi: h.usagi_line,
     color: h.color
