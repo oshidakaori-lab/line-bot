@@ -146,7 +146,6 @@ app.post("/callback", express.json(), async (req, res) => {
                       { type: "text", text: "Open Card", color: frameColor, align: "center", weight: "bold", size: "sm" }
                     ]
                   }
-
                 ]
               }
             ]
