@@ -131,34 +131,8 @@ app.post("/callback", express.json(), async (req, res) => {
                       { type: "text", text: h.sky_name, size: "md", color: "#cbd5e1", align: "center" }
                     ]
                   },
-                  // 📝 ちいかわたちの様子
-                  {
-                    type: "box",
-                    layout: "vertical",
-                    margin: "lg",
-                    paddingAll: "sm",
-                    contents: [
-                      { type: "text", text: "📝 今のちいかわたちの様子", size: "xxs", color: "#64748b", weight: "bold" },
-                      // 💡 犯人はここだった！ fontStyle を style に修正したよ！
-                      { type: "text", text: h.chiikawa_scene || "みんなですやすや眠っているみたい。", size: "sm", color: "#cbd5e1", wrap: true, margin: "xs", style: "italic" }
-                    ]
-                  },
-                  // 🛡 鎧さんの見守り助言
-                  {
-                    type: "box",
-                    layout: "vertical",
-                    margin: "md",
-                    paddingAll: "md",
-                    backgroundColor: "#1e293b",
-                    cornerRadius: "lg",
-                    borderWidth: "light",
-                    borderColor: "#334155",
-                    contents: [
-                      { type: "text", text: "🛡 鎧さんの助言", size: "xxs", color: "#94a3b8", weight: "bold" },
-                      { type: "text", text: h.yoroi_advice || "今日はぼちぼちいこう。", size: "sm", color: "#e2e8f0", wrap: true, margin: "sm" }
-                    ]
-                  },
-                  // 🃏 ボタン
+                  // 🌟 ここにあった「📝 今のちいかわたちの様子」と「🛡 鎧さんの助言」を削除！
+                  // 🃏 すぐに「Open Card」ボタンを配置！
                   {
                     type: "box",
                     layout: "vertical",
@@ -172,6 +146,7 @@ app.post("/callback", express.json(), async (req, res) => {
                       { type: "text", text: "Open Card", color: frameColor, align: "center", weight: "bold", size: "sm" }
                     ]
                   }
+
                 ]
               }
             ]
