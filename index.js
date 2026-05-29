@@ -26,13 +26,17 @@ fs.createReadStream("lines_3.csv") // 🌟 lines.csv から lines_3.csv に変�
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
+// index.js の app.get("/api/fortune", ...) の中身をこれに差し替えてね！
+
 app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
   
+  // 🌟 LINE側と合わせて、数字（line）または文字列で確実にCSVから爻を特定するよ
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-  let l = matchedLines.find(line => String(line.line_name) === String(l_name)) || { line_name: l_name };
+  const lineIndex = parseInt(l_name) || 1; 
+  let l = matchedLines.find(line => String(line.line) === String(lineIndex) || String(line.line_name) === String(l_name)) || {};
 
   res.json({
     name: h.name, 
@@ -40,17 +44,27 @@ app.get("/api/fortune", (req, res) => {
     sky_name: h.sky_name,
     emotion: h.emotion,
     emotion_type: h.emotion_type,
-    line_name: l.line_name || l_name, 
-    line_emotion: l.soranoeki_line_emotion || "静かに巡る空の気配",
-    meaning: h.meaning,
-    // 🌟 h.yoroi_advice があればそれを使い、なければデフォルトの言葉にする
-    advice: h.yoroi_advice || "今は無理せず、ゆっくり過ごすといいぞ。",
-    chiikawa: h.chiikawa_line, 
-    hachiware: h.hachiware_line, 
-    usagi: h.usagi_line,
-    color: h.color
+    
+    // 🌟 LINEで集めていた「可愛い爻の名前」と「その時の感情」をHTMLへ引き継ぐ！
+    line_name: l.line_name_kawaii || l.line_name || l_name, 
+    line_emotion: l.chiikawa_line_emotion || l.soranoeki_line_emotion || "静かに巡る空の気配",
+    
+    // 🌟 【ご要望】meaning を chiikawa_scene に変更！
+    chiikawa_scene: h.chiikawa_scene || "みんなですやすや眠っているみたい。",
+    
+    // 🌟 【ご要望】鎧さんの見守り助言をHTMLにまとめる！
+    advice: h.yoroi_advice || "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    
+    // 🌟 3人の可愛いセリフ（爻のCSVデータにあれば優先、なければ卦のJSから取得）
+    chiikawa: l.chiikawa_line || h.chiikawa_line || "フゥン", 
+    hachiware: l.hachiware_line || h.hachiware_line || "なんとかなれーッ", 
+    usagi: l.usagi_line || h.usagi_line || "ヤハ",
+    
+    color: h.color,
+    image: h.image
   });
 });
+
 
 app.post("/callback", express.json(), async (req, res) => {
   try {

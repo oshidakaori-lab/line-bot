@@ -151,6 +151,8 @@
             const hid = urlParams.get('hid');
             const l_name = urlParams.get('l_name');
             
+// index.html の下の方にある <script> 内、fetch の .then(data => { ... }) の中身だよ！
+
             fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
                 .then(res => res.json())
                 .then(data => {
@@ -163,33 +165,29 @@
                     else if (data.weather.includes("雪")) icon = "❄️";
                     else if (data.weather.includes("虹")) icon = "🌈";
 
-                    // 🌟 新しいテキストを反映！「☀️ 無雲高天 (創造)」のように表示されるよ！
+                    // ☁️ 空のステータス表示
                     document.getElementById('weather-text').innerText = icon + " " + data.sky_name + " (" + data.emotion_type + ")";
                     document.getElementById('hexagram-name').innerText = data.name;
-                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
-                    // 🌟 詩的な情景描写
-                    //document.getElementById('meaning-text').innerText = "📖 " + data.emotion + "\n\n" + data.meaning;//
                     
-                    // 🌟 可愛い爻の名前と感情を表示！
+                    // 🌟 1. LINE譲りの「可愛い爻の名前 / 感情」を表示！
                     document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
                     
-                    // 🌟 meaning ではなく chiikawa_scene を表示！
+                    // 🌟 2. 【変更】meaning ではなく、空の感情 ＋ chiikawa_scene（ちいかわたちの様子）を表示！
                     document.getElementById('meaning-text').innerText = "📖 " + data.emotion + "\n\n" + data.chiikawa_scene;
                     
-                    // 🌟 鎧さんの見守り助言を表示！
+                    // 🌟 3. 【新設】鎧さんの見守り助言を表示！
                     document.getElementById('advice-text').innerText = data.advice;
                     
-                    // 🌟 3人のセリフを表示！
+                    // 🌟 4. 3人の固有セリフをわちゃわちゃ表示！
                     document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
+                    // 背景画像とカラーシールドの適用（既存のまま）
                     if (data.image) {
                         document.body.style.backgroundImage = `url('${data.image}')`;
                     }
-
                     const matchedColor = colorMap[data.color] || '#ffffff';
-                    
                     const card = document.getElementById('card-element');
                     card.style.borderColor = matchedColor;
                     card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.5), 0 0 15px ${matchedColor}44`;
@@ -201,6 +199,7 @@
                     const adviceBox = document.getElementById('advice-element');
                     adviceBox.style.borderLeftColor = matchedColor;
                 })
+
                 .catch(err => {
                     document.getElementById('hexagram-name').innerText = "😭 エラー";
                     document.getElementById('meaning-text').innerText = err.message;
