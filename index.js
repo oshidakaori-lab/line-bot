@@ -44,9 +44,8 @@ app.get("/api/fortune", (req, res) => {
     line_emotion: l.soranoeki_line_emotion || "静かに巡る空の気配",
     meaning: h.meaning,
     // 🌟 h.yoroi_advice があればそれを使い、なければデフォルトの言葉にする
-    advice: h.yoroi_advice || "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    advice: h.yoroi_advice || "今は無理せず、ゆっくり過ごすといいぞ。",
     chiikawa: h.chiikawa_line, 
-
     hachiware: h.hachiware_line, 
     usagi: h.usagi_line,
     color: h.color
