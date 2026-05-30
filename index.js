@@ -4,56 +4,67 @@ const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
-const app = express();
+// 🌟 AIライブラリを読み込む
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+const app = express();
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
 
-let hexagrams = [];
-let lines = [];
-const lastFortune = new Map();
+const hexagrams = require("./hexagrams");
+const lines = [];
 
-const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
+const cleanHeader = ({ header }) => header.replace(/[\uFEFF\u200B]+/g, '').trim();
 
-// 卦と爻のデータを読み込み
-fs.createReadStream("hexagrams_master_with_emotion.csv")
-  .pipe(csv({ mapHeaders: cleanHeader }))
-  .on("data", (data) => hexagrams.push(data));
-
-fs.createReadStream("lines.csv")
+fs.createReadStream("lines_3.csv")
   .pipe(csv({ mapHeaders: cleanHeader }))
   .on("data", (data) => lines.push(data));
 
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-app.get("/api/fortune", (req, res) => {
+// 🌟 ここがAI連携の核心部分！
+app.get("/api/fortune", async (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
 
-  const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
-  const lineIndex = parseInt(l_name) || 1;
-  let l = matchedLines.find(line => String(line.line) === String(lineIndex)) || {};
+  // 爻のデータを探す
+  const l = lines.find(line => String(line.hexagram_id) === String(hid) && String(line.line_name) === String(l_name));
 
-  res.json({
-    name: h.name,
-    weather: h.weather,
-    sky_name: h.sky_name,
-    emotion: h.emotion,
-    emotion_type: h.emotion_action,
-    line_name: l.line_name_kawaii || l_name,
-    line_emotion: l.chiikawa_line_emotion || "静かに巡る空の気配",
-    chiikawa_scene: h.sky_description_kawaii || "みんなですやすや眠っているみたい。",
-    advice: h.yoroi_advice || "ゆっくり過ごすといいぞ。",
-    chiikawa: l.chiikawa_line || "フゥン",
-    hachiware: l.hachiware_line || "なんとかなれーッ",
-    usagi: l.usagi_line || "ヤハ",
-    image: h.image,
-    bgm: h.bgm
-  });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  
+  // AIへのプロンプト（指示書）
+  const prompt = `
+    あなたはちいかわの世界のガイドです。
+    以下の情報を元に、ちいかわ、ハチワレ、うさぎの3人のセリフと、鎧さんのアドバイスを考えてください。
+    
+    【卦】${h.name}：${h.emotion}
+    【空の様子】${h.sky_name}：${h.sky_description_kawaii || h.chiikawa_scene}
+    【爻の意味】${l ? l.chiikawa_line_emotion : '特になし'}
+    
+    必ず以下のJSON形式だけで答えてください。
+    {"chiikawa": "ちいかわのセリフ", "hachiware": "ハチワレのセリフ", "usagi": "うさぎのセリフ", "advice": "鎧さんのアドバイス"}
+  `;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const aiText = result.response.text().replace(/```json|```/g, "").trim();
+    const aiData = JSON.parse(aiText);
+    
+    res.json({
+      ...h,
+      line_name: l ? l.line_name_kawaii : l_name,
+      ...aiData
+    });
+  } catch (e) {
+    console.error("AI生成エラー:", e);
+    // AIが失敗したとき用の予備データ（これまでのCSVデータ）
+    res.json({ ...h, chiikawa: "…", hachiware: "…", usagi: "ヤハ", advice: h.yoroi_advice || "ぼちぼちいこう。" });
+  }
 });
 
 app.post("/callback", express.json(), async (req, res) => {
