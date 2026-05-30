@@ -19,7 +19,6 @@
             -moz-osx-font-smoothing: grayscale;
             color: #fff;
 
-            /* 初期状態のグラデーション */
             background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -37,19 +36,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        
-/* 🌟 代わりに、この新しいオーバーレイ用のCSSを貼り付けてね！ */
-.bg-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 1;
-    pointer-events: none;
-    /* 色が変わる時にじんわり変化させる魔法 */
-    transition: background 1.0s ease-in-out; 
-}
+        .bg-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            transition: background 1.0s ease-in-out; 
+        }
 
-
-        /* 🌟 カードをベールより手前に出すために z-index を指定 */
         .container {
             width: 100%; height: 100%; 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
@@ -58,9 +52,8 @@
             z-index: 10; 
         }
         
-        /* 🃏 カード：すりガラス効果。少しだけ背景を濃くして白文字を完全ガード */
         .fortune-card {
-            background: rgba(15, 23, 42, 0.75); /* 75%の濃いめダークマスク */
+            background: rgba(15, 23, 42, 0.75);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 2px solid rgba(255, 255, 255, 0.2); 
             border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
@@ -69,6 +62,7 @@
             transition: border-color 0.8s ease-in-out, box-shadow 0.8s ease-in-out; 
             position: relative;
             overflow: hidden;
+            cursor: pointer; /* クリックできることをアピール */
         }
         .fortune-card::before {
             content: "";
@@ -115,10 +109,25 @@
         .character-box { transform: rotate(-1deg); }
         .char-line { margin-bottom: 6px; padding-left: 0.5em; font-size: 0.9rem; line-height: 1.7; opacity: 0.95; }
         .char-line:last-child { margin-bottom: 0; }
+        
+        /* BGM案内のテキスト */
+        .tap-notice {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
     </style>
 </head>
 
 <body>
+    <div class="bg-overlay" id="overlay-element"></div>
+
     <div class="container">
         <div class="fortune-card" id="card-element">
             <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
@@ -135,11 +144,13 @@
                 <div class="char-line" id="hachiware-text">ハチワレ：「いま準備してるからね！」</div>
                 <div class="char-line" id="usagi-text">うさぎ：「プルルルル！」</div>
             </div>
+            
+            <audio id="bgm-player" loop></audio>
+            <div class="tap-notice" id="tap-notice">🎵 タップして音を鳴らす</div>
         </div>
     </div>
 
     <script>
-                // 🌟 新色が追加された最強のカラー辞書！
         const colorMap = {
             gold: '#fbbf24', gray: '#94a3b8', purple: '#c084fc', mist: '#cbd5e1',
             azure: '#38bdf8', coral: '#f87171', leafgreen: '#4ade80', sand: '#fba550',
@@ -147,16 +158,28 @@
             storm: '#64748b', moon: '#fef08a', snow: '#e0f2fe', shadow: '#334155', obsidian: '#1e293b', midnight: '#1e1b4b'
         };
 
+        const weatherGradients = {
+            '晴れ': 'linear-gradient(-45deg, #1e3a8a, #3b82f6, #1d4ed8)', 
+            '曇り': 'linear-gradient(-45deg, #1e293b, #475569, #334155)', 
+            '雨': 'linear-gradient(-45deg, #090d16, #1e293b, #111827)',   
+            '雷': 'linear-gradient(-45deg, #1e1b4b, #4c1d95, #2e1065)',   
+            '風': 'linear-gradient(-45deg, #111827, #374151, #1f2937)',   
+            '雪': 'linear-gradient(-45deg, #111827, #475569, #94a3b8)',   
+            '虹': 'linear-gradient(-45deg, #1e1b4b, #db2777, #4c1d95)'    
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
+        
         if(urlParams.has('hid')) {
             const hid = urlParams.get('hid');
             const l_name = urlParams.get('l_name');
             
-// index.html の下の方にある <script> 内、fetch の .then(data => { ... }) の中身だよ！
-
             fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
                 .then(res => res.json())
                 .then(data => {
+                    // エラーがあれば例外を投げる
+                    if(data.error) throw new Error(data.error);
+
                     let icon = "🔮";
                     if (data.weather.includes("雷")) icon = "⚡️";
                     else if (data.weather.includes("雨")) icon = "☔";
@@ -166,56 +189,34 @@
                     else if (data.weather.includes("雪")) icon = "❄️";
                     else if (data.weather.includes("虹")) icon = "🌈";
 
-                    // ☁️ 空のステータス表示
                     document.getElementById('weather-text').innerText = icon + " " + data.sky_name + " (" + data.emotion_type + ")";
                     document.getElementById('hexagram-name').innerText = data.name;
                     
+                    // 🌟 修正1: data.line_name と data.line_emotion で正しく受け取る！
+                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
                     
-                    
-                    // 🌟 1. LINE譲りの「可愛い爻の名前 / 感情」を表示！
-                    document.getElementById('line-text').innerText = data.line_name_kawaii + " / " + data.chiikawa_line_emotion;
-                    
-                    // 🌟 2. 【変更】meaning ではなく、空の感情 ＋ chiikawa_scene（ちいかわたちの様子）を表示！
                     document.getElementById('meaning-text').innerText = "📖 " + data.emotion + "\n\n" + data.chiikawa_scene;
-                    
-                    // 🌟 3. 【新設】鎧さんの見守り助言を表示！
                     document.getElementById('advice-text').innerText = data.advice;
                     
-                    // 🌟 4. 3人の固有セリフをわちゃわちゃ表示！
                     document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
                     document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
                     document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
 
-                    // 🌟 【新設】画像がないとき（または読み込み中）の天気別エモグラデーション辞書
-                    const weatherGradients = {
-                        '晴れ': 'linear-gradient(-45deg, #1e3a8a, #3b82f6, #1d4ed8)', // 青空
-                        '曇り': 'linear-gradient(-45deg, #1e293b, #475569, #334155)', // 雲床
-                        '雨': 'linear-gradient(-45deg, #090d16, #1e293b, #111827)',   // 雨天
-                        '雷': 'linear-gradient(-45deg, #1e1b4b, #4c1d95, #2e1065)',   // 雷雲
-                        '風': 'linear-gradient(-45deg, #111827, #374151, #1f2937)',   // 疾風
-                        '雪': 'linear-gradient(-45deg, #111827, #475569, #94a3b8)',   // 雪空
-                        '虹': 'linear-gradient(-45deg, #1e1b4b, #db2777, #4c1d95)'    // 幻想
-                    };
-
-                    // 🌟 【演出】画像があれば適用、なければ天気別のグラデーションをベースにする！
+                    // 背景画像の設定
                     if (data.image) {
                         document.body.style.backgroundImage = `url('${data.image}')`;
                     } else {
                         document.body.style.backgroundImage = weatherGradients[data.weather] || weatherGradients['晴れ'];
                     }
 
+                    // 🌟 修正2: matchedColor の宣言を1回だけにする！
                     const matchedColor = colorMap[data.color] || '#ffffff';
 
-                    // 🌟 【演出】Colorを背景にじんわり溶け込ませるグラデーションベール！
-                    // 上部はColorがほんのり（末尾の33は透明度約20%）、下部は文字が見やすいようにダークネイビー（cc〜ff）に沈むよ
+                    // オーバーレイの適用
                     const overlay = document.getElementById('overlay-element');
                     overlay.style.background = `linear-gradient(to bottom, ${matchedColor}33 0%, #0f172acc 60%, #0f172aff 100%)`;
                     
-                    // 背景画像とカラーシールドの適用（既存のまま）
-                    if (data.image) {
-                        document.body.style.backgroundImage = `url('${data.image}')`;
-                    }
-                    const matchedColor = colorMap[data.color] || '#ffffff';
+                    // カードの装飾
                     const card = document.getElementById('card-element');
                     card.style.borderColor = matchedColor;
                     card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.5), 0 0 15px ${matchedColor}44`;
@@ -226,14 +227,33 @@
 
                     const adviceBox = document.getElementById('advice-element');
                     adviceBox.style.borderLeftColor = matchedColor;
-                })
 
+                    // 🌟 BGMのセットアップ（ユーザーがカードをタップしたら再生）
+                    if (data.bgm) {
+                        const bgmPlayer = document.getElementById('bgm-player');
+                        bgmPlayer.src = data.bgm; // BGMファイルへのパスをセット
+                        
+                        // カード全体をタップできるようにイベントを追加
+                        card.addEventListener('click', () => {
+                            if (bgmPlayer.paused) {
+                                bgmPlayer.play().catch(e => console.log("再生ブロックされました", e));
+                                document.getElementById('tap-notice').innerText = "🔊 BGM再生中 (タップで停止)";
+                            } else {
+                                bgmPlayer.pause();
+                                document.getElementById('tap-notice').innerText = "🎵 タップして音を鳴らす";
+                            }
+                        });
+                    } else {
+                        // BGMがない場合は案内を隠す
+                        document.getElementById('tap-notice').style.display = 'none';
+                    }
+                })
                 .catch(err => {
+                    console.error(err);
                     document.getElementById('hexagram-name').innerText = "😭 エラー";
-                    document.getElementById('meaning-text').innerText = err.message;
+                    document.getElementById('meaning-text').innerText = "データを読み込めなかったみたい…";
                 });
         }
-
     </script>
 </body>
 </html>
