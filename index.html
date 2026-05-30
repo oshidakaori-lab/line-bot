@@ -5,35 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>空の易</title>
     <style>
-        body { 
-            background: #0f172a; 
-            color: #fff; 
-            font-family: "Helvetica Neue", Arial, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0;
-            padding: 20px;
-        }
-        .card { 
-            background: rgba(255,255,255,0.05); 
-            padding: 30px; 
-            border-radius: 24px; 
-            text-align: center; 
-            width: 100%; 
-            max-width: 400px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        h1 { font-size: 1.5rem; margin-bottom: 20px; color: #f8fafc; }
-        .scene { font-size: 0.9rem; color: #94a3b8; margin-bottom: 25px; line-height: 1.6; }
-        .dialogue { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 0.95rem; text-align: left; }
-        .advice { font-size: 0.85rem; color: #fbbf24; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        body { background: #0f172a; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.2); }
+        h1 { font-size: 1.5rem; margin-bottom: 10px; }
+        p { font-size: 1rem; line-height: 1.6; color: #cbd5e1; }
+        .dialogue { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: left; font-size: 0.9rem; }
     </style>
 </head>
 <body>
+    <div class="card">
+        <h1 id="title">読み込み中...</h1>
+        <p id="scene"></p>
+        <div class="dialogue">
+            <p id="chiikawa"></p>
+            <p id="hachiware"></p>
+            <p id="usagi"></p>
+        </div>
+        <p id="advice" style="margin-top:20px; color:#fbbf24; font-weight:bold;"></p>
+        <audio id="bgm" loop></audio>
+    </div>
 
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        fetch(`/api/fortune?hid=${params.get('hid')}&l_name=${params.get('l_name')}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('title').innerText = data.name;
+                document.getElementById('scene').innerText = data.chiikawa_scene;
+                document.getElementById('chiikawa').innerText = "ちいかわ：「" + data.chiikawa + "」";
+                document.getElementById('hachiware').innerText = "ハチワレ：「" + data.hachiware + "」";
+                document.getElementById('usagi').innerText = "うさぎ：「" + data.usagi + "」";
+                document.getElementById('advice').innerText = "鎧さんの助言：" + data.advice;
+                
+                const audio = document.getElementById('bgm');
+                audio.src = data.bgm;
+                document.body.addEventListener('click', () => audio.play(), { once: true });
+            });
+    </script>
+</body>
+</html>
     <div class="card">
         <h1 id="title">読み込み中...</h1>
         <p id="scene" class="scene"></p>
