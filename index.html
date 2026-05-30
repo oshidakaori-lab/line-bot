@@ -3,86 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空の易</title>
+    <title>空の易 - 占い結果</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
     <style>
-        body { background: #0f172a; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.2); }
-        h1 { font-size: 1.5rem; margin-bottom: 10px; }
-        p { font-size: 1rem; line-height: 1.6; color: #cbd5e1; }
-        .dialogue { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: left; font-size: 0.9rem; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #fff;
+
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #172554, #312e81);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            transition: background-image 0.6s ease-in-out;
+            position: relative;
+        }
+    
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            transition: background 1.0s ease-in-out; 
+        }
+
+        .container {
+            width: 100%; height: 100%; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 20px;
+            position: relative;
+            z-index: 10; 
+        }
+        
+        .fortune-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.2); 
+            border-radius: 24px; padding: 28px 22px; width: 100%; max-width: 350px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); text-align: center;
+            animation: floatCard 6s ease-in-out infinite;
+            transition: border-color 0.8s ease-in-out, box-shadow 0.8s ease-in-out; 
+            position: relative;
+            overflow: hidden;
+            cursor: pointer; /* クリックできることをアピール */
+        }
+        .fortune-card::before {
+            content: "";
+            position: absolute;
+            top: -30%; left: -30%; width: 160%; height: 160%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            filter: blur(20px);
+            animation: shineMove 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes floatCard {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        @keyframes shineMove {
+            0% { transform: translateX(-10%) translateY(-10%); }
+            50% { transform: translateX(10%) translateY(10%); }
+            100% { transform: translateX(-10%) translateY(-10%); }
+        }
+
+        .weather-info { font-size: 1.1rem; font-weight: 500; margin-bottom: 6px; opacity: 0.9; }
+        
+        .hexagram-title { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            margin-bottom: 4px; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            transition: color 0.8s ease-in-out, text-shadow 0.8s ease-in-out;
+        }
+        
+        .hexagram-sub { font-size: 0.9rem; opacity: 0.85; margin-bottom: 12px; }
+        .meaning-box { background: rgba(0, 0, 0, 0.3); border-radius: 14px; padding: 12px; margin: 8px 0 14px 0; font-size: 0.9rem; line-height: 1.5; border: 1px dashed rgba(255, 255, 255, 0.2); }
+        .divider { height: 1px; background: rgba(255, 255, 255, 0.2); margin: 12px 0; width: 100%; }
+        
+        .advice-box { 
+            text-align: left; font-size: 0.95rem; line-height: 1.6; margin: 16px 0; 
+            background: rgba(0, 0, 0, 0.45); padding: 14px; border-radius: 14px; 
+            border-left: 4px solid rgba(255, 255, 255, 0.6); 
+            transition: border-left-color 0.8s ease-in-out;
+        }
+        
+        .advice-label { font-size: 0.75rem; font-weight: bold; opacity: 0.7; margin-bottom: 6px; }
+        .character-box { transform: rotate(-1deg); }
+        .char-line { margin-bottom: 6px; padding-left: 0.5em; font-size: 0.9rem; line-height: 1.7; opacity: 0.95; }
+        .char-line:last-child { margin-bottom: 0; }
+        
+        /* BGM案内のテキスト */
+        .tap-notice {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.4; }
+        }
     </style>
 </head>
+
 <body>
-    <div class="card">
-        <h1 id="title">読み込み中...</h1>
-        <p id="scene"></p>
-        <div class="dialogue">
-            <p id="chiikawa"></p>
-            <p id="hachiware"></p>
-            <p id="usagi"></p>
+    <div class="bg-overlay" id="overlay-element"></div>
+
+    <div class="container">
+        <div class="fortune-card" id="card-element">
+            <div class="weather-info" id="weather-text">🔮 読み込み中...</div>
+            <div class="hexagram-title" id="hexagram-name">Please Wait</div>
+            <div class="hexagram-sub" id="line-text">データを集めています</div>
+            <div class="meaning-box" id="meaning-text">ちいかわ達が占いの準備をしているよ...</div>
+            <div class="divider"></div>
+            <div class="advice-box" id="advice-element">
+                <div class="advice-label">💬 鎧さんの見守り助言</div>
+                <div id="advice-text">ちょっと待っててくれな。</div>
+            </div> 
+            <div class="character-box">
+                <div class="char-line" id="chiikawa-text">ちいかわ：「フゥン…」</div>
+                <div class="char-line" id="hachiware-text">ハチワレ：「いま準備してるからね！」</div>
+                <div class="char-line" id="usagi-text">うさぎ：「プルルルル！」</div>
+            </div>
+            
+            <audio id="bgm-player" loop></audio>
+            <div class="tap-notice" id="tap-notice">🎵 タップして音を鳴らす</div>
         </div>
-        <p id="advice" style="margin-top:20px; color:#fbbf24; font-weight:bold;"></p>
-        <audio id="bgm" loop></audio>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        fetch(`/api/fortune?hid=${params.get('hid')}&l_name=${params.get('l_name')}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('title').innerText = data.name;
-                document.getElementById('scene').innerText = data.chiikawa_scene;
-                document.getElementById('chiikawa').innerText = "ちいかわ：「" + data.chiikawa + "」";
-                document.getElementById('hachiware').innerText = "ハチワレ：「" + data.hachiware + "」";
-                document.getElementById('usagi').innerText = "うさぎ：「" + data.usagi + "」";
-                document.getElementById('advice').innerText = "鎧さんの助言：" + data.advice;
-                
-                const audio = document.getElementById('bgm');
-                audio.src = data.bgm;
-                document.body.addEventListener('click', () => audio.play(), { once: true });
-            });
-    </script>
-</body>
-</html>
-    <div class="card">
-        <h1 id="title">読み込み中...</h1>
-        <p id="scene" class="scene"></p>
-        
-        <div class="dialogue" id="dialogue">
-            <p>ちいかわ: <span id="c-text"></span></p>
-            <p>ハチワレ: <span id="h-text"></span></p>
-            <p>うさぎ: <span id="u-text"></span></p>
-        </div>
+        const colorMap = {
+            gold: '#fbbf24', gray: '#94a3b8', purple: '#c084fc', mist: '#cbd5e1',
+            azure: '#38bdf8', coral: '#f87171', leafgreen: '#4ade80', sand: '#fba550',
+            indigo: '#818cf8', plum: '#f472b6', teal: '#2dd4bf', electric: '#a855f7', amber: '#fbbf24',
+            storm: '#64748b', moon: '#fef08a', snow: '#e0f2fe', shadow: '#334155', obsidian: '#1e293b', midnight: '#1e1b4b'
+        };
 
-        <div class="advice" id="advice"></div>
-        <audio id="bgm" loop></audio>
-    </div>
+        const weatherGradients = {
+            '晴れ': 'linear-gradient(-45deg, #1e3a8a, #3b82f6, #1d4ed8)', 
+            '曇り': 'linear-gradient(-45deg, #1e293b, #475569, #334155)', 
+            '雨': 'linear-gradient(-45deg, #090d16, #1e293b, #111827)',   
+            '雷': 'linear-gradient(-45deg, #1e1b4b, #4c1d95, #2e1065)',   
+            '風': 'linear-gradient(-45deg, #111827, #374151, #1f2937)',   
+            '雪': 'linear-gradient(-45deg, #111827, #475569, #94a3b8)',   
+            '虹': 'linear-gradient(-45deg, #1e1b4b, #db2777, #4c1d95)'    
+        };
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
         
-        // サーバーからAIのデータを取得
-        fetch(`/api/fortune?hid=${params.get('hid')}&l_name=${params.get('l_name')}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('title').innerText = data.name;
-                document.getElementById('scene').innerText = data.chiikawa_scene;
-                document.getElementById('c-text').innerText = data.chiikawa;
-                document.getElementById('h-text').innerText = data.hachiware;
-                document.getElementById('u-text').innerText = data.usagi;
-                document.getElementById('advice').innerText = "鎧さんのアドバイス: " + data.advice;
-                
-                const audio = document.getElementById('bgm');
-                audio.src = data.bgm;
-                
-                // 画面クリックでBGM再生（ブラウザの制限対策）
-                document.body.addEventListener('click', () => {
-                    audio.play();
-                }, { once: true });
-            })
-            .catch(err => {
-                document.getElementById('title').innerText = "読み込みエラー";
-            });
+        if(urlParams.has('hid')) {
+            const hid = urlParams.get('hid');
+            const l_name = urlParams.get('l_name');
+            
+            fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
+                .then(res => res.json())
+                .then(data => {
+                    // エラーがあれば例外を投げる
+                    if(data.error) throw new Error(data.error);
+
+                    let icon = "🔮";
+                    if (data.weather.includes("雷")) icon = "⚡️";
+                    else if (data.weather.includes("雨")) icon = "☔";
+                    else if (data.weather.includes("晴")) icon = "☀️";
+                    else if (data.weather.includes("曇")) icon = "☁️";
+                    else if (data.weather.includes("風")) icon = "🌪️";
+                    else if (data.weather.includes("雪")) icon = "❄️";
+                    else if (data.weather.includes("虹")) icon = "🌈";
+
+                    document.getElementById('weather-text').innerText = icon + " " + data.sky_name + " (" + data.emotion_type + ")";
+                    document.getElementById('hexagram-name').innerText = data.name;
+                    
+                    // 🌟 修正1: data.line_name と data.line_emotion で正しく受け取る！
+                    document.getElementById('line-text').innerText = data.line_name + " / " + data.line_emotion;
+                    
+                    document.getElementById('meaning-text').innerText = "📖 " + data.emotion + "\n\n" + data.chiikawa_scene;
+                    document.getElementById('advice-text').innerText = data.advice;
+                    
+                    document.getElementById('chiikawa-text').innerText = "ちいかわ：「" + data.chiikawa + "」";
+                    document.getElementById('hachiware-text').innerText = "ハチワレ：「" + data.hachiware + "」";
+                    document.getElementById('usagi-text').innerText = "うさぎ：「" + data.usagi + "」";
+
+                    // 背景画像の設定
+                    if (data.image) {
+                        document.body.style.backgroundImage = `url('${data.image}')`;
+                    } else {
+                        document.body.style.backgroundImage = weatherGradients[data.weather] || weatherGradients['晴れ'];
+                    }
+
+                    // 🌟 修正2: matchedColor の宣言を1回だけにする！
+                    const matchedColor = colorMap[data.color] || '#ffffff';
+
+                    // オーバーレイの適用
+                    const overlay = document.getElementById('overlay-element');
+                    overlay.style.background = `linear-gradient(to bottom, ${matchedColor}33 0%, #0f172acc 60%, #0f172aff 100%)`;
+                    
+                    // カードの装飾
+                    const card = document.getElementById('card-element');
+                    card.style.borderColor = matchedColor;
+                    card.style.boxShadow = `0 20px 50px rgba(0, 0, 0, 0.5), 0 0 15px ${matchedColor}44`;
+                    
+                    const title = document.getElementById('hexagram-name');
+                    title.style.color = matchedColor;
+                    title.style.textShadow = `0 2px 10px rgba(0,0,0,0.8), 0 0 8px ${matchedColor}`;
+
+                    const adviceBox = document.getElementById('advice-element');
+                    adviceBox.style.borderLeftColor = matchedColor;
+
+                    // 🌟 BGMのセットアップ（ユーザーがカードをタップしたら再生）
+                    if (data.bgm) {
+                        const bgmPlayer = document.getElementById('bgm-player');
+                        bgmPlayer.src = data.bgm; // BGMファイルへのパスをセット
+                        
+                        // カード全体をタップできるようにイベントを追加
+                        card.addEventListener('click', () => {
+                            if (bgmPlayer.paused) {
+                                bgmPlayer.play().catch(e => console.log("再生ブロックされました", e));
+                                document.getElementById('tap-notice').innerText = "🔊 BGM再生中 (タップで停止)";
+                            } else {
+                                bgmPlayer.pause();
+                                document.getElementById('tap-notice').innerText = "🎵 タップして音を鳴らす";
+                            }
+                        });
+                    } else {
+                        // BGMがない場合は案内を隠す
+                        document.getElementById('tap-notice').style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('hexagram-name').innerText = "😭 エラー";
+                    document.getElementById('meaning-text').innerText = "データを読み込めなかったみたい…";
+                });
+        }
     </script>
 </body>
 </html>

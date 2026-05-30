@@ -4,130 +4,72 @@ const line = require("@line/bot-sdk");
 const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
 const app = express();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
 });
 
-const hexagrams = [];
-const lines = [];
+// 🌟 データを入れる空の箱を用意するよ
+let hexagrams = [];
+let lines = [];
+const lastFortune = new Map();
 
-// CSV読み込み設定
-const cleanHeader = ({ header }) => header.replace(/[\uFEFF\u200B]+/g, '').trim();
+// ヘッダーのゴミ（BOM）を取り除く関数
+const cleanHeader = ({ header }) => header.replace(/^[\uFEFF\u200B]+/, '').trim();
 
+// 🌟 1. 卦のデータをCSVから読み込む！
 fs.createReadStream("hexagrams_master_with_emotion.csv")
   .pipe(csv({ mapHeaders: cleanHeader }))
-  .on("data", (data) => hexagrams.push(data));
+  .on("data", (data) => hexagrams.push(data))
+  .on("end", () => console.log("Hexagrams CSV loaded!"));
 
+// 🌟 2. 爻のデータをCSVから読み込む！
 fs.createReadStream("lines.csv")
   .pipe(csv({ mapHeaders: cleanHeader }))
-  .on("data", (data) => lines.push(data));
+  .on("data", (data) => lines.push(data))
+  .on("end", () => console.log("Lines CSV loaded!"));
 
-app.use(express.static(__dirname));
-
-app.get("/api/fortune", async (req, res) => {
-  const { hid, l_name } = req.query;
-  const h = hexagrams.find(item => String(item.id) === String(hid));
-  const l = lines.find(line => String(line.hexagram_id) === String(hid) && String(line.line) === String(l_name));
-
-  if (!h) return res.status(404).json({ error: "卦が見つかりません" });
-
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-  const prompt = `あなたは「ちいかわ」の世界のガイドです。以下の情報から、ちいかわ達の会話と鎧さんのアドバイスを生成してください。
-  【卦】${h.name}: ${h.sky_description_kawaii} (${h.emotion_action_kawaii})
-  【爻】${l ? l.line_name_kawaii : ""}: ${l ? l.chiikawa_line_emotion : ""}
-  
-  JSON形式（"chiikawa", "hachiware", "usagi", "advice", "chiikawa_scene"）で回答して。`;
-
-  try {
-    const result = await model.generateContent(prompt);
-    const aiData = JSON.parse(result.response.text().replace(/```json|```/g, ""));
-    res.json({ ...h, ...aiData, bgm: h.bgm || "default.mp3" });
-  } catch (e) {
-    res.json({ ...h, chiikawa: "…", hachiware: "…", usagi: "ヤハ", advice: "ゆっくりいこう。", chiikawa_scene: h.sky_description_kawaii, bgm: h.bgm || "default.mp3" });
-  }
-});
-
-app.listen(process.env.PORT || 10000);
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-// 🌟 ここがAIの魔法を使うメイン部分！
-app.get("/api/fortune", async (req, res) => {
+app.get("/api/fortune", (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
-
+  
   const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
   const lineIndex = parseInt(l_name) || 1; 
   let l = matchedLines.find(line => String(line.line) === String(lineIndex) || String(line.line_name) === String(l_name)) || {};
 
-  // 🤖 AIへの指示書（プロンプト）
-  // 君の作ったCSVデータをAIに渡して、場面を想像させるよ！
-  const prompt = `
-    あなたは「ちいかわ」の世界のガイドです。
-    以下の情報を元に、ちいかわ、ハチワレ、うさぎの3人の会話と、鎧さんのアドバイス、そして今の情景（ちいかわ達の様子）を考えてください。
-
-    【空の様子】${h.sky_name}：${h.sky_description_kawaii}
-    【全体の感情】${h.emotion_action_kawaii}
-    【今の状況（爻）】${l.line_name_kawaii}：${l.chiikawa_line_emotion}
-
-    必ず以下のJSON形式だけで答えてください。マークダウン（\`\`\`jsonなど）は不要です。
-    {
-      "chiikawa": "ちいかわのセリフ（短め）",
-      "hachiware": "ハチワレのセリフ（短め）",
-      "usagi": "うさぎのセリフ（短め）",
-      "chiikawa_scene": "ちいかわ達が今何をしているかの情景描写",
-      "advice": "鎧さん風の温かい見守り助言"
-    }
-  `;
-
-  let aiData = {};
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    
-    // AIが余計な記号をつけた場合に取り除く安全装置
-    const text = result.response.text().replace(/```json|```/g, "").trim();
-    aiData = JSON.parse(text);
-    
-  } catch (e) {
-    console.error("AIの生成に失敗しました:", e);
-    // 🛡️ AIが疲れている時（エラー時）は、君のCSVのデータを代わりに使うよ！ボットは止まりません！
-    aiData = {
-      chiikawa: l.chiikawa_line || "フゥン",
-      hachiware: l.hachiware_line || "なんとかなれーッ",
-      usagi: l.usagi_line || "ヤハ",
-      chiikawa_scene: h.sky_description_kawaii || "みんなですやすや眠っているみたい。",
-      advice: "今はぼちぼちいこう。"
-    };
-  }
-
-  // 🌟 HTML画面（index.html）へデータを送る
+  // 🌟 HTMLへ送るデータを準備！CSVの新しい列名に合わせたよ。
   res.json({
     name: h.name, 
     weather: h.weather,
     sky_name: h.sky_name,
     emotion: h.emotion,
-    emotion_type: h.emotion_action,
+    emotion_type: h.emotion_action, // 👈 csvの列名に合わせました
+    
     line_name: l.line_name_kawaii || l.line_name || l_name, 
     line_emotion: l.chiikawa_line_emotion || l.soranoeki_line_emotion || "静かに巡る空の気配",
-    chiikawa_scene: aiData.chiikawa_scene, // AIが考えた情景
-    advice: aiData.advice,                 // AIが考えたアドバイス
-    chiikawa: aiData.chiikawa,             // AIが考えたセリフ
-    hachiware: aiData.hachiware,           // AIが考えたセリフ
-    usagi: aiData.usagi,                   // AIが考えたセリフ
-    color: h.color, // 背景グラデーション用
+    
+    // 🌟 csvの列名に合わせて取得
+    chiikawa_scene: h.sky_description_kawaii || h.sky_description || "みんなですやすや眠っているみたい。",
+    
+    // 🌟 見守り助言
+    advice: h.yoroi_advice || "今は無理せず、美味しいものでもハフムシャ食べてゆっくり過ごすといいぞ。",
+    
+    chiikawa: l.chiikawa_line || h.chiikawa_line || "フゥン", 
+    hachiware: l.hachiware_line || h.hachiware_line || "なんとかなれーッ", 
+    usagi: l.usagi_line || h.usagi_line || "ヤハ",
+    
+    color: h.color,
     image: h.image,
-    bgm: h.bgm
+    bgm: h.bgm // 🌟 BGMを追加！
   });
 });
 
-// 🌟 LINEに通知を送る処理（レアリティやカラーを消したシンプル版！）
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -137,6 +79,8 @@ app.post("/callback", express.json(), async (req, res) => {
       if (event.type !== "message" || event.message.type !== "text") continue;
 
       const userId = event.source.userId;
+      
+      // データがまだ読み込めていない時のエラー回避
       if (hexagrams.length === 0) continue;
 
       let h;
@@ -150,9 +94,24 @@ app.post("/callback", express.json(), async (req, res) => {
       const lineIndex = Math.floor(Math.random() * 6) + 1;
       const lName = `${lineIndex}爻`; 
 
-      const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lineIndex)}`;
+      const matchedLines = lines.filter(line => String(line.hexagram_id) === String(h.id));
+      const l = matchedLines.find(line => String(line.line) === String(lineIndex)) || {};
+      
+      // const kawaiiName = l.line_name_kawaii || lName;
+      // const chiikawaEmotion = l.chiikawa_line_emotion || ""; 
+      // const chiikawaWord = l.chiikawa_line || ""; 
 
-      // 🌟 シンプルでスタイリッシュなFlex Message
+      const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lName)}`;
+
+      const rarityColors = {
+        "SSR": "#fbbf24", // ゴールド
+        "SR": "#38bdf8", // ブルー
+        "R": "#4ade80", // グリーン
+        "N": "#94a3b8"  // グレー
+      };
+      
+      const frameColor = rarityColors[h.rarity] || "#ffffff";
+
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name}】が届いたよ`,
@@ -161,7 +120,7 @@ app.post("/callback", express.json(), async (req, res) => {
           body: {
             type: "box",
             layout: "vertical",
-            backgroundColor: "#ffffff",
+            backgroundColor: frameColor,
             paddingAll: "2px",
             cornerRadius: "xl",
             contents: [
@@ -172,8 +131,9 @@ app.post("/callback", express.json(), async (req, res) => {
                 cornerRadius: "xl",
                 paddingAll: "xl",
                 contents: [
-                  { type: "text", text: h.name, weight: "bold", size: "xxl", color: "#ffffff", align: "center", margin: "none" },
-                  { type: "text", text: lName, size: "xs", color: "#64748b", align: "center", margin: "md" },
+                  { type: "text", text: `•  ${h.rarity}  •`, weight: "bold", color: frameColor, align: "center", size: "xs" },
+                  { type: "text", text: h.name, weight: "bold", size: "xxl", color: "#ffffff", align: "center", margin: "lg" },
+                  { type: "text", text: lName, size: "xs", color: "#64748b", align: "center", margin: "none" },
                   {
                     type: "box",
                     layout: "vertical",
@@ -189,12 +149,12 @@ app.post("/callback", express.json(), async (req, res) => {
                     layout: "vertical",
                     margin: "xl",
                     paddingAll: "sm",
-                    borderColor: "#ffffff",
+                    borderColor: frameColor,
                     borderWidth: "semi-bold",
                     cornerRadius: "md",
                     action: { type: "uri", label: "Open Card", uri: finalUrl },
                     contents: [
-                      { type: "text", text: "Open Card", color: "#ffffff", align: "center", weight: "bold", size: "sm" }
+                      { type: "text", text: "Open Card", color: frameColor, align: "center", weight: "bold", size: "sm" }
                     ]
                   }
                 ]
