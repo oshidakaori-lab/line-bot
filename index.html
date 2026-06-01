@@ -17,7 +17,7 @@
             min-height: 100vh;
             min-height: 100dvh; 
             font-family: 'Zen Maru Gothic', sans-serif;
-            color: #fff;
+            color: #334155; /* 全体の基本文字色をマイルドな濃いグレーに */
             display: flex; justify-content: center; align-items: center;
             padding: 20px; background-color: #0f172a;
             overflow-x: hidden;
@@ -39,9 +39,10 @@
             100% { transform: translate(5vw, 0vh) scale(1.02); }   
         }
 
+        /* 背景にかける薄いフィルター */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.45));
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(15, 23, 42, 0.2));
             z-index: -1; transition: opacity 0.8s ease;
         }
 
@@ -63,49 +64,50 @@
             100% { transform: translateY(0px); }
         }
 
+        /* 🌟 白基調のすりガラスカードスタイル */
         .card {
-            background: rgba(30, 41, 59, 0.55); 
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.68); /* 半透明な白 */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 30px; border-radius: 32px;
             text-align: center; width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5); /* 綺麗に見える白枠 */
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12); /* 影も優しく */
             opacity: 0; transform: scale(0.96);
-            /* 最初のアニメーション */
             animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            /* 透過アニメーションの設定 */
             transition: opacity 1.2s ease, background-color 1.2s ease, backdrop-filter 1.2s ease, transform 0.4s ease;
         }
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 🌟 今回の修正ポイント！ !important をつけて確実に透過させるよ */
+        /* 🌟 白基調の自動透過（ディミング）設定 */
         .card.dimmed {
-            opacity: 0.35 !important;
-            background-color: rgba(30, 41, 59, 0.15) !important;
+            opacity: 0.25 !important; /* 白は透けやすいので少しだけ強めに透過 */
+            background-color: rgba(255, 255, 255, 0.15) !important;
             backdrop-filter: blur(1px) !important;
         }
         
-        .card.dimmed:hover { opacity: 0.6 !important; }
+        .card.dimmed:hover { opacity: 0.5 !important; }
 
         .animate-item { opacity: 0; transform: translateY(12px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .delay-1 { animation-delay: 0.15s; } .delay-2 { animation-delay: 0.3s; }
         .delay-3 { animation-delay: 0.45s; } .delay-4 { animation-delay: 0.6s; } .delay-5 { animation-delay: 0.75s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-        .sky-title { font-size: 0.95rem; color: #38bdf8; margin-bottom: 20px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+        /* 白ベースで見やすいように文字色を調整 */
+        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #1e293b; text-shadow: none; }
+        .sky-title { font-size: 0.95rem; color: #0284c7; margin-bottom: 20px; font-weight: 600; text-shadow: none; }
 
         #scene {
-            font-size: 1rem; line-height: 1.7; color: #f8fafc;
-            background: rgba(15, 23, 42, 0.45); padding: 16px; border-radius: 20px;
-            margin-bottom: 25px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 1rem; line-height: 1.7; color: #334155;
+            background: rgba(255, 255, 255, 0.5); padding: 16px; border-radius: 20px;
+            margin-bottom: 25px; text-align: left; border: 1px solid rgba(15, 23, 42, 0.06);
         }
 
         .dialogue-container { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 25px; }
         .bubble-box {
-            display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.92);
-            color: #334155; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.95);
+            color: #334155; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
         }
         .char-name {
             font-weight: 700; font-size: 0.8rem; margin-bottom: 4px; display: inline-block;
@@ -118,23 +120,25 @@
 
         .advice-box {
             margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,251,235,0.95), rgba(255,253,245,0.95));
-            color: #78350f; border-radius: 24px; text-align: left; box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            color: #78350f; border-radius: 24px; text-align: left; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
         }
         .advice-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: #b45309; }
         #advice-text { font-size: 0.95rem; line-height: 1.6; }
-        .notice { font-size: 0.75rem; color: #cbd5e1; margin-top: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        
+        .notice { font-size: 0.75rem; color: #64748b; margin-top: 15px; text-shadow: none; }
 
+        /* 背景を眺めるための切り替えボタン */
         .toggle-bg-btn {
             position: fixed; bottom: 20px; right: 20px; z-index: 100;
-            background: rgba(0, 0, 0, 0.6); color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px;
+            background: rgba(255, 255, 255, 0.8); color: #000;
+            border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 20px;
             padding: 12px 20px; font-size: 0.95rem; font-family: inherit; font-weight: bold;
-            cursor: pointer; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transition: all 0.3s;
         }
-        .toggle-bg-btn:hover { background: rgba(0, 0, 0, 0.8); transform: scale(1.05); }
+        .toggle-bg-btn:hover { background: rgba(255, 255, 255, 0.95); transform: scale(1.05); }
 
-        /* ――― 各天候エフェクト用のパーツCSS（略さずそのまま） ――― */
+        /* 各天候エフェクト */
         .rain { position: absolute; background: rgba(255,255,255,0.4); width: 1.5px; height: 25px; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(105vh); } }
         .snow { position: absolute; color: rgba(255,255,255,0.85); animation: snowFall linear infinite; }
@@ -220,7 +224,6 @@
             }
         }
 
-        // 🌟 画面のどこを触っても、半透明からクッキリ戻るように設定！
         document.body.addEventListener('click', () => {
             resetCardOpacity();
         });
@@ -250,7 +253,6 @@
                     audio.src = data.bgm;
                     
                     document.getElementById('main-card').addEventListener('click', (e) => {
-                        // ボタンタップ時はBGM鳴らさないようにする
                         if(e.target.id === 'toggle-bg-btn') return;
                         
                         if (audio.paused) {
@@ -278,17 +280,16 @@
             
             const btn = document.getElementById('toggle-bg-btn');
             btn.innerText = uiVisible ? '👁️ 背景をよく見る' : '📝 おしゃべりに戻る';
-            btn.style.background = uiVisible ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)';
-            btn.style.color = uiVisible ? '#fff' : '#000';
+            btn.style.background = uiVisible ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.95)';
+            btn.style.color = '#000';
 
-            // イベントが親に伝わらないようにする（bodyのクリックイベントと衝突回避）
             event.stopPropagation(); 
 
             if (uiVisible) {
                 resetCardOpacity();
             } else {
                 clearTimeout(fadeTimer);
-                document.getElementById('main-card').classList.remove('dimmed'); // 見えない状態ではリセット
+                document.getElementById('main-card').classList.remove('dimmed');
             }
         }
 
@@ -330,7 +331,7 @@
                     let spark = document.createElement('div'); spark.className = 'sparkle';
                     spark.style.left = Math.random() * 100 + 'vw'; spark.style.width = spark.style.height = (Math.random() * 5 + 3) + 'px';
                     spark.style.background = 'radial-gradient(circle, #fff, #f97316)'; spark.style.boxShadow = '0 0 12px #ea580c';
-                    spark.style.animationDuration = (Math.random() * 3 + 3) + 's'; spark.style.animationDelay = Math.random() * 3 + 's';
+                    sparkle.style.animationDuration = (Math.random() * 3 + 3) + 's'; spark.style.animationDelay = Math.random() * 3 + 's';
                     container.appendChild(spark);
                 }
             } else if (species === "風旅族") {
