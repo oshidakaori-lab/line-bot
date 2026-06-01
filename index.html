@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>空の易 - キャラおしゃべり図鑑</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +13,10 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body, html {
-            width: 100%; min-height: 100%;
+            width: 100%; 
+            /* 🌟 背景が途切れる問題（白い余白）を修正！スマホの画面下までしっかり覆うよ */
+            min-height: 100vh;
+            min-height: 100dvh; 
             font-family: 'Zen Maru Gothic', sans-serif;
             color: #fff;
             display: flex; justify-content: center; align-items: center;
@@ -21,29 +24,32 @@
             overflow-x: hidden;
         }
 
-        /* 🌟 背景専用レイヤー（ここでゆっくり動かすよ！） */
+        /* 🌟 ふわふわ横スクロール用の背景レイヤー */
         .bg-layer {
             position: fixed;
-            top: -5%; left: -5%; width: 110%; height: 110%; /* 動く余白のために少し大きく */
+            top: -10vh; 
+            left: -25vw; /* 画面より横に大きくはみ出させる */
+            width: 150vw; /* 横幅を1.5倍に！ */
+            height: 120vh; /* 縦も少し大きめに */
             background-size: cover;
             background-position: center;
             z-index: -2;
             transition: background-image 1.2s ease-in-out;
-            animation: slowPanZoom 25s alternate infinite ease-in-out;
+            /* 🌟 40秒かけて左右をゆっくり見渡すアニメーション */
+            animation: fluffyScroll 40s alternate infinite ease-in-out;
         }
 
-        /* ゆっくりカメラが動くアニメーション */
-        @keyframes slowPanZoom {
-            0% { transform: scale(1) translate(0px, 0px); }
-            33% { transform: scale(1.05) translate(12px, -15px); }
-            66% { transform: scale(1.03) translate(-15px, 12px); }
-            100% { transform: scale(1.08) translate(-5px, -5px); }
+        /* 🌟 横へゆっくり視点が移動するアニメーション */
+        @keyframes fluffyScroll {
+            0% { transform: translate(15vw, 2vh) scale(1); }    /* 左の方を映す */
+            50% { transform: translate(-15vw, -3vh) scale(1.05); } /* 右の方を映す */
+            100% { transform: translate(5vw, 0vh) scale(1.02); }   /* 少し戻る */
         }
 
-        /* 画像の上に重ねるグラデーション */
+        /* 画像の上に重ねるグラデーション（少し透明度を上げて背景を見やすくしたよ） */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.65));
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.5));
             z-index: -1;
             transition: opacity 0.5s ease;
         }
@@ -54,7 +60,7 @@
             pointer-events: none; z-index: -1; overflow: hidden;
         }
 
-        /* カードとUIをまとめるラッパー（ボタンで消せるようにするよ） */
+        /* カードとUIをまとめるラッパー */
         .ui-wrapper {
             width: 100%; max-width: 450px;
             display: flex; flex-direction: column; align-items: center;
@@ -70,8 +76,8 @@
         }
 
         .card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(14px);
+            background: rgba(30, 41, 59, 0.6); /* 透明度を増やして背景を透けさせたよ */
+            backdrop-filter: blur(8px);
             padding: 30px; border-radius: 32px;
             text-align: center; width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -82,14 +88,14 @@
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 文字やバルーンが下からふわっと現れるアニメーション */
+        /* アニメーション関連 */
         .animate-item { opacity: 0; transform: translateY(12px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .delay-1 { animation-delay: 0.15s; } .delay-2 { animation-delay: 0.3s; }
         .delay-3 { animation-delay: 0.45s; } .delay-4 { animation-delay: 0.6s; } .delay-5 { animation-delay: 0.75s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-        .sky-title { font-size: 0.95rem; color: #38bdf8; margin-bottom: 20px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .sky-title { font-size: 0.95rem; color: #38bdf8; margin-bottom: 20px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
 
         #scene {
             font-size: 1rem; line-height: 1.7; color: #f8fafc;
@@ -99,7 +105,7 @@
 
         .dialogue-container { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 25px; }
         .bubble-box {
-            display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.96);
+            display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.92);
             color: #334155; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         .char-name {
@@ -112,7 +118,7 @@
         .char-text { font-size: 0.95rem; line-height: 1.5; font-weight: 500; }
 
         .advice-box {
-            margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #fffbeb, #fffdf5);
+            margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,251,235,0.95), rgba(255,253,245,0.95));
             color: #78350f; border-radius: 24px; text-align: left; box-shadow: 0 6px 16px rgba(0,0,0,0.2);
         }
         .advice-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: #b45309; }
@@ -124,7 +130,7 @@
             position: fixed; bottom: 20px; right: 20px; z-index: 100;
             background: rgba(0, 0, 0, 0.6); color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px;
-            padding: 10px 16px; font-size: 0.9rem; font-family: inherit; font-weight: bold;
+            padding: 12px 20px; font-size: 0.95rem; font-family: inherit; font-weight: bold;
             cursor: pointer; backdrop-filter: blur(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: all 0.3s;
         }
@@ -188,7 +194,6 @@
     </div>
 
     <script>
-        // 🌟 CSVの「species_8」と「英語の画像ファイル名」のマッピング
         const speciesImages = {
             "創空族": "sky.png", "受雲族": "cloud.png", "雷芽族": "thunder.png", "雨巡族": "rain.png",
             "風旅族": "wind.png", "虹結族": "rainbow.png", "雪守族": "snow.png", "炎灯族": "fire.png"
@@ -198,14 +203,12 @@
         const hid = params.get('hid') || "1"; 
         const l_name = params.get('l_name') || "1"; 
 
-        // 🌟 本番用：APIからデータを受け取る
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
                 const species = data.species_8 || "創空族"; 
                 const imageFile = speciesImages[species] || "sky.png"; 
                 
-                // body ではなく bg-layer に画像を適用して動かすよ
                 document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
                 startWeatherEffect(species);
 
@@ -245,7 +248,6 @@
             document.getElementById('ui-wrapper').style.opacity = uiVisible ? '1' : '0';
             document.getElementById('bg-overlay').style.opacity = uiVisible ? '1' : '0';
             
-            // カードが消えている間はタップできないようにする
             document.getElementById('ui-wrapper').style.pointerEvents = uiVisible ? 'auto' : 'none';
             
             const btn = document.getElementById('toggle-bg-btn');
@@ -254,7 +256,6 @@
             btn.style.color = uiVisible ? '#fff' : '#000';
         }
 
-        // 🌟 動きのあるお天気エフェクト
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect');
             container.innerHTML = ''; 
