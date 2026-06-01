@@ -3,43 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空の易</title>
+    <title>空の易 - キャラおしゃべり図鑑</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
     <style>
-        body { background: #0f172a; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.2); }
-        h1 { font-size: 1.5rem; margin-bottom: 10px; }
-        p { font-size: 1rem; line-height: 1.6; color: #cbd5e1; }
-        .dialogue { margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; text-align: left; font-size: 0.9rem; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; min-height: 100%;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: #0f172a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 全体のカードデザイン */
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 24px;
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            color: #f8fafc;
+        }
+
+        .sky-title {
+            font-size: 1rem;
+            color: #38bdf8;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        /* 情景（空の目撃情報）の枠 */
+        #scene {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+            border-left: 4px solid #38bdf8;
+        }
+
+        /* 🌟 キャラクターたちのおしゃべりエリア（会話バルーン） */
+        .dialogue-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .bubble-box {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1e293b;
+            padding: 12px 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 各キャラの左端につくお名前ラベル */
+        .char-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            color: #fff;
+            width: fit-content;
+        }
+
+        /* キャラごとのイメージカラー設定 */
+        .chiikawa-box  { border-left: 6px solid #ffb7c5; } /* ピンク */
+        .chiikawa-box .char-name { background-color: #ff94a8; }
+
+        .hachiware-box { border-left: 6px solid #60a5fa; } /* 青 */
+        .hachiware-box .char-name { background-color: #3b82f6; }
+
+        .usagi-box     { border-left: 6px solid #fbbf24; } /* 黄色 */
+        .usagi-box .char-name { background-color: #f59e0b; }
+
+        .char-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* 🌟 鎧さんの助言枠 */
+        .advice-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fef3c7, #fff9db);
+            color: #78350f;
+            border-radius: 16px;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-left: 6px solid #d97706;
+        }
+
+        .advice-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: #b45309;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        #advice-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* タップの案内文 */
+        .notice {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
+
+    <div class="card" id="main-card">
         <h1 id="title">読み込み中...</h1>
-        <p id="scene"></p>
-        <div class="dialogue">
-            <p id="chiikawa"></p>
-            <p id="hachiware"></p>
-            <p id="usagi"></p>
+        <div id="sky-title" class="sky-title"></div>
+        
+        <p id="scene">空の様子を探しています...</p>
+        
+        <div class="dialogue-container">
+            <div class="bubble-box chiikawa-box">
+                <span class="char-name">ちいかわ</span>
+                <span class="char-text" id="chiikawa">...</span>
+            </div>
+            <div class="bubble-box hachiware-box">
+                <span class="char-name">ハチワレ</span>
+                <span class="char-text" id="hachiware">...</span>
+            </div>
+            <div class="bubble-box usagi-box">
+                <span class="char-name">うさぎ</span>
+                <span class="char-text" id="usagi">...</span>
+            </div>
         </div>
-        <p id="advice" style="margin-top:20px; color:#fbbf24; font-weight:bold;"></p>
-        <audio id="bgm" loop></audio>
+
+        <div class="advice-box">
+            <div class="advice-title">🎒 ポシェットの鎧さんの助言</div>
+            <p id="advice-text">...</p>
+        </div>
+
+        <p id="tap-notice" class="notice">🎵 画面をタップすると音が出るよ</p>
+        <audio id="bgm-player" loop></audio>
     </div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        fetch(`/api/fortune?hid=${params.get('hid')}&l_name=${params.get('l_name')}`)
+        const hid = params.get('hid') || "1"; 
+        const l_name = params.get('l_name') || "1"; 
+
+        // サーバー（API）から占いデータを取得
+        fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
-                document.getElementById('title').innerText = data.name;
-                document.getElementById('scene').innerText = data.chiikawa_scene;
-                document.getElementById('chiikawa').innerText = "ちいかわ：「" + data.chiikawa + "」";
-                document.getElementById('hachiware').innerText = "ハチワレ：「" + data.hachiware + "」";
-                document.getElementById('usagi').innerText = "うさぎ：「" + data.usagi + "」";
-                document.getElementById('advice').innerText = "鎧さんの助言：" + data.advice;
+                // データのマッピング
+                document.getElementById('title').innerText = `${data.name} (${l_name}爻)`;
+                document.getElementById('sky-title').innerText = `✨ 出現中の空：${data.sky_name || data.soranoeki_sky || "不思議な空"}`;
+                document.getElementById('scene').innerText = data.chiikawa_scene || "みんなで空を見上げているよ。";
                 
-                const audio = document.getElementById('bgm');
-                audio.src = data.bgm;
-                document.body.addEventListener('click', () => audio.play(), { once: true });
+                // 🌟 セリフを代入（「」は自動でつくようにスマート化！）
+                document.getElementById('chiikawa').innerText = data.chiikawa ? `「${data.chiikawa}」` : "「…わァ…」";
+                document.getElementById('hachiware').innerText = data.hachiware ? `「${data.hachiware}」` : "「ね、何かが始まりそうだね…！」";
+                document.getElementById('usagi').innerText = data.usagi ? `「${data.usagi}」` : "「ヤハーーッ！」";
+                
+                // 鎧さんのアドバイス
+                document.getElementById('advice-text').innerText = data.advice || data.advice_message || "ぼちぼちいこう。";
+
+                // BGMの連動設定
+                if (data.bgm) {
+                    const audio = document.getElementById('bgm-player');
+                    audio.src = data.bgm;
+                    
+                    // カードをタップしてBGM再生の切り替え
+                    document.getElementById('main-card').addEventListener('click', () => {
+                        if (audio.paused) {
+                            audio.play().catch(e => console.log("再生がブロックされました", e));
+                            document.getElementById('tap-notice').innerText = "🔊 BGM再生中！ (タップで停止)";
+                        } else {
+                            audio.pause();
+                            document.getElementById('tap-notice').innerText = "🎵 タップして音を鳴らす";
+                        }
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('title').innerText = "😭 エラー";
+                document.getElementById('scene').innerText = "データをうまく読み込めなかったみたい…";
             });
     </script>
 </body>
