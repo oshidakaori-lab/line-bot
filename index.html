@@ -14,7 +14,6 @@
         
         body, html {
             width: 100%; 
-            /* 🌟 背景が途切れる問題（白い余白）を修正！スマホの画面下までしっかり覆うよ */
             min-height: 100vh;
             min-height: 100dvh; 
             font-family: 'Zen Maru Gothic', sans-serif;
@@ -24,37 +23,35 @@
             overflow-x: hidden;
         }
 
-        /* 🌟 ふわふわ横スクロール用の背景レイヤー */
+        /* ふわふわ横スクロール用の背景レイヤー */
         .bg-layer {
             position: fixed;
             top: -10vh; 
-            left: -25vw; /* 画面より横に大きくはみ出させる */
-            width: 150vw; /* 横幅を1.5倍に！ */
-            height: 120vh; /* 縦も少し大きめに */
+            left: -25vw; 
+            width: 150vw; 
+            height: 120vh; 
             background-size: cover;
             background-position: center;
             z-index: -2;
             transition: background-image 1.2s ease-in-out;
-            /* 🌟 40秒かけて左右をゆっくり見渡すアニメーション */
             animation: fluffyScroll 40s alternate infinite ease-in-out;
         }
 
-        /* 🌟 横へゆっくり視点が移動するアニメーション */
         @keyframes fluffyScroll {
-            0% { transform: translate(15vw, 2vh) scale(1); }    /* 左の方を映す */
-            50% { transform: translate(-15vw, -3vh) scale(1.05); } /* 右の方を映す */
-            100% { transform: translate(5vw, 0vh) scale(1.02); }   /* 少し戻る */
+            0% { transform: translate(15vw, 2vh) scale(1); }    
+            50% { transform: translate(-15vw, -3vh) scale(1.05); } 
+            100% { transform: translate(5vw, 0vh) scale(1.02); }   
         }
 
-        /* 画像の上に重ねるグラデーション（少し透明度を上げて背景を見やすくしたよ） */
+        /* 画像の上に重ねるグラデーション */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.5));
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.45));
             z-index: -1;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
         }
 
-        /* 動きのある天候エフェクト用のステージ */
+        /* 天候エフェクトステージ */
         #weather-effect {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: -1; overflow: hidden;
@@ -76,17 +73,32 @@
         }
 
         .card {
-            background: rgba(30, 41, 59, 0.6); /* 透明度を増やして背景を透けさせたよ */
-            backdrop-filter: blur(8px);
+            background: rgba(30, 41, 59, 0.55); 
+            backdrop-filter: blur(10px);
             padding: 30px; border-radius: 32px;
             text-align: center; width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
             opacity: 0; transform: scale(0.96);
             animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            
+            /* 🌟 徐々に透過していくためのなめらかな変化設定 */
+            transition: opacity 1.2s ease, background-color 1.2s ease, backdrop-filter 1.2s ease, transform 0.4s ease;
         }
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
+
+        /* 🌟 時間が経って自動透過（ディミング）したときのスタイル */
+        .card.dimmed {
+            opacity: 0.35; /* カード全体を35%までスーッと透過させるよ */
+            background-color: rgba(30, 41, 59, 0.15);
+            backdrop-filter: blur(1px); /* 後ろのイラストがクッキリ見えるようにぼかしを弱く */
+        }
+        
+        /* 透過中に軽く触る（ホバー）だけでもちょっと見やすくなるオマケ */
+        .card.dimmed:hover {
+            opacity: 0.6;
+        }
 
         /* アニメーション関連 */
         .animate-item { opacity: 0; transform: translateY(12px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -125,7 +137,7 @@
         #advice-text { font-size: 0.95rem; line-height: 1.6; }
         .notice { font-size: 0.75rem; color: #cbd5e1; margin-top: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
-        /* 🌟 背景を眺めるための切り替えボタン */
+        /* 背景を眺めるための切り替えボタン */
         .toggle-bg-btn {
             position: fixed; bottom: 20px; right: 20px; z-index: 100;
             background: rgba(0, 0, 0, 0.6); color: #fff;
@@ -203,6 +215,25 @@
         const hid = params.get('hid') || "1"; 
         const l_name = params.get('l_name') || "1"; 
 
+        let fadeTimer;
+        const mainCard = document.getElementById('main-card');
+
+        // 🌟 自動で徐々に透過させるタイマー関数
+        function startFadeTimer() {
+            clearTimeout(fadeTimer);
+            fadeTimer = setTimeout(() => {
+                if (uiVisible) {
+                    mainCard.classList.add('dimmed');
+                }
+            }, 5000); // 🌟 触らなくなってから5秒後に自動透過
+        }
+
+        // 🌟 タップされたらクッキリ戻してタイマーをリセットする関数
+        function resetCardOpacity() {
+            mainCard.classList.remove('dimmed');
+            startFadeTimer();
+        }
+
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
@@ -221,10 +252,18 @@
                 document.getElementById('usagi').innerText = `「${data.usagi || '…'}」`;
                 document.getElementById('advice-text').innerText = data.advice;
 
+                // 最初のおしゃべりが表示されてから自動透過のカウントダウンを始めるよ
+                startFadeTimer();
+
                 if (data.bgm) {
                     const audio = document.getElementById('bgm-player');
                     audio.src = data.bgm;
-                    document.getElementById('main-card').addEventListener('click', () => {
+                    
+                    // カードタップ時のイベント
+                    mainCard.addEventListener('click', () => {
+                        // 🌟 タップされたのでクッキリ戻す！
+                        resetCardOpacity();
+
                         if (audio.paused) {
                             audio.play().catch(e => console.log(e));
                             document.getElementById('tap-notice').innerText = "🔊 BGM再生中！ (タップで停止)";
@@ -241,7 +280,7 @@
                 document.getElementById('scene').innerText = "お空のデータがうまく届かなかったみたい…";
             });
 
-        // 🌟 UIを隠して背景だけを堪能する機能
+        // UIを隠して背景だけを堪能する機能
         let uiVisible = true;
         function toggleUI() {
             uiVisible = !uiVisible;
@@ -254,6 +293,12 @@
             btn.innerText = uiVisible ? '👁️ 背景をよく見る' : '📝 おしゃべりに戻る';
             btn.style.background = uiVisible ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)';
             btn.style.color = uiVisible ? '#fff' : '#000';
+
+            if (uiVisible) {
+                resetCardOpacity();
+            } else {
+                clearTimeout(fadeTimer);
+            }
         }
 
         function startWeatherEffect(species) {
