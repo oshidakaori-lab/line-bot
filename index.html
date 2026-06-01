@@ -38,10 +38,10 @@
             100% { transform: translate(5vw, 0vh) scale(1.02); }   
         }
 
-        /* 背景を少しくらめにして文字を読みやすくする */
+        /* 文字を読みやすくするための画面全体へのごく薄い暗幕 */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.5));
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.55));
             z-index: -1;
         }
 
@@ -63,29 +63,18 @@
             100% { transform: translateY(0px); }
         }
 
-                /* 🌟 背景・境界線を少し残したミニマルスタイル */
+        /* 🌟 背景完全透過 ＆ 枠線だけを残すスタイル */
         .card {
-            /* ほぼ透明な黒背景にして、背景を薄っすら引き締める */
-            background: rgba(15, 23, 42, 0.35); 
-            /* 少しだけぼかしを残して、文字を読みやすくする */
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            
-            padding: 30px 25px; 
-            border-radius: 24px;
-            text-align: left; 
-            width: 100%;
-            
-            /* 境界線は「少しだけ」感じられる程度の細い線に */
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            /* 影は削って、浮遊感を出しつつもカードらしさをキープ */
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            
-            opacity: 0; 
-            transform: scale(0.98);
+            background: transparent; /* 背景色を完全に無くす */
+            backdrop-filter: none; /* ぼかしも無くす */
+            -webkit-backdrop-filter: none;
+            padding: 30px 25px; border-radius: 24px;
+            text-align: left; width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.35); /* 枠線を美しく際立たせる */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* 枠線が背景に溶けすぎないよう、ふんわりとした影 */
+            opacity: 0; transform: scale(0.98);
             animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
@@ -95,11 +84,11 @@
         .delay-3 { animation-delay: 0.35s; } .delay-4 { animation-delay: 0.45s; } .delay-5 { animation-delay: 0.6s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* 🌟 空の背景に文字が溶け込まないように影をつける */
+        /* 🌟 背景が透けても文字が読みやすいよう、しっかり影をつける */
         .card h1, .card #sky-title, .card #scene, 
         .card .char-name, .card .dialogue-line span, 
         .card .yoroi-name, .card .yoroi-text {
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.7);
         }
 
         /* ヘッダー周り */
@@ -109,28 +98,28 @@
 
         /* 情景テキスト */
         #scene {
-            font-size: 0.95rem; line-height: 1.7; color: #e2e8f0;
+            font-size: 0.95rem; line-height: 1.7; color: #f8fafc;
             margin-bottom: 28px; padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* 🌟 ミニマルなセリフ表示（文字色でキャラクターを表現） */
+        /* ミニマルなセリフ表示（文字色でキャラクターを表現） */
         .dialogue-container { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
         .dialogue-line { font-size: 0.95rem; line-height: 1.6; font-weight: 500; display: flex; flex-direction: column; }
-        .char-name { font-size: 0.75rem; opacity: 0.7; margin-bottom: 2px; }
+        .char-name { font-size: 0.75rem; opacity: 0.8; margin-bottom: 2px; color: #ffffff; }
         
-        .chiikawa-text { color: #fda4af; } /* やわらかいピンク */
-        .hachiware-text { color: #93c5fd; } /* クリアな水色 */
-        .usagi-text { color: #fde047; } /* あざやかな黄色 */
+        .chiikawa-text { color: #fecdd3; } /* やわらかいピンク */
+        .hachiware-text { color: #bfdbfe; } /* クリアな水色 */
+        .usagi-text { color: #fef08a; } /* あざやかな黄色 */
 
         /* 鎧さんの言葉 */
-        .advice-box { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
-        .yoroi-text { color: #fdba74; font-size: 0.9rem; line-height: 1.6; } /* あたたかいオレンジ */
-        .yoroi-name { font-size: 0.75rem; opacity: 0.7; color: #fdba74; margin-bottom: 4px; display: block; }
+        .advice-box { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+        .yoroi-text { color: #fed7aa; font-size: 0.9rem; line-height: 1.6; } /* あたたかいオレンジ */
+        .yoroi-name { font-size: 0.75rem; opacity: 0.8; color: #ffffff; margin-bottom: 4px; display: block; }
 
-        .notice { font-size: 0.7rem; color: #94a3b8; margin-top: 20px; text-align: center; }
+        .notice { font-size: 0.7rem; color: #cbd5e1; margin-top: 20px; text-align: center; }
 
-        /* 🌟 シネマティックで華やかな天候エフェクト */
+        /* シネマティックで華やかな天候エフェクト */
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
         
