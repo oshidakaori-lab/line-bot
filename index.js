@@ -15,34 +15,34 @@ const client = new line.Client({
 
 const hexagrams = [];
 const lines = [];
-const lastFortune = new Map(); // 連続で同じ結果が出ないように記憶する箱
+const lastFortune = new Map();
 
-// CSV読み込み設定
 const cleanHeader = ({ header }) => header.replace(/[\uFEFF\u200B]+/g, '').trim();
 
+// 🌟🌟🌟 ここが最大の修正ポイント！ 🌟🌟🌟
+// separator: '\t' を追加して、タブ区切りのデータを正しく読み込むよ！
 fs.createReadStream("hexagrams_master_with_emotion.csv")
-  .pipe(csv({ mapHeaders: cleanHeader }))
+  .pipe(csv({ separator: '\t', mapHeaders: cleanHeader }))
   .on("data", (data) => hexagrams.push(data));
 
 fs.createReadStream("lines.csv")
-  .pipe(csv({ mapHeaders: cleanHeader }))
+  .pipe(csv({ separator: '\t', mapHeaders: cleanHeader }))
   .on("data", (data) => lines.push(data));
 
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-// 🌟 HTML画面からのリクエスト（ここでAIが会話を作るよ！）
+// 🤖 AIへの連携部分
 app.get("/api/fortune", async (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
-  // 爻のデータを探す処理を修正
   const l = lines.find(line => String(line.hexagram_id) === String(h?.id) && String(line.line) === String(l_name));
 
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
 
   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
   const prompt = `あなたは「ちいかわ」の世界のガイドです。以下の情報から、ちいかわ達の会話と鎧さんのアドバイスを生成してください。
-  【卦】${h.name}: ${h.sky_description_kawaii} (${h.emotion_action_kawaii})
+  【卦】${h.name}: ${h.sky_description_kawaii || ""}
   【爻】${l ? l.line_name_kawaii : ""}: ${l ? l.chiikawa_line_emotion : ""}
   
   必ずJSON形式（"chiikawa", "hachiware", "usagi", "advice", "chiikawa_scene"）のみで回答して。マークダウンは不要です。`;
@@ -57,7 +57,7 @@ app.get("/api/fortune", async (req, res) => {
   }
 });
 
-// 🌟 LINEからのメッセージ受け取り（ここが前回消えちゃってた部分！）
+// 📱 LINEのお返事部分
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -67,9 +67,13 @@ app.post("/callback", express.json(), async (req, res) => {
       if (event.type !== "message" || event.message.type !== "text") continue;
 
       const userId = event.source.userId;
-      if (hexagrams.length === 0) continue; // データ準備中ならスキップ
+      
+      // データ準備中なら文字で教える（安全装置）
+      if (hexagrams.length === 0) {
+         await client.replyMessage(event.replyToken, { type: "text", text: "ごめんね、今データを準備中だよ！" });
+         continue;
+      }
 
-      // ランダムに占いの結果（卦）を選ぶ
       let h;
       let attempts = 0;
       do {
@@ -78,16 +82,13 @@ app.post("/callback", express.json(), async (req, res) => {
       } while (h.id === lastFortune.get(userId) && attempts < 10);
       lastFortune.set(userId, h.id);
 
-      // ランダムに爻（1〜6）を選ぶ
       const lineIndex = Math.floor(Math.random() * 6) + 1;
       const lName = `${lineIndex}爻`; 
-
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lineIndex)}`;
 
-      // LINEに送るシンプルなカード（レアリティなし・白枠）
       const flexMessage = {
         type: "flex",
-        altText: `🔮 【${h.name}】が届いたよ`,
+        altText: `🔮 ${h.name}の占い結果`,
         contents: {
           type: "bubble",
           body: {
@@ -136,7 +137,16 @@ app.post("/callback", express.json(), async (req, res) => {
         }
       };
 
-      await client.replyMessage(event.replyToken, flexMessage);
+      try {
+        await client.replyMessage(event.replyToken, flexMessage);
+      } catch (flexError) {
+        console.error("Flex Message送信エラー:", flexError);
+        // 万が一カードでエラーが起きても、文字でURLを届ける！
+        await client.replyMessage(event.replyToken, { 
+          type: "text", 
+          text: `🔮 ${h.name} が出たよ！\n以下のURLからカードを開いてね！\n${finalUrl}` 
+        });
+      }
     }
     res.sendStatus(200);
   } catch (error) { 
