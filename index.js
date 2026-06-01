@@ -40,7 +40,7 @@ app.get("/api/fortune", async (req, res) => {
 
   if (!h) return res.status(404).json({ error: "卦が見つかりません" });
 
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
   const prompt = `あなたは「ちいかわ」の世界のガイドです。以下の情報から、ちいかわ達の会話と鎧さんのアドバイスを生成してください。
   【卦】${h.name}: ${h.sky_description_kawaii || ""}
   【爻】${l ? l.line_name_kawaii : ""}: ${l ? l.chiikawa_line_emotion : ""}
