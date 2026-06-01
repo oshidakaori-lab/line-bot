@@ -95,7 +95,7 @@ app.get("/api/fortune", async (req, res) => {
       bgm: h.bgm || "default.mp3" 
     });
   }
-
+}); // 👈🌟これ（app.getを閉じるカッコ）を追加！！！
 
 // LINEからのメッセージ受け取り
 app.post("/callback", express.json(), async (req, res) => {
