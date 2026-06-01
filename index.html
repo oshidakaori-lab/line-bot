@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>空の易 - エフェクトテスト</title>
+    <title>空の易 - キャラおしゃべり図鑑</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +31,7 @@
             z-index: 0;
         }
 
+        /* 画像の上に重ねるグラデーションフィルター */
         .bg-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -38,6 +39,7 @@
             z-index: -1;
         }
 
+        /* 🌟 動きのある天候エフェクト用のステージ */
         #weather-effect {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -46,6 +48,7 @@
             overflow: hidden;
         }
 
+        /* 🌟 カードをぷかぷか浮かせるラッパー */
         .card-wrapper {
             width: 100%;
             max-width: 450px;
@@ -60,6 +63,7 @@
             100% { transform: translateY(0px); }
         }
 
+        /* ふんわりしたカード全体の登場アニメーション */
         .card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(14px);
@@ -69,29 +73,78 @@
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: scale(0.96);
+            animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes cardAppear {
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* 🌟 文字やバルーンが下からふわっと時間差で現れるアニメーション */
+        .animate-item {
+            opacity: 0;
+            transform: translateY(12px);
+            animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 { animation-delay: 0.15s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.45s; }
+        .delay-4 { animation-delay: 0.6s; }
+        .delay-5 { animation-delay: 0.75s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
         h1 { font-size: 1.6rem; margin-bottom: 4px; color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
         .sky-title { font-size: 0.95rem; color: #38bdf8; margin-bottom: 20px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
 
-        /* 天候切り替えボタン（テスト用） */
-        .test-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+        /* 情景描写の枠 */
+        #scene {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #f8fafc;
+            background: rgba(15, 23, 42, 0.45);
+            padding: 16px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .test-btn {
-            padding: 10px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-family: inherit;
-            cursor: pointer;
-            transition: background 0.3s;
+
+        /* 会話エリア */
+        .dialogue-container { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 25px; }
+        
+        .bubble-box {
+            display: flex; flex-direction: column;
+            background: rgba(255, 255, 255, 0.96);
+            color: #334155; padding: 12px 16px; border-radius: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        .test-btn:hover { background: rgba(255, 255, 255, 0.4); }
+        .char-name {
+            font-weight: 700; font-size: 0.8rem; margin-bottom: 4px;
+            display: inline-block; padding: 1px 8px; border-radius: 20px; color: #fff; width: fit-content;
+        }
+        .chiikawa-box  { border-left: 6px solid #ffb7c5; }
+        .chiikawa-box .char-name { background-color: #ff94a8; }
+        .hachiware-box { border-left: 6px solid #60a5fa; }
+        .hachiware-box .char-name { background-color: #3b82f6; }
+        .usagi-box     { border-left: 6px solid #fbbf24; }
+        .usagi-box .char-name { background-color: #f59e0b; }
+        .char-text { font-size: 0.95rem; line-height: 1.5; font-weight: 500; }
+
+        /* 鎧さんのアドバイス枠 */
+        .advice-box {
+            margin-top: 20px; padding: 20px;
+            background: linear-gradient(135deg, #fffbeb, #fffdf5);
+            color: #78350f; border-radius: 24px; text-align: left;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+        .advice-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: #b45309; }
+        #advice-text { font-size: 0.95rem; line-height: 1.6; }
+        .notice { font-size: 0.75rem; color: #cbd5e1; margin-top: 15px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 
         /* ――― 各天候エフェクト用のパーツCSS ――― */
         .rain { position: absolute; background: rgba(255,255,255,0.4); width: 1.5px; height: 25px; animation: fall linear infinite; }
@@ -125,37 +178,101 @@
 </head>
 <body>
 
+    <!-- 背景フィルターと天候エフェクトステージ -->
     <div class="bg-overlay"></div>
     <div id="weather-effect"></div>
 
+    <!-- 🌟 全体を浮かせるラッパー -->
     <div class="card-wrapper">
         <div class="card" id="main-card">
-            <h1>エフェクト確認モード</h1>
-            <div id="sky-title" class="sky-title">下のボタンを押してね</div>
+            <h1 id="title" class="animate-item delay-1">読み込み中...</h1>
+            <div id="sky-title" class="sky-title animate-item delay-1"></div>
             
-            <!-- AIのエラーに関係なく表示を確認できるボタンたち！ -->
-            <div class="test-buttons">
-                <button class="test-btn" onclick="changeWeather('sky.png', '創空族')">✨ 創空族 (キラキラ)</button>
-                <button class="test-btn" onclick="changeWeather('cloud.png', '受雲族')">☁️ 受雲族 (くも)</button>
-                <button class="test-btn" onclick="changeWeather('thunder.png', '雷芽族')">⚡ 雷芽族 (かみなり)</button>
-                <button class="test-btn" onclick="changeWeather('rain.png', '雨巡族')">☔ 雨巡族 (あめ)</button>
-                <button class="test-btn" onclick="changeWeather('wind.png', '風旅族')">💨 風旅族 (かぜ)</button>
-                <button class="test-btn" onclick="changeWeather('rainbow.png', '虹結族')">🌈 虹結族 (シャボン玉)</button>
-                <button class="test-btn" onclick="changeWeather('snow.png', '雪守族')">❄️ 雪守族 (ゆき)</button>
-                <button class="test-btn" onclick="changeWeather('fire.png', '炎灯族')">🔥 炎灯族 (ひかり)</button>
+            <p id="scene" class="animate-item delay-2">空の様子を探しています...</p>
+            
+            <div class="dialogue-container">
+                <div class="bubble-box chiikawa-box animate-item delay-3">
+                    <span class="char-name">ちいかわ</span>
+                    <span class="char-text" id="chiikawa">...</span>
+                </div>
+                <div class="bubble-box hachiware-box animate-item delay-4">
+                    <span class="char-name">ハチワレ</span>
+                    <span class="char-text" id="hachiware">...</span>
+                </div>
+                <div class="bubble-box usagi-box animate-item delay-5">
+                    <span class="char-name">うさぎ</span>
+                    <span class="char-text" id="usagi">...</span>
+                </div>
             </div>
+
+            <div class="advice-box animate-item delay-5">
+                <div class="advice-title">🎒 鎧さんの言葉</div>
+                <p id="advice-text">...</p>
+            </div>
+
+            <p id="tap-notice" class="notice">🎵 画面をタップすると音が出るよ</p>
+            <audio id="bgm-player" loop></audio>
         </div>
     </div>
 
     <script>
-        // ボタンを押すと、背景画像とエフェクトが切り替わる魔法の関数
-        function changeWeather(imageFile, species) {
-            document.body.style.backgroundImage = `url('${imageFile}')`;
-            document.getElementById('sky-title').innerText = `現在表示中：${species}`;
-            startWeatherEffect(species);
-        }
+        const speciesImages = {
+    "創空族": "sky.png", 
+    "受雲族": "cloud.png", 
+    "雷芽族": "thunder.png", 
+    "雨巡族": "rain.png",
+    "風旅族": "wind.png", 
+    "虹結族": "rainbow.png", 
+    "雪守族": "snow.png", 
+    "炎灯族": "fire.png"
+};
 
-        // 🌟 動きのあるお天気エフェクト
+
+        const params = new URLSearchParams(window.location.search);
+        const hid = params.get('hid') || "1"; 
+        const l_name = params.get('l_name') || "1"; 
+
+        fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
+            .then(res => res.json())
+            .then(data => {
+                // 🌟 [修正] encodeURIComponentを外し、ブラウザに自動処理させて画像を表示！
+                const species = data.species_8 || "創空族"; 
+                const imageFile = speciesImages[species] || "創空族.png"; 
+                document.body.style.backgroundImage = `url('${imageFile}')`;
+
+                // 🌟 天候エフェクトの開始
+                startWeatherEffect(species);
+
+                document.getElementById('title').innerText = `${data.name} (${l_name})`;
+                document.getElementById('sky-title').innerText = `✨ 出現中の空：${data.sky_name || data.soranoeki_sky || "不思議な空"}`;
+                document.getElementById('scene').innerText = data.chiikawa_scene;
+                
+                document.getElementById('chiikawa').innerText = `「${data.chiikawa || '…'}」`;
+                document.getElementById('hachiware').innerText = `「${data.hachiware || '…'}」`;
+                document.getElementById('usagi').innerText = `「${data.usagi || '…'}」`;
+                document.getElementById('advice-text').innerText = data.advice;
+
+                if (data.bgm) {
+                    const audio = document.getElementById('bgm-player');
+                    audio.src = data.bgm;
+                    document.getElementById('main-card').addEventListener('click', () => {
+                        if (audio.paused) {
+                            audio.play().catch(e => console.log(e));
+                            document.getElementById('tap-notice').innerText = "🔊 BGM再生中！ (タップで停止)";
+                        } else {
+                            audio.pause();
+                            document.getElementById('tap-notice').innerText = "🎵 タップして音を鳴らす";
+                        }
+                    });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('title').innerText = "😭 エラー";
+                document.getElementById('scene').innerText = "お空のデータがうまく届かなかったみたい…";
+            });
+
+        // 🌟 動きのあるお天気エフェクトを生成する関数
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect');
             container.innerHTML = ''; 
@@ -253,9 +370,6 @@
                 }
             }
         }
-        
-        // 最初に画面を開いたときは、創空族を表示しておくよ
-        changeWeather('sky.png', '創空族');
     </script>
 </body>
 </html>
