@@ -20,7 +20,6 @@
             display: flex; justify-content: center; align-items: center;
             padding: 20px; background-color: #0f172a;
             overflow-x: hidden;
-            color: #f8fafc;
         }
 
         /* ふわふわ横スクロール用の背景レイヤー */
@@ -29,6 +28,7 @@
             top: -10vh; left: -25vw; width: 150vw; height: 120vh; 
             background-size: cover; background-position: center;
             z-index: -2;
+            transition: background-image 1.2s ease-in-out;
             animation: fluffyScroll 40s alternate infinite ease-in-out;
         }
 
@@ -38,11 +38,10 @@
             100% { transform: translate(5vw, 0vh) scale(1.02); }   
         }
 
-        /* 文字を読みやすくするための画面全体へのごく薄い暗幕 */
         .bg-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.55));
-            z-index: -1;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.35));
+            z-index: -1; transition: opacity 0.8s ease;
         }
 
         #weather-effect {
@@ -53,9 +52,9 @@
         .ui-wrapper {
             width: 100%; max-width: 450px;
             display: flex; flex-direction: column; align-items: center;
+            transition: opacity 0.5s ease;
         }
 
-        /* ふわふわ浮くアニメーション */
         .card-floater { animation: floatAnimation 5s ease-in-out infinite; width: 100%; }
         @keyframes floatAnimation {
             0% { transform: translateY(0px); }
@@ -63,80 +62,121 @@
             100% { transform: translateY(0px); }
         }
 
-        /* 🌟 背景完全透過 ＆ 枠線だけを残すスタイル */
+        /* 🌟 デフォルト：文字がくっきり読める【白基調（ライト）】 */
         .card {
-            background: transparent; /* 背景色を完全に無くす */
-            backdrop-filter: none; /* ぼかしも無くす */
-            -webkit-backdrop-filter: none;
-            padding: 30px 25px; border-radius: 24px;
-            text-align: left; width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.35); /* 枠線を美しく際立たせる */
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* 枠線が背景に溶けすぎないよう、ふんわりとした影 */
-            opacity: 0; transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.88); /* 後ろの空に負けないよう、白をすこし濃くしたよ */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 30px; border-radius: 32px;
+            text-align: center; width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.15); 
+            opacity: 0; transform: scale(0.96);
             animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: opacity 1.2s ease, background-color 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease, color 0.5s ease;
+            
+            color: #0f172a; /* 読みにくさ解消！真っ黒に近いディープネイビー */
         }
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 文字がフワッと出てくるアニメーション */
-        .animate-item { opacity: 0; transform: translateY(8px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.35s; } .delay-4 { animation-delay: 0.45s; } .delay-5 { animation-delay: 0.6s; }
+        /* 🌟 切り替え用：シックで幻想的な【黒基調（ダーク）】 */
+        .card.dark-theme {
+            background: rgba(30, 41, 59, 0.65); 
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            color: #f8fafc;
+        }
+
+        /* 🌟 5秒後の自動透過（ディミング）も白黒それぞれに最適化 */
+        .card.dimmed {
+            opacity: 0.22 !important; 
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(1px) !important;
+        }
+        .card.dark-theme.dimmed {
+            opacity: 0.32 !important;
+            background-color: rgba(30, 41, 59, 0.12) !important;
+            backdrop-filter: blur(1px) !important;
+        }
+        
+        .card.dimmed:hover { opacity: 0.6 !important; }
+
+        .animate-item { opacity: 0; transform: translateY(12px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .delay-1 { animation-delay: 0.15s; } .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.45s; } .delay-4 { animation-delay: 0.6s; } .delay-5 { animation-delay: 0.75s; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* 🌟 背景が透けても文字が読みやすいよう、しっかり影をつける */
-        .card h1, .card #sky-title, .card #scene, 
-        .card .char-name, .card .dialogue-line span, 
-        .card .yoroi-name, .card .yoroi-text {
-            text-shadow: 0 2px 5px rgba(0,0,0,0.7);
-        }
+        /* タイトルまわりの文字色調整 */
+        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #0f172a; transition: color 0.5s; }
+        .card.dark-theme h1 { color: #f8fafc; }
 
-        /* ヘッダー周り */
-        .header-area { text-align: center; margin-bottom: 24px; }
-        h1 { font-size: 1.5rem; margin-bottom: 6px; color: #ffffff; letter-spacing: 1px; }
-        .sky-title { font-size: 0.9rem; color: #cbd5e1; font-weight: 400; }
+        .sky-title { font-size: 0.95rem; color: #0284c7; margin-bottom: 20px; font-weight: 600; transition: color 0.5s; }
+        .card.dark-theme .sky-title { color: #38bdf8; }
 
-        /* 情景テキスト */
+        /* 解説文の枠 */
         #scene {
-            font-size: 0.95rem; line-height: 1.7; color: #f8fafc;
-            margin-bottom: 28px; padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1rem; line-height: 1.7; color: #1e293b;
+            background: rgba(15, 23, 42, 0.04); padding: 16px; border-radius: 20px;
+            margin-bottom: 25px; text-align: left; border: 1px solid rgba(15, 23, 42, 0.08);
+            transition: all 0.5s;
+        }
+        .card.dark-theme #scene {
+            color: #f8fafc; background: rgba(15, 23, 42, 0.45); border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* ミニマルなセリフ表示（文字色でキャラクターを表現） */
-        .dialogue-container { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
-        .dialogue-line { font-size: 0.95rem; line-height: 1.6; font-weight: 500; display: flex; flex-direction: column; }
-        .char-name { font-size: 0.75rem; opacity: 0.8; margin-bottom: 2px; color: #ffffff; }
-        
-        .chiikawa-text { color: #fecdd3; } /* やわらかいピンク */
-        .hachiware-text { color: #bfdbfe; } /* クリアな水色 */
-        .usagi-text { color: #fef08a; } /* あざやかな黄色 */
+        /* セリフの吹き出し（ちいかわ達の枠は一貫して見やすく白ベース固定） */
+        .dialogue-container { display: flex; flex-direction: column; gap: 12px; text-align: left; margin-bottom: 25px; }
+        .bubble-box {
+            display: flex; flex-direction: column; background: rgba(255, 255, 255, 0.96);
+            color: #334155; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        }
+        .char-name {
+            font-weight: 700; font-size: 0.8rem; margin-bottom: 4px; display: inline-block;
+            padding: 1px 8px; border-radius: 20px; color: #fff; width: fit-content;
+        }
+        .chiikawa-box { border-left: 6px solid #ffb7c5; } .chiikawa-box .char-name { background-color: #ff94a8; }
+        .hachiware-box { border-left: 6px solid #60a5fa; } .hachiware-box .char-name { background-color: #3b82f6; }
+        .usagi-box { border-left: 6px solid #fbbf24; } .usagi-box .char-name { background-color: #f59e0b; }
+        .char-text { font-size: 0.95rem; line-height: 1.5; font-weight: 500; }
 
-        /* 鎧さんの言葉 */
-        .advice-box { padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
-        .yoroi-text { color: #fed7aa; font-size: 0.9rem; line-height: 1.6; } /* あたたかいオレンジ */
-        .yoroi-name { font-size: 0.75rem; opacity: 0.8; color: #ffffff; margin-bottom: 4px; display: block; }
+        /* 鎧さんのアドバイス */
+        .advice-box {
+            margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255,251,235,0.96), rgba(255,253,245,0.96));
+            color: #78350f; border-radius: 24px; text-align: left; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+        }
+        .advice-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; color: #b45309; }
+        #advice-text { font-size: 0.95rem; line-height: 1.6; }
+        
+        .notice { font-size: 0.75rem; color: #475569; margin-top: 15px; transition: color 0.5s; }
+        .card.dark-theme .notice { color: #cbd5e1; }
 
-        .notice { font-size: 0.7rem; color: #cbd5e1; margin-top: 20px; text-align: center; }
+        /* 🛠️ 右下の操作ボタンたち */
+        .toggle-bg-btn, .toggle-theme-btn {
+            position: fixed; right: 20px; z-index: 100;
+            background: rgba(255, 255, 255, 0.85); color: #0f172a;
+            border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 20px;
+            padding: 12px 20px; font-size: 0.95rem; font-family: inherit; font-weight: bold;
+            cursor: pointer; backdrop-filter: blur(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+        }
+        .toggle-bg-btn { bottom: 20px; }
+        .toggle-theme-btn { bottom: 75px; } /* 上に並べる */
+        .toggle-bg-btn:hover, .toggle-theme-btn:hover { transform: scale(1.05); background: rgba(255, 255, 255, 0.98); }
 
-        /* シネマティックで華やかな天候エフェクト */
-        .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
-        
-        .snow { position: absolute; color: rgba(255,255,255,0.95); text-shadow: 0 0 10px rgba(255,255,255,0.6); animation: snowFall linear infinite; }
-        @keyframes snowFall { 0% { transform: translateY(-5vh) translateX(0) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; } }
-        
-        .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
-        @keyframes riseUp { 0% { transform: translateY(105vh) scale(0.5); opacity: 0; } 30% { opacity: 0.8; } 70% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
-        
-        .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0)); height: 3px; border-radius: 50%; filter: blur(2px); animation: blow cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
-        
-        .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, #fff, rgba(255,255,255,0)); opacity: 0; pointer-events: none; z-index: -1; animation: lightning 6s ease-in-out infinite; mix-blend-mode: overlay; }
-        @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
-        
-        .cloud-particle { position: absolute; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; animation: drift linear infinite; mix-blend-mode: screen; }
-        @keyframes drift { 0% { transform: translateX(-30vw) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(120vw) scale(1.2); opacity: 0; } }
+        /* 各天候エフェクト用のCSS */
+        .rain { position: absolute; background: rgba(255,255,255,0.4); width: 1.5px; height: 25px; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(105vh); } }
+        .snow { position: absolute; color: rgba(255,255,255,0.85); animation: snowFall linear infinite; }
+        @keyframes snowFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(40px) rotate(360deg); opacity: 0; } }
+        .sparkle { position: absolute; border-radius: 50%; animation: riseUp ease-in-out infinite; }
+        @keyframes riseUp { 0% { transform: translateY(105vh) scale(0); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(-5vh) scale(1.2); opacity: 0; } }
+        .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.3), rgba(255,255,255,0)); height: 2px; animation: blow linear infinite; }
+        @keyframes blow { 0% { transform: translateX(-100vw); } 100% { transform: translateX(100vw); } }
+        .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 1; animation: lightning 5s ease-in-out infinite; }
+        @keyframes lightning { 0%, 92%, 94%, 96%, 100% { opacity: 0; } 93%, 95% { opacity: 0.2; } }
+        .cloud-particle { position: absolute; background: rgba(255,255,255,0.12); border-radius: 50%; filter: blur(25px); animation: drift linear infinite; }
+        @keyframes drift { 0% { transform: translateX(-250px); } 100% { transform: translateX(105vw); } }
     </style>
 </head>
 <body>
@@ -145,38 +185,39 @@
     <div id="bg-overlay" class="bg-overlay"></div>
     <div id="weather-effect"></div>
 
+    <!-- 🌟 新しく追加した切り替えボタンだよ！ -->
+    <button id="toggle-theme-btn" class="toggle-theme-btn" onclick="toggleTheme()">🌙 黒基調にする</button>
+    <button id="toggle-bg-btn" class="toggle-bg-btn" onclick="toggleUI()">👁️ 背景をよく見る</button>
+
     <div id="ui-wrapper" class="ui-wrapper">
         <div class="card-floater">
             <div class="card" id="main-card">
-                
-                <div class="header-area animate-item delay-1">
-                    <h1 id="title">読み込み中...</h1>
-                    <div id="sky-title" class="sky-title"></div>
-                </div>
+                <h1 id="title" class="animate-item delay-1">読み込み中...</h1>
+                <div id="sky-title" class="sky-title animate-item delay-1"></div>
                 
                 <p id="scene" class="animate-item delay-2">空の様子を探しています...</p>
                 
                 <div class="dialogue-container">
-                    <div class="dialogue-line chiikawa-text animate-item delay-3">
+                    <div class="bubble-box chiikawa-box animate-item delay-3">
                         <span class="char-name">ちいかわ</span>
-                        <span id="chiikawa">...</span>
+                        <span class="char-text" id="chiikawa">...</span>
                     </div>
-                    <div class="dialogue-line hachiware-text animate-item delay-4">
+                    <div class="bubble-box hachiware-box animate-item delay-4">
                         <span class="char-name">ハチワレ</span>
-                        <span id="hachiware">...</span>
+                        <span class="char-text" id="hachiware">...</span>
                     </div>
-                    <div class="dialogue-line usagi-text animate-item delay-5">
+                    <div class="bubble-box usagi-box animate-item delay-5">
                         <span class="char-name">うさぎ</span>
-                        <span id="usagi">...</span>
+                        <span class="char-text" id="usagi">...</span>
                     </div>
                 </div>
 
                 <div class="advice-box animate-item delay-5">
-                    <span class="yoroi-name">鎧さんの言葉</span>
-                    <p id="advice-text" class="yoroi-text">...</p>
+                    <div class="advice-title">🎒 鎧さんの言葉</div>
+                    <p id="advice-text">...</p>
                 </div>
 
-                <p id="tap-notice" class="notice">画面タップでBGM再生・停止</p>
+                <p id="tap-notice" class="notice">🎵 画面をタップすると音が出るよ</p>
                 <audio id="bgm-player" loop></audio>
             </div>
         </div>
@@ -192,6 +233,29 @@
         const hid = params.get('hid') || "1"; 
         const l_name = params.get('l_name') || "1"; 
 
+        let fadeTimer;
+        let uiVisible = true;
+
+        function startFadeTimer() {
+            clearTimeout(fadeTimer);
+            fadeTimer = setTimeout(() => {
+                if (uiVisible) {
+                    document.getElementById('main-card').classList.add('dimmed');
+                }
+            }, 5000); 
+        }
+
+        function resetCardOpacity() {
+            if (uiVisible) {
+                document.getElementById('main-card').classList.remove('dimmed');
+                startFadeTimer();
+            }
+        }
+
+        document.body.addEventListener('click', () => {
+            resetCardOpacity();
+        });
+
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
@@ -202,7 +266,7 @@
                 startWeatherEffect(species);
 
                 document.getElementById('title').innerText = `${data.name} (${l_name})`;
-                document.getElementById('sky-title').innerText = `${data.sky_name || data.soranoeki_sky || "不思議な空"}`;
+                document.getElementById('sky-title').innerText = `✨ 出現中の空：${data.sky_name || data.soranoeki_sky || "不思議な空"}`;
                 document.getElementById('scene').innerText = data.chiikawa_scene;
                 
                 document.getElementById('chiikawa').innerText = `「${data.chiikawa || '…'}」`;
@@ -210,17 +274,21 @@
                 document.getElementById('usagi').innerText = `「${data.usagi || '…'}」`;
                 document.getElementById('advice-text').innerText = data.advice;
 
+                startFadeTimer();
+
                 if (data.bgm) {
                     const audio = document.getElementById('bgm-player');
                     audio.src = data.bgm;
                     
-                    document.body.addEventListener('click', () => {
+                    document.getElementById('main-card').addEventListener('click', (e) => {
+                        if(e.target.id === 'toggle-bg-btn' || e.target.id === 'toggle-theme-btn') return;
+                        
                         if (audio.paused) {
                             audio.play().catch(e => console.log(e));
-                            document.getElementById('tap-notice').innerText = "🔊 BGM再生中";
+                            document.getElementById('tap-notice').innerText = "🔊 BGM再生中！ (タップで停止)";
                         } else {
                             audio.pause();
-                            document.getElementById('tap-notice').innerText = "画面タップでBGM再生・停止";
+                            document.getElementById('tap-notice').innerText = "🎵 タップして音を鳴らす";
                         }
                     });
                 }
@@ -231,99 +299,112 @@
                 document.getElementById('scene').innerText = "お空のデータがうまく届かなかったみたい…";
             });
 
+        // 🌟 白と黒のテーマをきりかえる関数
+        function toggleTheme() {
+            const card = document.getElementById('main-card');
+            const btn = document.getElementById('toggle-theme-btn');
+            
+            if (card.classList.contains('dark-theme')) {
+                card.classList.remove('dark-theme');
+                btn.innerText = "🌙 黒基調にする";
+            } else {
+                card.classList.add('dark-theme');
+                btn.innerText = "☀️ 白基調にする";
+            }
+            
+            event.stopPropagation(); // bodyのクリックイベント発動を防ぐ
+            resetCardOpacity(); // 切り替えた瞬間に透明化をリセット
+        }
+
+        function toggleUI() {
+            uiVisible = !uiVisible;
+            document.getElementById('ui-wrapper').style.opacity = uiVisible ? '1' : '0';
+            document.getElementById('bg-overlay').style.opacity = uiVisible ? '1' : '0';
+            document.getElementById('ui-wrapper').style.pointerEvents = uiVisible ? 'auto' : 'none';
+            
+            // 背景をじっくり見るときはテーマ切り替えボタンも一緒に消すよ
+            const themeBtn = document.getElementById('toggle-theme-btn');
+            themeBtn.style.opacity = uiVisible ? '1' : '0';
+            themeBtn.style.pointerEvents = uiVisible ? 'auto' : 'none';
+            
+            const btn = document.getElementById('toggle-bg-btn');
+            btn.innerText = uiVisible ? '👁️ 背景をよく見る' : '📝 おしゃべりに戻る';
+            btn.style.background = uiVisible ? 'rgba(255, 255, 255, 0.85)' : 'rgba(15, 23, 42, 0.9)';
+            btn.style.color = uiVisible ? '#0f172a' : '#fff';
+
+            event.stopPropagation(); 
+
+            if (uiVisible) {
+                resetCardOpacity();
+            } else {
+                clearTimeout(fadeTimer);
+                document.getElementById('main-card').classList.remove('dimmed');
+            }
+        }
+
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect');
             container.innerHTML = ''; 
             
             if (species === "雨巡族") {
-                for(let i=0; i<60; i++) {
+                for(let i=0; i<45; i++) {
                     let drop = document.createElement('div'); drop.className = 'rain';
-                    drop.style.left = Math.random() * 100 + 'vw'; 
-                    drop.style.top = Math.random() * -100 + 'px';
-                    const zIndex = Math.random();
-                    drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`;
-                    drop.style.opacity = zIndex * 0.7 + 0.3;
-                    drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; 
-                    drop.style.animationDelay = Math.random() * 2 + 's';
+                    drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -50 + 'px';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's'; drop.style.animationDelay = Math.random() * 2 + 's';
                     container.appendChild(drop);
                 }
             } else if (species === "雪守族") {
-                const snowChars = ['❄', '･', '❅', '°'];
-                for(let i=0; i<40; i++) {
-                    let flake = document.createElement('div'); flake.className = 'snow'; 
-                    flake.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
-                    flake.style.left = Math.random() * 100 + 'vw'; 
-                    flake.style.fontSize = (Math.random() * 20 + 8) + 'px';
-                    flake.style.filter = `blur(${Math.random() * 2}px)`; 
-                    flake.style.animationDuration = (Math.random() * 4 + 4) + 's'; 
-                    flake.style.animationDelay = Math.random() * -5 + 's'; 
+                for(let i=0; i<25; i++) {
+                    let flake = document.createElement('div'); flake.className = 'snow'; flake.innerHTML = Math.random() > 0.4 ? '❄' : '･';
+                    flake.style.left = Math.random() * 100 + 'vw'; flake.style.fontSize = (Math.random() * 14 + 10) + 'px';
+                    flake.style.animationDuration = (Math.random() * 3 + 3) + 's'; flake.style.animationDelay = Math.random() * 5 + 's';
                     container.appendChild(flake);
                 }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
-                for(let i=0; i<30; i++) {
+                for(let i=0; i<20; i++) {
                     let drop = document.createElement('div'); drop.className = 'rain';
-                    drop.style.left = Math.random() * 100 + 'vw'; 
-                    drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))';
-                    drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's';
+                    drop.style.left = Math.random() * 100 + 'vw'; drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
                     container.appendChild(drop);
                 }
             } else if (species === "創空族") {
-                for(let i=0; i<35; i++) {
+                for(let i=0; i<20; i++) {
                     let sparkle = document.createElement('div'); sparkle.className = 'sparkle';
-                    sparkle.style.left = Math.random() * 100 + 'vw'; 
-                    const size = (Math.random() * 8 + 3) + 'px';
-                    sparkle.style.width = sparkle.style.height = size;
-                    sparkle.style.background = 'radial-gradient(circle, #ffffff, rgba(253, 224, 71, 0.2))'; 
-                    sparkle.style.boxShadow = '0 0 15px rgba(253, 224, 71, 0.8)';
-                    sparkle.style.animationDuration = (Math.random() * 5 + 3) + 's'; 
-                    sparkle.style.animationDelay = Math.random() * -5 + 's';
+                    sparkle.style.left = Math.random() * 100 + 'vw'; sparkle.style.width = sparkle.style.height = (Math.random() * 6 + 4) + 'px';
+                    sparkle.style.background = 'radial-gradient(circle, #fffdf0, rgba(251,191,36,0.6))'; sparkle.style.boxShadow = '0 0 10px #fef08a';
+                    sparkle.style.animationDuration = (Math.random() * 4 + 4) + 's'; sparkle.style.animationDelay = Math.random() * 4 + 's';
                     container.appendChild(sparkle);
                 }
             } else if (species === "炎灯族") {
-                for(let i=0; i<40; i++) {
+                for(let i=0; i<20; i++) {
                     let spark = document.createElement('div'); spark.className = 'sparkle';
-                    spark.style.left = Math.random() * 100 + 'vw'; 
-                    const size = (Math.random() * 6 + 2) + 'px';
-                    spark.style.width = spark.style.height = size;
-                    spark.style.background = 'radial-gradient(circle, #fff, rgba(249, 115, 22, 0.3))'; 
-                    spark.style.boxShadow = '0 0 12px #ea580c, 0 0 20px #ef4444'; 
-                    spark.style.animationDuration = (Math.random() * 2.5 + 2) + 's'; 
-                    spark.style.animationDelay = Math.random() * -3 + 's';
+                    spark.style.left = Math.random() * 100 + 'vw'; spark.style.width = spark.style.height = (Math.random() * 5 + 3) + 'px';
+                    spark.style.background = 'radial-gradient(circle, #fff, #f97316)'; spark.style.boxShadow = '0 0 12px #ea580c';
+                    spark.style.animationDuration = (Math.random() * 3 + 3) + 's'; spark.style.animationDelay = Math.random() * 3 + 's';
                     container.appendChild(spark);
                 }
             } else if (species === "風旅族") {
-                for(let i=0; i<15; i++) {
+                for(let i=0; i<8; i++) {
                     let wind = document.createElement('div'); wind.className = 'wind-line';
-                    wind.style.top = (Math.random() * 100) + 'vh'; 
-                    wind.style.width = (Math.random() * 200 + 150) + 'px';
-                    wind.style.opacity = Math.random() * 0.5 + 0.2;
-                    wind.style.animationDuration = (Math.random() * 2 + 1) + 's'; 
-                    wind.style.animationDelay = Math.random() * -2 + 's';
+                    wind.style.top = (Math.random() * 100) + 'vh'; wind.style.width = (Math.random() * 150 + 100) + 'px';
+                    wind.style.animationDuration = (Math.random() * 1.6 + 1.4) + 's'; wind.style.animationDelay = Math.random() * 3 + 's';
                     container.appendChild(wind);
                 }
             } else if (species === "虹結族") {
-                const colors = ['rgba(254,205,211,0.6)', 'rgba(191,219,254,0.6)', 'rgba(253,230,138,0.6)', 'rgba(187,247,208,0.6)', 'rgba(233,213,255,0.6)'];
-                for(let i=0; i<25; i++) {
-                    let bubble = document.createElement('div'); bubble.className = 'sparkle'; 
-                    bubble.style.left = Math.random() * 100 + 'vw';
-                    const size = (Math.random() * 40 + 10) + 'px'; 
-                    bubble.style.width = bubble.style.height = size;
-                    bubble.style.background = colors[Math.floor(Math.random() * colors.length)]; 
-                    bubble.style.boxShadow = '0 0 20px ' + bubble.style.background;
-                    bubble.style.animationDuration = (Math.random() * 8 + 4) + 's'; 
-                    bubble.style.animationDelay = Math.random() * -8 + 's';
+                const colors = ['rgba(254,205,211,0.45)', 'rgba(191,219,254,0.45)', 'rgba(253,230,138,0.45)', 'rgba(187,247,208,0.45)'];
+                for(let i=0; i<15; i++) {
+                    let bubble = document.createElement('div'); bubble.className = 'sparkle'; bubble.style.left = Math.random() * 100 + 'vw';
+                    const size = (Math.random() * 25 + 15) + 'px'; bubble.style.width = bubble.style.height = size;
+                    bubble.style.background = colors[Math.random() % colors.length]; bubble.style.border = '1px solid rgba(255,255,255,0.25)';
+                    bubble.style.animationDuration = (Math.random() * 6 + 5) + 's'; bubble.style.animationDelay = Math.random() * 5 + 's';
                     container.appendChild(bubble);
                 }
             } else if (species === "受雲族") {
-                for(let i=0; i<10; i++) {
+                for(let i=0; i<6; i++) {
                     let cloud = document.createElement('div'); cloud.className = 'cloud-particle';
-                    cloud.style.top = (Math.random() * 80 - 10) + 'vh'; 
-                    const size = (Math.random() * 300 + 150) + 'px';
-                    cloud.style.width = cloud.style.height = size; 
-                    cloud.style.animationDuration = (Math.random() * 30 + 15) + 's';
-                    cloud.style.animationDelay = Math.random() * -20 + 's'; 
-                    container.appendChild(cloud);
+                    cloud.style.top = (Math.random() * 70) + 'vh'; const size = (Math.random() * 160 + 140) + 'px';
+                    cloud.style.width = cloud.style.height = size; cloud.style.animationDuration = (Math.random() * 25 + 20) + 's';
+                    cloud.style.animationDelay = Math.random() * -12 + 's'; container.appendChild(cloud);
                 }
             }
         }
