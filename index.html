@@ -7,7 +7,6 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- 🌟 ぷにっと丸くてかわいいフォントを読み込み -->
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
 
     <style>
@@ -17,12 +16,13 @@
             width: 100%; 
             min-height: 100vh;
             min-height: 100dvh; 
-            font-family: 'M PLUS Rounded 1c', sans-serif; /* 🌟 ぷにっとしたフォントを適用 */
+            font-family: 'M PLUS Rounded 1c', sans-serif;
             display: flex; justify-content: center; align-items: center;
             padding: 20px 15px; 
             background-color: transparent; 
             overflow-x: hidden;
             color: #f8fafc;
+            cursor: pointer; /* 全体がタップできることを示す */
         }
 
         /* 左から右へ読むようなカメラワーク（パンニング） */
@@ -44,15 +44,15 @@
             pointer-events: none; z-index: -1; overflow: hidden;
         }
 
-        /* 🌟 3つのブロックを並べるコンテナ */
         .ui-wrapper {
             width: 100%; max-width: 450px;
             display: flex; flex-direction: column; align-items: center;
-            gap: 20px; /* ブロック同士のすきま */
+            gap: 20px;
             padding: 30px 0;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); /* UI全体のフェード用 */
         }
 
-        /* 🌟 それぞれ独立してフワフワ浮くアニメーション */
+        /* 3つのブロックの浮遊アニメーション */
         .floater-1 { animation: floatAnim1 5.5s ease-in-out infinite; width: 100%; }
         .floater-2 { animation: floatAnim2 6.5s ease-in-out infinite 0.5s; width: 100%; }
         .floater-3 { animation: floatAnim3 6s ease-in-out infinite 1s; width: 100%; }
@@ -61,52 +61,86 @@
         @keyframes floatAnim2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
         @keyframes floatAnim3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
-        /* 🌟 ほわっとした文字囲い（読みやすさアップ＆ぷにっと丸い形） */
+        /* 🌟 ベースの文字囲いスタイル */
         .card-block {
-            background: rgba(15, 23, 42, 0.35); /* ほわっとした暗めの半透明 */
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.25);
-            border-radius: 32px; /* ぷにっとかわいい角丸 */
+            border-radius: 32px; 
             padding: 24px 20px; 
             text-align: left; width: 100%;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05);
             opacity: 0; transform: scale(0.95);
+            transition: all 0.6s ease; /* モード切り替え時の滑らかな変化 */
         }
 
-        /* フェードインアニメーション */
-        .animate-item { animation: blockAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        /* 🌟 [モード1] ゆらぎモード（ゆっくり透明になったり戻ったり） */
+        .mode-normal .card-block {
+            animation: blockAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards, 
+                       boxPulse 6s infinite alternate ease-in-out 1s;
+        }
+
+        @keyframes boxPulse {
+            0% { 
+                background: rgba(15, 23, 42, 0.0); 
+                border: 2px solid rgba(255, 255, 255, 0.05); 
+                box-shadow: none;
+                backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+            }
+            100% { 
+                background: rgba(15, 23, 42, 0.4); 
+                border: 2px solid rgba(255, 255, 255, 0.3); 
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05);
+                backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            }
+        }
+
+        /* 🌟 [モード2] くっきり読書モード（タップ時） */
+        .mode-reading .card-block {
+            opacity: 1; transform: scale(1);
+            background: rgba(15, 23, 42, 0.85) !important; 
+            border: 2px solid rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1) !important;
+            animation: none !important; /* ゆらぎをストップ */
+        }
+
+        /* 🌟 [モード3] ギャラリーモード（2回タップ時） */
+        .mode-gallery .ui-wrapper {
+            opacity: 0; 
+            pointer-events: none; 
+            transform: scale(1.05); /* フワッと奥に消える感覚 */
+        }
+
+        /* ギャラリーモード中のお知らせ文字 */
+        #gallery-hint {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 500;
+            letter-spacing: 1px; opacity: 0; pointer-events: none;
+            transition: opacity 0.8s ease; text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .mode-gallery #gallery-hint { opacity: 1; }
+
+        /* フェードインのタイミング */
         .delay-1 { animation-delay: 0.1s; } 
         .delay-2 { animation-delay: 0.25s; }
         .delay-3 { animation-delay: 0.4s; }
-        
         @keyframes blockAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 🌟 蛍のようにぽわっと光るエフェクト（そのまま） */
+        /* 蛍のようにぽわっと光るエフェクト */
         @keyframes firefly {
             0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; }
             50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; }
         }
-
         .firefly-text-1 { animation: firefly 4.0s ease-in-out infinite 0.7s; }
         .firefly-text-2 { animation: firefly 4.8s ease-in-out infinite 0.8s; }
         .firefly-text-3 { animation: firefly 3.5s ease-in-out infinite 0.95s; }
         .firefly-text-4 { animation: firefly 5.2s ease-in-out infinite 1.05s; }
         .firefly-text-5 { animation: firefly 3.9s ease-in-out infinite 1.2s; }
 
-        /* --- 文字サイズと装飾（ぷにっと感を強調） --- */
-        
-        /* ブロック1：タイトルと情景 */
+        /* 文字サイズと装飾 */
         .header-area { text-align: center; margin-bottom: 16px; }
         h1 { font-size: 1.9rem; font-weight: 800; margin-bottom: 8px; color: #ffffff; letter-spacing: 1.5px; }
         .sky-title { font-size: 1.15rem; color: #f8fafc; font-weight: 500; letter-spacing: 1px; }
         
-        #scene {
-            font-size: 1.1rem; line-height: 1.8; color: #ffffff; font-weight: 500;
-            text-align: center;
-        }
+        #scene { font-size: 1.1rem; line-height: 1.8; color: #ffffff; font-weight: 500; text-align: center; }
 
-        /* ブロック2：会話 */
         .dialogue-container { display: flex; flex-direction: column; gap: 20px; }
         .dialogue-line { font-size: 1.15rem; line-height: 1.7; font-weight: 800; display: flex; flex-direction: column; letter-spacing: 0.5px; }
         .char-name { font-size: 0.85rem; opacity: 0.9; margin-bottom: 6px; color: #ffffff; font-weight: 700; }
@@ -115,41 +149,38 @@
         .hachiware-text { color: #bfdbfe; } 
         .usagi-text { color: #fef08a; } 
 
-        /* ブロック3：鎧さんの言葉 */
         .advice-box { text-align: left; }
         .yoroi-name { font-size: 0.85rem; opacity: 0.9; color: #ffffff; margin-bottom: 8px; display: block; font-weight: 700; }
         .yoroi-text { color: #fed7aa; font-size: 1.15rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
 
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
-        /* 天候エフェクト（そのまま） */
+        /* 天候エフェクト */
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
-        
         .snow { position: absolute; color: rgba(255,255,255,0.95); text-shadow: 0 0 10px rgba(255,255,255,0.6); animation: snowFall linear infinite; }
         @keyframes snowFall { 0% { transform: translateY(-5vh) translateX(0) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; } }
-        
         .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
         @keyframes riseUp { 0% { transform: translateY(105vh) scale(0.5); opacity: 0; } 30% { opacity: 0.8; } 70% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
-        
         .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0)); height: 3px; border-radius: 50%; filter: blur(2px); animation: blow cubic-bezier(0.4, 0, 0.2, 1) infinite; }
         @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
-        
         .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, #fff, rgba(255,255,255,0)); opacity: 0; pointer-events: none; z-index: -1; animation: lightning 6s ease-in-out infinite; mix-blend-mode: overlay; }
         @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
-        
         .cloud-particle { position: absolute; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; animation: drift linear infinite; mix-blend-mode: screen; }
         @keyframes drift { 0% { transform: translateX(-30vw) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(120vw) scale(1.2); opacity: 0; } }
     </style>
 </head>
-<body>
+<!-- 🌟 初期状態は「mode-normal」 -->
+<body class="mode-normal">
 
     <div id="bg-layer" class="bg-layer"></div>
     <div id="weather-effect"></div>
 
+    <!-- 🌟 ギャラリーモード時のヒント文字 -->
+    <div id="gallery-hint">画面タップでもとに戻るよ</div>
+
     <div id="ui-wrapper" class="ui-wrapper">
         
-        <!-- ☁️ ブロック1: タイトルと情景 -->
         <div class="floater-1">
             <div class="card-block animate-item delay-1">
                 <div class="header-area">
@@ -160,7 +191,6 @@
             </div>
         </div>
         
-        <!-- ☁️ ブロック2: みんなの会話 -->
         <div class="floater-2">
             <div class="card-block animate-item delay-2">
                 <div class="dialogue-container">
@@ -180,14 +210,13 @@
             </div>
         </div>
 
-        <!-- ☁️ ブロック3: 鎧さんの言葉とBGM -->
         <div class="floater-3">
             <div class="card-block animate-item delay-3">
                 <div class="advice-box">
                     <span class="yoroi-name">鎧さんの言葉</span>
                     <p id="advice-text" class="yoroi-text firefly-text-4">...</p>
                 </div>
-                <p id="tap-notice" class="notice firefly-text-5">画面タップでBGM再生・停止</p>
+                <p id="tap-notice" class="notice firefly-text-5">タップで文字をくっきり＆BGM再生</p>
                 <audio id="bgm-player" loop></audio>
             </div>
         </div>
@@ -225,16 +254,6 @@
                 if (data.bgm) {
                     const audio = document.getElementById('bgm-player');
                     audio.src = data.bgm;
-                    
-                    document.body.addEventListener('click', () => {
-                        if (audio.paused) {
-                            audio.play().catch(e => console.log(e));
-                            document.getElementById('tap-notice').innerText = "🔊 BGM再生中";
-                        } else {
-                            audio.pause();
-                            document.getElementById('tap-notice').innerText = "画面タップでBGM再生・停止";
-                        }
-                    });
                 }
             })
             .catch(err => {
@@ -242,6 +261,34 @@
                 document.getElementById('title').innerText = "😭 エラー";
                 document.getElementById('scene').innerText = "お空のデータがうまく届かなかったみたい…";
             });
+
+        // 🌟 画面タップで3つのモードを切り替える処理
+        let currentMode = 0; // 0:ゆらぎ, 1:くっきり, 2:ギャラリー
+        
+        document.body.addEventListener('click', () => {
+            currentMode = (currentMode + 1) % 3;
+            const body = document.body;
+            const notice = document.getElementById('tap-notice');
+            const audio = document.getElementById('bgm-player');
+            
+            // BGM再生（初回タップ時などに再生されるようにする）
+            if (audio.paused && audio.src) {
+                audio.play().catch(e => console.log("BGM再生エラー:", e));
+            }
+
+            // モードのクラスをリセット
+            body.classList.remove('mode-normal', 'mode-reading', 'mode-gallery');
+
+            if (currentMode === 0) {
+                body.classList.add('mode-normal');
+                notice.innerText = "タップで文字をくっきり";
+            } else if (currentMode === 1) {
+                body.classList.add('mode-reading');
+                notice.innerText = "タップで背景ギャラリーモードへ";
+            } else if (currentMode === 2) {
+                body.classList.add('mode-gallery');
+            }
+        });
 
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect');
