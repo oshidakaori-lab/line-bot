@@ -173,34 +173,11 @@
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
         /* 天候エフェクト */
-        .rain { 
-    position: absolute; 
-    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.6)); 
-    width: 1px; 
-    height: 40px; 
-    transform-origin: bottom;
-    animation: fall linear infinite; 
-}
-/* 雨に少し斜めの角度をつけ、長さをランダムにする */
-@keyframes fall { 
-    0% { transform: translateY(-10vh) translateX(0) scaleY(1) rotate(5deg); opacity: 0; } 
-    10% { opacity: 1; } 
-    80% { opacity: 1; } 
-    100% { transform: translateY(105vh) translateX(-5vw) scaleY(1.5) rotate(5deg); opacity: 0; } 
-}
-        .snow { 
-    position: absolute; 
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%);
-    animation: snowFall linear infinite; 
-}
-@keyframes snowFall { 
-    0% { transform: translateY(-5vh) translateX(0); opacity: 0; } 
-    20% { opacity: 1; } 
-    80% { opacity: 1; } 
-    100% { transform: translateY(105vh) translateX(30px); opacity: 0; } 
-}
-
+        .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
+        .snow { position: absolute; color: rgba(255,255,255,0.95); text-shadow: 0 0 10px rgba(255,255,255,0.6); animation: snowFall linear infinite; }
+        @keyframes snowFall { 0% { transform: translateY(-5vh) translateX(0) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateY(105vh) translateX(60px) rotate(360deg); opacity: 0; } }
+        .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
         @keyframes riseUp { 0% { transform: translateY(105vh) scale(0.5); opacity: 0; } 30% { opacity: 0.8; } 70% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
         .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0)); height: 3px; border-radius: 50%; filter: blur(2px); animation: blow cubic-bezier(0.4, 0, 0.2, 1) infinite; }
         @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
@@ -330,50 +307,22 @@
             container.innerHTML = ''; 
             
             if (species === "雨巡族") {
-    for(let i=0; i<80; i++) {
-        let drop = document.createElement('div'); drop.className = 'rain';
-        drop.style.left = Math.random() * 120 - 10 + 'vw'; /* 画面外からも降らせる */
-        drop.style.top = Math.random() * -100 + 'px';
-        
-        // 奥の雨は細く暗く、手前の雨は太く明るく（ボケさせる）
-        const depth = Math.random(); 
-        if (depth > 0.8) {
-            drop.style.width = '2px';
-            drop.style.filter = 'blur(1px)';
-            drop.style.opacity = '0.5';
-        } else {
-            drop.style.opacity = depth * 0.4 + 0.1;
-        }
-        drop.style.animationDuration = (Math.random() * 0.2 + 0.4) + 's'; 
-        drop.style.animationDelay = Math.random() * 2 + 's'; 
-        container.appendChild(drop);
-    }
-}
-
+                for(let i=0; i<60; i++) {
+                    let drop = document.createElement('div'); drop.className = 'rain';
+                    drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -100 + 'px';
+                    const zIndex = Math.random(); drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`;
+                    drop.style.opacity = zIndex * 0.7 + 0.3; drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; 
+                    drop.style.animationDelay = Math.random() * 2 + 's'; container.appendChild(drop);
+                }
             } else if (species === "雪守族") {
-    for(let i=0; i<60; i++) {
-        let flake = document.createElement('div'); flake.className = 'snow'; 
-        flake.style.left = Math.random() * 100 + 'vw'; 
-        
-        // 大きさとボケ感をランダムにして奥行きを出す
-        const size = Math.random() * 8 + 3;
-        flake.style.width = size + 'px';
-        flake.style.height = size + 'px';
-        
-        // 手前の大きな雪はボケる（被写界深度）
-        if (size > 8) {
-            flake.style.filter = `blur(${Math.random() * 2 + 1}px)`;
-        } else {
-            flake.style.filter = `blur(${Math.random() * 1}px)`;
-        }
-        
-        flake.style.opacity = Math.random() * 0.6 + 0.2;
-        flake.style.animationDuration = (Math.random() * 5 + 5) + 's'; 
-        flake.style.animationDelay = Math.random() * -5 + 's'; 
-        container.appendChild(flake);
-    }
-}
-
+                const snowChars = ['❄', '･', '❅', '°'];
+                for(let i=0; i<40; i++) {
+                    let flake = document.createElement('div'); flake.className = 'snow'; 
+                    flake.innerHTML = snowChars[Math.floor(Math.random() * snowChars.length)];
+                    flake.style.left = Math.random() * 100 + 'vw'; flake.style.fontSize = (Math.random() * 20 + 8) + 'px';
+                    flake.style.filter = `blur(${Math.random() * 2}px)`; flake.style.animationDuration = (Math.random() * 4 + 4) + 's'; 
+                    flake.style.animationDelay = Math.random() * -5 + 's'; container.appendChild(flake);
+                }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
                 for(let i=0; i<30; i++) {
