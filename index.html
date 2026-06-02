@@ -25,7 +25,7 @@
             cursor: pointer;
         }
 
-        /* 🌟 背景のシネマティックカメラワーク（30秒かけて右へ） */
+        /* 背景のシネマティックカメラワーク（30秒かけて右へ） */
         .bg-layer {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh; 
@@ -50,7 +50,7 @@
             gap: 20px;
             padding: 30px 0;
             transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden; /* 右外の待機キャラで画面が横揺れしないようにする */
+            overflow: hidden; 
         }
 
         /* ふわふわ浮遊アニメーション */
@@ -71,21 +71,19 @@
             transition: all 0.6s ease;
         }
 
-        /* 🌟 [モード1] ゆらぎモード（フレームイン ＋ ゆらぎ） */
+        /* [モード1] ゆらぎモード */
         .mode-normal .card-block {
-            /* スケールではなく、右（50vw）からスライドインしてくる動きに変更 */
             animation: frameInRight 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, 
                        boxPulse 6s infinite alternate ease-in-out 1s;
         }
 
-        /* ブロックごとの登場タイミング */
-        .mode-normal .delay-1 { animation-delay: 0.5s, 1.5s; } /* タイトルは最初 */
-        .mode-normal .delay-2 { animation-delay: 2.0s, 3.0s; } /* 会話枠は少し後 */
-        .mode-normal .delay-3 { animation-delay: 7.0s, 8.0s; } /* 鎧さんは最後に合流 */
+        .mode-normal .delay-1 { animation-delay: 0.5s, 1.5s; } 
+        .mode-normal .delay-2 { animation-delay: 2.0s, 3.0s; } 
+        .mode-normal .delay-3 { animation-delay: 7.0s, 8.0s; } 
 
         @keyframes frameInRight {
-            0% { opacity: 0; transform: translateX(30vw); } /* 画面の右外から */
-            100% { opacity: 1; transform: translateX(0); }  /* 定位置へ */
+            0% { opacity: 0; transform: translateX(30vw); } 
+            100% { opacity: 1; transform: translateX(0); }  
         }
 
         @keyframes boxPulse {
@@ -100,10 +98,10 @@
             }
         }
 
-        /* 🌟 キャラクター個別のフレームイン設定 */
+        /* キャラクター個別のフレームイン設定 */
         .dialogue-line {
-            opacity: 0; /* 最初は見えない状態 */
-            transform: translateX(40px); /* 少し右にずらしておく */
+            opacity: 0; 
+            transform: translateX(40px); 
         }
         
         .mode-normal .char-reveal {
@@ -115,7 +113,6 @@
             100% { opacity: 1; transform: translateX(0); }
         }
 
-        /* カメラ移動に合わせて順番に登場するディレイ設定！ */
         .mode-normal .delay-chiikawa { animation-delay: 3.0s; }
         .mode-normal .delay-hachiware { animation-delay: 4.5s; }
         .mode-normal .delay-usagi { animation-delay: 5.8s; }
@@ -129,7 +126,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1) !important;
             animation: none !important;
         }
-        /* 読書モード時は文字もすべて強制表示 */
         .mode-reading .dialogue-line { opacity: 1; transform: translateX(0); animation: none !important; }
 
         /* [モード3] ギャラリーモード */
@@ -145,7 +141,7 @@
         }
         .mode-gallery #gallery-hint { opacity: 1; }
 
-        /* 蛍のようにぽわっと光るエフェクト（そのまま） */
+        /* 蛍のようにぽわっと光るエフェクト */
         @keyframes firefly {
             0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; }
             50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; }
@@ -172,7 +168,7 @@
         .yoroi-text { color: #fed7aa; font-size: 1.15rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
-        /* 天候エフェクト */
+        /* 天候エフェクトCSS */
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
         .snow { position: absolute; color: rgba(255,255,255,0.95); text-shadow: 0 0 10px rgba(255,255,255,0.6); animation: snowFall linear infinite; }
@@ -183,8 +179,24 @@
         @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
         .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, #fff, rgba(255,255,255,0)); opacity: 0; pointer-events: none; z-index: -1; animation: lightning 6s ease-in-out infinite; mix-blend-mode: overlay; }
         @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
-        .cloud-particle { position: absolute; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; animation: drift linear infinite; mix-blend-mode: screen; }
-        @keyframes drift { 0% { transform: translateX(-30vw) scale(0.8); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(120vw) scale(1.2); opacity: 0; } }
+        
+        /* 🌟 ふわふわ漂う「霧」のエフェクト（受雲族用）修正版 */
+        .cloud-particle { 
+            position: absolute; 
+            border-radius: 50%; /* 四角くならないように枠自体を楕円にする */
+            /* ぼかし（blur）に頼らず、グラデーションの透過だけでふんわりさせる */
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0) 70%); 
+            animation: fogDrift ease-in-out infinite; 
+            pointer-events: none;
+        }
+        /* ゆったりと上下しながら右へ流れるアニメーション */
+        @keyframes fogDrift { 
+            0% { transform: translate(-30vw, 10vh) scale(1); opacity: 0; } 
+            25% { opacity: 0.6; }
+            50% { transform: translate(45vw, -5vh) scale(1.2); }
+            75% { opacity: 0.6; }
+            100% { transform: translate(120vw, 10vh) scale(1.4); opacity: 0; } 
+        }
     </style>
 </head>
 <body class="mode-normal">
@@ -363,11 +375,24 @@
                     container.appendChild(bubble);
                 }
             } else if (species === "受雲族") {
-                for(let i=0; i<10; i++) {
+                // 🌟 霧のエフェクトを生成
+                for(let i=0; i<15; i++) {
                     let cloud = document.createElement('div'); cloud.className = 'cloud-particle';
-                    cloud.style.top = (Math.random() * 80 - 10) + 'vh'; const size = (Math.random() * 300 + 150) + 'px';
-                    cloud.style.width = cloud.style.height = size; cloud.style.animationDuration = (Math.random() * 30 + 15) + 's';
-                    cloud.style.animationDelay = Math.random() * -20 + 's'; container.appendChild(cloud);
+                    
+                    // 画面の中央〜下部を中心に霧を配置
+                    cloud.style.top = (Math.random() * 60 + 30) + 'vh'; 
+                    
+                    // 横に広く、縦に狭い「霧の層」を作成
+                    const w = (Math.random() * 400 + 300) + 'px';
+                    const h = (Math.random() * 150 + 100) + 'px';
+                    cloud.style.width = w; 
+                    cloud.style.height = h; 
+                    
+                    // それぞれの霧がバラバラのスピードで流れるように
+                    cloud.style.animationDuration = (Math.random() * 25 + 20) + 's';
+                    cloud.style.animationDelay = (Math.random() * -30) + 's'; 
+                    
+                    container.appendChild(cloud);
                 }
             }
         }
