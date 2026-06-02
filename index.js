@@ -6,7 +6,6 @@ const csv = require("csv-parser");
 const path = require("path");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// ★追加：Cloudinary（音声保存場所）の準備
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -45,7 +44,6 @@ fs.createReadStream("lines.csv")
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-// 🌟 フロント（画面）からのリクエスト
 app.get("/api/fortune", async (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => String(item.id) === String(hid));
@@ -98,7 +96,6 @@ app.get("/api/fortune", async (req, res) => {
   }
 });
 
-// LINEからのメッセージ受け取り
 app.post("/callback", express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -133,7 +130,6 @@ app.post("/callback", express.json(), async (req, res) => {
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lineIndex)}`;
       const skyTitle = h.sky_name || h.soranoeki_sky || "不思議な空";
 
-      // 既存のキレイな占いのカード（Flex Message）
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name || "空の占い"}】が届いたよ`,
@@ -185,8 +181,8 @@ app.post("/callback", express.json(), async (req, res) => {
         }
       };
 
-      // ★追加：Fish.audioで「〇〇のカードが届いたよ！」という音声を作る
       const speakText = `${h.name}のカードが届いたよ！開いてみてね！`;
+      let errorMessage = "";
 
       try {
         const fishResponse = await fetch("https://api.fish.audio/v1/tts", {
@@ -197,47 +193,52 @@ app.post("/callback", express.json(), async (req, res) => {
           },
           body: JSON.stringify({
             text: speakText,
-            model_id: process.env.FISH_AUDIO_MODEL_ID,
+            reference_id: process.env.FISH_AUDIO_MODEL_ID, // ★ここを正しく修正しました
             format: "mp3"
           })
         });
 
-        if (fishResponse.ok) {
-          const arrayBuffer = await fishResponse.arrayBuffer();
-          const buffer = Buffer.from(arrayBuffer);
-
-          // 音声をCloudinaryにアップロード
-          const uploadResult = await new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
-              { resource_type: "video", format: "mp3" },
-              (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-              }
-            );
-            uploadStream.end(buffer);
-          });
-
-          // 音声の長さを計算
-          const duration_ms = Math.max(2000, speakText.length * 300);
-
-          // 画像カードと音声を「両方」送る！
-          await client.replyMessage(event.replyToken, [
-            flexMessage,
-            {
-              type: "audio",
-              originalContentUrl: uploadResult.secure_url,
-              duration: duration_ms
-            }
-          ]);
-          continue; // 成功したら次の処理へ
+        if (!fishResponse.ok) {
+           const errText = await fishResponse.text();
+           throw new Error(`Fishエラー: ${fishResponse.status} ${errText}`);
         }
+
+        const arrayBuffer = await fishResponse.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { resource_type: "video", format: "mp3" },
+            (error, result) => {
+              if (error) reject(new Error(`Cloudinaryエラー: ${error.message}`));
+              else resolve(result);
+            }
+          );
+          uploadStream.end(buffer);
+        });
+
+        const duration_ms = Math.max(2000, speakText.length * 300);
+
+        await client.replyMessage(event.replyToken, [
+          flexMessage,
+          {
+            type: "audio",
+            originalContentUrl: uploadResult.secure_url,
+            duration: duration_ms
+          }
+        ]);
+        continue; 
+        
       } catch (err) {
         console.error("音声作成エラー:", err);
+        errorMessage = err.message; // エラーの原因をメモ
       }
 
-      // 音声が失敗した時は、今まで通り画像カードだけ送る
-      await client.replyMessage(event.replyToken, flexMessage);
+      // ★もし音声が失敗したら、LINEのトーク画面に直接エラーの原因を返信する
+      await client.replyMessage(event.replyToken, [
+        flexMessage,
+        { type: "text", text: `(裏側のエラーメモ: ${errorMessage})` }
+      ]);
     }
     res.sendStatus(200);
   } catch (error) { 
