@@ -376,4 +376,15 @@
             } else if (species === "受雲族") {
                 for(let i=0; i<10; i++) {
                     let cloud = document.createElement('div'); cloud.className = 'cloud-particle';
-                    cloud.style.top = (Math.random() * 80 - 1
+                    cloud.style.top = (Math.random() * 80 - 10) + 'vh'; 
+                    const size = (Math.random() * 300 + 150) + 'px';
+                    cloud.style.width = cloud.style.height = size; 
+                    cloud.style.animationDuration = (Math.random() * 30 + 15) + 's';
+                    cloud.style.animationDelay = Math.random() * -20 + 's'; 
+                    container.appendChild(cloud);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
