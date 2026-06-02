@@ -6,6 +6,15 @@ const csv = require("csv-parser");
 const path = require("path");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// ★追加：Cloudinary（音声保存場所）の準備
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
+});
+
 const app = express();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const client = new line.Client({
@@ -15,12 +24,10 @@ const client = new line.Client({
 
 const hexagrams = [];
 const lines = [];
-const lastFortune = new Map(); // 連続で同じ結果が出ないように記憶する箱
+const lastFortune = new Map(); 
 
-// CSVのヘッダーから不要な文字（BOMなど）を消すキレイにする処理
 const cleanHeader = ({ header }) => header.replace(/[\uFEFF\u200B]+/g, '').trim();
 
-// タブ区切り（\t）を明示して確実にCSVを読み込む
 fs.createReadStream("hexagrams_master_with_emotion.csv")
   .pipe(csv({ separator: '\t', mapHeaders: cleanHeader }))
   .on("data", (data) => {
@@ -44,13 +51,10 @@ app.get("/api/fortune", async (req, res) => {
   const h = hexagrams.find(item => String(item.id) === String(hid));
   const l = lines.find(line => String(line.hexagram_id) === String(h?.id) && String(line.line) === String(l_name));
 
-  if (!h) {
-    return res.status(404).json({ error: "卦のデータが見つかりません。" });
-  }
+  if (!h) return res.status(404).json({ error: "卦のデータが見つかりません。" });
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   
-   // 🌟 キャラ感とふんわり感を徹底的に磨いたプロンプト
   const prompt = `ちいかわの世界のやさしい空気感で、以下の「空の様子」と「データ」をもとに、みんなのやり取りと鎧さんの言葉を考えてください。
   
   【データ】
@@ -60,42 +64,39 @@ app.get("/api/fortune", async (req, res) => {
   ・変化の様子（爻の状況）: ${l ? l.line_name_kawaii : "全体の雰囲気"}
   
   【セリフと情景の厳格なルール】
-  1. ちいかわは文章で喋らせず、「…」「…ンショ」「…わぁ」「…ッ」のような、短い健気なつぶやきや仕草だけにしてください。
-  2. ハチワレのセリフからは「ちいかわちゃん」という呼びかけを絶対に省略してください。「ねえ、すごく綺麗だね」「なんだか心地いいね」のように、自然につぶやく掛け合いにしてください。
-  3. うさぎは「ヤハ！」「ウララララ！」「プルャ！」などの楽しそうな叫び声だけにしてください。
-  4. ポシェットの鎧さんは、さらにほんの少し優しく、包み込むような口調にしてください。「そうか、そんな空なんだね」「大丈夫だぞ、きっとうまくいくよ」「ゆっくりいこうな」など、温かく見守る言葉にしてください。
-  5. 「あなた」「三者三様」などの人称や、解説的な難しい言葉は絶対に含めないでください。
-  6. chiikawa_scene（空の情景）は、絵本のようにふんわりとした、やわらかい雰囲気にしてください（例：「淡い光が空にやさしく溶けて、みんなでゆったりと空を見上げているね…」のような表現）。
+  1. ちいかわは文章で喋らせず、「…」「…ンショ」「…わぁ」「…ッ」のような短い健気なつぶやきに。
+  2. ハチワレのセリフから「ちいかわちゃん」という呼びかけを省略。
+  3. うさぎは「ヤハ！」「ウララララ！」「プルャ！」などの叫び声のみ。
+  4. 鎧さんは、さらにほんの少し優しく、包み込むような口調に。
+  5. 「あなた」「三者三様」などの人称や難しい言葉は含めない。
+  6. chiikawa_sceneは、絵本のようにふんわりとしたやわらかい雰囲気に。
 
-  必ず以下のJSON形式のみで回答してください。余計な解説は一切含めないでください。カギカッコ（「」）は含めずに中身だけを書いてください。
+  必ず以下のJSON形式のみで回答してください。
   {
-    "chiikawa": "つぶやきの中身",
-    "hachiware": "ハチワレのセリフの中身",
-    "usagi": "うさぎの叫びの中身",
-    "advice": "鎧さんのやさしい言葉",
-    "chiikawa_scene": "ふんわりとした情景描写"
+    "chiikawa": "つぶやき",
+    "hachiware": "セリフ",
+    "usagi": "叫び",
+    "advice": "言葉",
+    "chiikawa_scene": "情景描写"
   }`;
 
   try {
     const result = await model.generateContent(prompt);
     const cleanText = result.response.text().replace(/```json|```/g, "").trim();
     const aiData = JSON.parse(cleanText);
-    
     res.json({ ...h, ...aiData, bgm: h.bgm || "default.mp3" });
   } catch (e) {
-    console.error("AI生成エラー:", e);
-    // エラー時の予備データも、指定のやさしい口調に合わせて修正
     res.json({ 
       ...h, 
       chiikawa: "…わぁ", 
       hachiware: "なんだか不思議な空だね…！おもしろいね。", 
       usagi: "ヤハ！！", 
-      advice: "大丈夫だぞ、ゆっくり美味しいものでも食べて、のんびりいこうな。", 
+      advice: "大丈夫だぞ、のんびりいこうな。", 
       chiikawa_scene: "淡い光がやさしく広がって、みんなでゆったり空を見上げているね…", 
       bgm: h.bgm || "default.mp3" 
     });
   }
-}); // 👈🌟これ（app.getを閉じるカッコ）を追加！！！
+});
 
 // LINEからのメッセージ受け取り
 app.post("/callback", express.json(), async (req, res) => {
@@ -123,19 +124,16 @@ app.post("/callback", express.json(), async (req, res) => {
         attempts++;
       } while (h && h.id === lastFortune.get(userId) && attempts < 10);
       
-      if (!h || !h.id) {
-        console.error("占い抽選エラー: 卦データが不正です", h);
-        continue;
-      }
+      if (!h || !h.id) continue;
       
       lastFortune.set(userId, h.id);
 
       const lineIndex = Math.floor(Math.random() * 6) + 1;
       const lName = `${lineIndex}爻`; 
-
       const finalUrl = `https://${req.get('host')}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lineIndex)}`;
       const skyTitle = h.sky_name || h.soranoeki_sky || "不思議な空";
 
+      // 既存のキレイな占いのカード（Flex Message）
       const flexMessage = {
         type: "flex",
         altText: `🔮 【${h.name || "空の占い"}】が届いたよ`,
@@ -187,11 +185,62 @@ app.post("/callback", express.json(), async (req, res) => {
         }
       };
 
+      // ★追加：Fish.audioで「〇〇のカードが届いたよ！」という音声を作る
+      const speakText = `${h.name}のカードが届いたよ！開いてみてね！`;
+
+      try {
+        const fishResponse = await fetch("https://api.fish.audio/v1/tts", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.FISH_AUDIO_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            text: speakText,
+            model_id: process.env.FISH_AUDIO_MODEL_ID,
+            format: "mp3"
+          })
+        });
+
+        if (fishResponse.ok) {
+          const arrayBuffer = await fishResponse.arrayBuffer();
+          const buffer = Buffer.from(arrayBuffer);
+
+          // 音声をCloudinaryにアップロード
+          const uploadResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+              { resource_type: "video", format: "mp3" },
+              (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+              }
+            );
+            uploadStream.end(buffer);
+          });
+
+          // 音声の長さを計算
+          const duration_ms = Math.max(2000, speakText.length * 300);
+
+          // 画像カードと音声を「両方」送る！
+          await client.replyMessage(event.replyToken, [
+            flexMessage,
+            {
+              type: "audio",
+              originalContentUrl: uploadResult.secure_url,
+              duration: duration_ms
+            }
+          ]);
+          continue; // 成功したら次の処理へ
+        }
+      } catch (err) {
+        console.error("音声作成エラー:", err);
+      }
+
+      // 音声が失敗した時は、今まで通り画像カードだけ送る
       await client.replyMessage(event.replyToken, flexMessage);
     }
     res.sendStatus(200);
   } catch (error) { 
-    console.error("LINE送信エラー詳細:", error.response?.data || error); 
     res.sendStatus(500); 
   }
 });
