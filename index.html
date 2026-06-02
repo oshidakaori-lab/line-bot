@@ -28,15 +28,15 @@
         /* 左から右へ読むようなカメラワーク（パンニング） */
         .bg-layer {
             position: fixed;
-            top: -5vh; left: 0; width: 130vw; height: 110vh; 
+            top: -5vh; left: 0; width: 140vw; height: 120vh; 
             background-size: cover; background-position: center;
             z-index: -2;
             animation: cameraReadPan 600s ease-in-out infinite alternate;
         }
 
         @keyframes cameraReadPan {
-            0% { transform: translateX(0vw) scale(1.08); }    
-            100% { transform: translateX(-35vw) scale(1.08); }
+            0% { transform: translateX(0vw) scale(1.05); }    
+            100% { transform: translateX(-30vw) scale(1.20); }
         }
 
         #weather-effect {
