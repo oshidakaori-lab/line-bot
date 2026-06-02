@@ -18,7 +18,8 @@
             min-height: 100dvh; 
             font-family: 'Zen Maru Gothic', sans-serif;
             display: flex; justify-content: center; align-items: center;
-            padding: 15px; background-color: #0f172a;
+            padding: 15px; 
+            background-color: transparent; /* 🌟 画面全体を完全に透明に修正！ */
             overflow-x: hidden;
             color: #f8fafc;
         }
@@ -36,8 +37,6 @@
             0% { transform: translateX(0) scale(1.05); }    
             100% { transform: translateX(-20vw) scale(1.05); }
         }
-
-        /* 🌟 暗幕（.bg-overlay）は完全に削除しました！ */
 
         #weather-effect {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -73,7 +72,7 @@
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 🌟 黒い影（text-shadow）を削除し、蛍の光エフェクトを追加 */
+        /* 蛍のようにぽわっと光るエフェクト */
         @keyframes firefly {
             0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; }
             50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; }
@@ -81,7 +80,7 @@
 
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* 文字がフワッと出た後、それぞれのペースで蛍のように光り続ける */
+        /* 文字がフワッと出た後、それぞれのペースで光り続ける */
         .animate-item { opacity: 0; transform: translateY(8px); }
         .delay-1 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s, firefly 4.0s ease-in-out infinite 0.7s; }
         .delay-2 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s, firefly 4.8s ease-in-out infinite 0.8s; }
