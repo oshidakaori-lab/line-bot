@@ -23,31 +23,21 @@
             color: #f8fafc;
         }
 
-        /* 🌟 左から右へ読むようなカメラワーク（パンニング） */
+        /* 左から右へ読むようなカメラワーク（パンニング） */
         .bg-layer {
             position: fixed;
-            top: -5vh; 
-            left: 0; /* 左端からスタート */
-            width: 130vw; /* 画面より少し横長にして移動幅を持たせる */
-            height: 110vh; 
-            background-size: cover; 
-            background-position: center;
+            top: -5vh; left: 0; width: 130vw; height: 110vh; 
+            background-size: cover; background-position: center;
             z-index: -2;
-            /* 画像をゆっくり左に動かすことで、カメラが右へ進む（読む）動きを表現 */
             animation: cameraReadPan 40s ease-in-out infinite alternate;
         }
 
         @keyframes cameraReadPan {
             0% { transform: translateX(0) scale(1.05); }    
-            100% { transform: translateX(-20vw) scale(1.05); } /* 横へゆっくりスライド */
+            100% { transform: translateX(-20vw) scale(1.05); }
         }
 
-        /* 画面全体へのごく薄い暗幕（文字と背景のバランスをとるため） */
-        .bg-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.45));
-            z-index: -1;
-        }
+        /* 🌟 暗幕（.bg-overlay）は完全に削除しました！ */
 
         #weather-effect {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -67,44 +57,47 @@
             100% { transform: translateY(0px); }
         }
 
-        /* 🌟 背景の黒い板を完全になくし、角丸の枠線だけを残すスタイル */
+        /* 角丸の枠線だけを残すスタイル */
         .card {
-            background: transparent; /* 黒い板をなくす */
+            background: transparent; 
             backdrop-filter: none;
             -webkit-backdrop-filter: none;
             padding: 30px 20px; 
             text-align: left; width: 100%;
-            border: 1px solid rgba(255, 255, 255, 0.35); /* 角丸の枠線 */
-            border-radius: 24px; /* 角丸 */
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.05); /* 枠線が浮いて見える微かな光 */
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 角丸の枠線 */
+            border-radius: 24px; 
+            box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
             opacity: 0; transform: scale(0.98);
             animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes cardAppear { to { opacity: 1; transform: scale(1); } }
 
-        /* 文字がフワッと出てくるアニメーション */
-        .animate-item { opacity: 0; transform: translateY(8px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.35s; } .delay-4 { animation-delay: 0.45s; } .delay-5 { animation-delay: 0.6s; }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* 背景が透けても文字がくっきり読めるよう、二重の強い影をつける */
-        .card h1, .card #sky-title, .card #scene, 
-        .card .char-name, .card .dialogue-line span, 
-        .card .yoroi-name, .card .yoroi-text {
-            text-shadow: 0px 2px 5px rgba(0,0,0,0.9), 0px 0px 10px rgba(0,0,0,0.6);
+        /* 🌟 黒い影（text-shadow）を削除し、蛍の光エフェクトを追加 */
+        @keyframes firefly {
+            0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; }
+            50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; }
         }
 
-        /* 文字サイズ（少し大きめ） */
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* 文字がフワッと出た後、それぞれのペースで蛍のように光り続ける */
+        .animate-item { opacity: 0; transform: translateY(8px); }
+        .delay-1 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.1s, firefly 4.0s ease-in-out infinite 0.7s; }
+        .delay-2 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.2s, firefly 4.8s ease-in-out infinite 0.8s; }
+        .delay-3 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.35s, firefly 3.5s ease-in-out infinite 0.95s; }
+        .delay-4 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.45s, firefly 5.2s ease-in-out infinite 1.05s; }
+        .delay-5 { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.6s, firefly 3.9s ease-in-out infinite 1.2s; }
+
+        /* 文字サイズと装飾 */
         .header-area { text-align: center; margin-bottom: 28px; }
         h1 { font-size: 1.8rem; margin-bottom: 8px; color: #ffffff; letter-spacing: 1px; }
-        .sky-title { font-size: 1.1rem; color: #cbd5e1; font-weight: 400; }
+        .sky-title { font-size: 1.1rem; color: #f8fafc; font-weight: 400; }
 
         #scene {
-            font-size: 1.1rem; line-height: 1.7; color: #f8fafc;
+            font-size: 1.1rem; line-height: 1.7; color: #ffffff;
             margin-bottom: 32px; padding-bottom: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .dialogue-container { display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px; }
@@ -115,13 +108,13 @@
         .hachiware-text { color: #bfdbfe; } 
         .usagi-text { color: #fef08a; } 
 
-        .advice-box { padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.25); }
+        .advice-box { padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.3); }
         .yoroi-text { color: #fed7aa; font-size: 1.1rem; line-height: 1.6; font-weight: 700; } 
         .yoroi-name { font-size: 0.85rem; opacity: 0.9; color: #ffffff; margin-bottom: 6px; display: block; }
 
-        .notice { font-size: 0.8rem; color: #cbd5e1; margin-top: 24px; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .notice { font-size: 0.8rem; color: #ffffff; margin-top: 24px; text-align: center; }
 
-        /* 天候エフェクト（そのまま） */
+        /* 天候エフェクト */
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
         
@@ -144,7 +137,6 @@
 <body>
 
     <div id="bg-layer" class="bg-layer"></div>
-    <div id="bg-overlay" class="bg-overlay"></div>
     <div id="weather-effect"></div>
 
     <div id="ui-wrapper" class="ui-wrapper">
@@ -178,7 +170,7 @@
                     <p id="advice-text" class="yoroi-text">...</p>
                 </div>
 
-                <p id="tap-notice" class="notice">画面タップでBGM再生・停止</p>
+                <p id="tap-notice" class="notice animate-item delay-5">画面タップでBGM再生・停止</p>
                 <audio id="bgm-player" loop></audio>
             </div>
         </div>
