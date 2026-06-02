@@ -35,12 +35,13 @@
             animation: cameraReadPan 40s ease-in-out infinite alternate;
         }
 
-        @keyframes cameraReadPan {
-            0% { transform: scale(1.45) translateX(-4%); }  /* ぐっと近づいた状態 ＋ 左寄り */
-            33% { transform: scale(1.33) translateX(3%); }   /* 少し引きつつ ＋ 右へスライド */
-            66% { transform: scale(1.22) translateX(-3%); }  /* さらに引きつつ ＋ 左へスライド */
-            100% { transform: scale(1.12) translateX(0%); }   /* 一番引いた状態（ズームアウト）で中央へ */
+         @keyframes cameraReadPan {
+            0% { transform: scale(1.30) translateX(-4.5%); } /* ぐっと寄って左側からスタート */
+            33% { transform: scale(1.20) translateX(3.0%); }  /* 少し引きながら右へスライド */
+            66% { transform: scale(1.10) translateX(-1.5%); } /* さらに引きながら、中央寄りの左へ */
+            100% { transform: scale(1.00) translateX(0%); }    /* 【限界】完全に等倍まで引ききって中央で静止！ */
         }
+
 
 
         #weather-effect {
