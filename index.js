@@ -247,7 +247,7 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
         console.error("音声作成/アップロードエラー:", err);
         await client.replyMessage(event.replyToken, [
           flexMessage,
-          { type: "text", text: "ごめんね、声の準備がうまくいかなかったのチャ…テキストで届いてるよ！" }
+          { type: "text", text: "ごめんね、声の準備がうまくいかなかったの…テキストで届いてるよ！" }
         ]);
       }
     }
