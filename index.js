@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const express = require("express");
 const line = require("@line/bot-sdk");
 const fs = require("fs");
@@ -11,6 +10,7 @@ const textToSpeech = require("@google-cloud/text-to-speech");
 
 const app = express();
 
+// Cloudinaryの設定
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -20,11 +20,9 @@ cloudinary.config({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Google Cloud TTSの設定
 let ttsClient;
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS_PATH) {
-  const creds = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS_PATH, "utf8"));
-  ttsClient = new textToSpeech.TextToSpeechClient({ credentials: creds });
-} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
   try {
     const creds = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
     ttsClient = new textToSpeech.TextToSpeechClient({ credentials: creds });
@@ -49,80 +47,28 @@ const client = new line.Client({
 const hexagrams = [];
 const hexagramLines = [];
 const lastFortune = new Map();
-const lastTouched = new Map();
 
-const cleanHeader = ({ header }) => header.replace(/[﻿​]+/g, "").trim();
+const cleanHeader = ({ header }) => header.replace(/[\uFEFF\u200B]+/g, "").trim();
 
-let hexagramsLoaded = false;
-let linesLoaded = false;
-let serverStarted = false;
-
-function tryStartServer() {
-  if (serverStarted) return;
-  if (hexagramsLoaded && linesLoaded) {
-    serverStarted = true;
-    const PORT = process.env.PORT || 10000;
-    app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
-  }
-}
-
+// 図鑑データの読み込み
 fs.createReadStream("hexagrams_master_with_emotion.csv")
   .pipe(csv({ separator: "\t", mapHeaders: cleanHeader }))
   .on("data", (data) => {
     if (data && data.id) hexagrams.push(data);
   })
-  .on("end", () => {
-    hexagramsLoaded = true;
-    console.log(`【図鑑】卦のデータを ${hexagrams.length} 件読み込みました。`);
-    tryStartServer();
-  })
-  .on("error", (e) => {
-    console.error("hexagrams CSV 読み込みエラー:", e);
-    hexagramsLoaded = true;
-    tryStartServer();
-  });
+  .on("end", () => console.log(`【図鑑】卦のデータを ${hexagrams.length} 件読み込みました。`));
 
 fs.createReadStream("lines.csv")
   .pipe(csv({ separator: "\t", mapHeaders: cleanHeader }))
   .on("data", (data) => {
     if (data && data.hexagram_id) hexagramLines.push(data);
   })
-  .on("end", () => {
-    linesLoaded = true;
-    console.log(`【図鑑】爻のデータを ${hexagramLines.length} 件読み込みました。`);
-    tryStartServer();
-  })
-  .on("error", (e) => {
-    console.error("lines CSV 読み込みエラー:", e);
-    linesLoaded = true;
-    tryStartServer();
-  });
+  .on("end", () => console.log(`【図鑑】爻のデータを ${hexagramLines.length} 件読み込みました。`));
 
 app.use(express.static(__dirname));
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-function buildFinalUrl(req, hid, lineIndex) {
-  const base = process.env.BASE_URL || `${req.protocol}://${req.get("host")}`;
-  return `${base.replace(//$/, "")}/index.html?hid=${encodeURIComponent(hid)}&l_name=${encodeURIComponent(lineIndex)}`;
-}
-
-function setLastFortune(userId, hid) {
-  lastFortune.set(userId, hid);
-  lastTouched.set(userId, Date.now());
-}
-
-const LAST_FORTUNE_TTL_MS = 1000 * 60 * 60 * 24 * 7;
-
-setInterval(() => {
-  const now = Date.now();
-  for (const [userId, t] of lastTouched.entries()) {
-    if (now - t > LAST_FORTUNE_TTL_MS) {
-      lastFortune.delete(userId);
-      lastTouched.delete(userId);
-    }
-  }
-}, 1000 * 60 * 60);
-
+// 画面（フロント）用API
 app.get("/api/fortune", async (req, res) => {
   const { hid, l_name } = req.query;
   const h = hexagrams.find(item => item && item.id && String(item.id) === String(hid));
@@ -159,43 +105,8 @@ app.get("/api/fortune", async (req, res) => {
 
   try {
     const result = await model.generateContent(prompt);
-
-    const rawText = (result && result.response && typeof result.response.text === "function")
-      ? result.response.text()
-      : (result && result.text) || "";
-
-    const cleanText = String(rawText).replace(/```json|```/g, "").trim();
-
-    let aiData = null;
-    try {
-      aiData = JSON.parse(cleanText);
-    } catch (parseErr) {
-      console.error("Gemini JSON parse failed:", parseErr, cleanText);
-      const m = cleanText.match(/{[sS]*}/);
-      if (m) {
-        try {
-          aiData = JSON.parse(m[0]);
-        } catch (e) {
-          console.error("Fallback JSON parse failed:", e);
-        }
-      }
-    }
-
-    const required = ["chiikawa", "hachiware", "usagi", "advice", "chiikawa_scene"];
-    const ok = aiData && required.every(k => typeof aiData[k] === "string");
-
-    if (!ok) {
-      return res.json({
-        ...h,
-        chiikawa: "…わぁ",
-        hachiware: "なんだか不思議な空だね…！おもしろいね。",
-        usagi: "ヤハ！！",
-        advice: "大丈夫だぞ、のんびりいこうな。",
-        chiikawa_scene: "淡い光がやさしく広がって、みんなでゆったり空を見上げているね…",
-        bgm: h.bgm || "default.mp3"
-      });
-    }
-
+    const cleanText = result.response.text().replace(/```json|```/g, "").trim();
+    const aiData = JSON.parse(cleanText);
     res.json({ ...h, ...aiData, bgm: h.bgm || "default.mp3" });
   } catch (e) {
     console.error("AI generateContent error:", e);
@@ -211,6 +122,7 @@ app.get("/api/fortune", async (req, res) => {
   }
 });
 
+// LINE送受信
 app.post("/callback", line.middleware(lineConfig), express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -236,19 +148,13 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
         attempts++;
       } while (h && h.id === lastFortune.get(userId) && attempts < 20);
 
-      if (!h || !h.id) {
-        await client.replyMessage(event.replyToken, {
-          type: "text",
-          text: "ごめんね、ちょっと調子が悪いみたい。あとでもう一回お願いできる？"
-        });
-        continue;
-      }
+      if (!h || !h.id) continue;
 
-      setLastFortune(userId, h.id);
+      lastFortune.set(userId, h.id);
 
       const lineIndex = Math.floor(Math.random() * 6) + 1;
       const lName = `${lineIndex}爻`;
-      const finalUrl = buildFinalUrl(req, h.id, lineIndex);
+      const finalUrl = `https://${req.get("host")}/index.html?hid=${h.id}&l_name=${encodeURIComponent(lineIndex)}`;
       const skyTitle = h.sky_name || h.soranoeki_sky || "不思議な空";
 
       const flexMessage = {
@@ -318,7 +224,7 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
 
         const uploadResult = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
-            { resource_type: "auto", format: "mp3" },
+            { resource_type: "video", format: "mp3" }, // video(音声)としてアップロード
             (error, result) => {
               if (error) reject(new Error(`Cloudinaryエラー: ${error.message}`));
               else resolve(result);
@@ -327,12 +233,7 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
           uploadStream.end(Buffer.from(buffer));
         });
 
-        let duration_ms = 3000;
-        if (uploadResult && uploadResult.duration) {
-          duration_ms = Math.round(uploadResult.duration * 1000);
-        } else {
-          duration_ms = Math.max(2000, speakText.length * 200);
-        }
+        const duration_ms = Math.max(2000, speakText.length * 300);
 
         await client.replyMessage(event.replyToken, [
           flexMessage,
@@ -346,7 +247,7 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
         console.error("音声作成/アップロードエラー:", err);
         await client.replyMessage(event.replyToken, [
           flexMessage,
-          { type: "text", text: "音声の準備がうまくいかなかったよ…ごめんね、テキストで届いてるよ！" }
+          { type: "text", text: "ごめんね、声の準備がうまくいかなかったのチャ…テキストで届いてるよ！" }
         ]);
       }
     }
@@ -356,4 +257,10 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
     console.error("callback handler error:", error);
     res.sendStatus(500);
   }
+});
+
+// サーバー起動
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
