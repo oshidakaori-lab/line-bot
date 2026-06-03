@@ -55,9 +55,12 @@ const cleanHeader = ({ header }) => header.replace(/[﻿​]+/g, "").trim();
 
 let hexagramsLoaded = false;
 let linesLoaded = false;
+let serverStarted = false;
 
 function tryStartServer() {
+  if (serverStarted) return;
   if (hexagramsLoaded && linesLoaded) {
+    serverStarted = true;
     const PORT = process.env.PORT || 10000;
     app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
   }
