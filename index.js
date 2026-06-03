@@ -16,6 +16,12 @@ cloudinary.config({
 
 const app = express();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Google Cloud TTSの準備
+const textToSpeech = require('@google-cloud/text-to-speech');
+const ttsClient = new textToSpeech.TextToSpeechClient({ 
+  credentials: JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS) 
+});
+
 const client = new line.Client({
   channelSecret: process.env.LINE_CHANNEL_SECRET,
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
@@ -185,27 +191,20 @@ app.post("/callback", express.json(), async (req, res) => {
       let errorMessage = "";
 
       try {
-        const fishResponse = await fetch("https://api.fish.audio/v1/tts", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${process.env.FISH_AUDIO_API_KEY}`,
-            "Content-Type": "application/json"
+        // ★ Google Cloud TTS で音声を作成する
+        const [ttsResponse] = await ttsClient.synthesizeSpeech({
+          input: { text: speakText },
+          voice: { 
+            languageCode: 'ja-JP', 
+            name: 'ja-JP-Wavenet-B' // ※可愛らしい高めの声（女性・少年風）です。好みに合わせて変更可能！
           },
-          body: JSON.stringify({
-            text: speakText,
-            reference_id: process.env.FISH_AUDIO_MODEL_ID, // ★ここを正しく修正しました
-            format: "mp3"
-          })
+          audioConfig: { audioEncoding: 'MP3' },
         });
 
-        if (!fishResponse.ok) {
-           const errText = await fishResponse.text();
-           throw new Error(`Fishエラー: ${fishResponse.status} ${errText}`);
-        }
+        // Googleから戻ってきた音声バッファ
+        const buffer = ttsResponse.audioContent;
 
-        const arrayBuffer = await fishResponse.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
+        // ★ Cloudinaryへアップロード（ここはそのまま流用！）
         const uploadResult = await new Promise((resolve, reject) => {
           const uploadStream = cloudinary.uploader.upload_stream(
             { resource_type: "video", format: "mp3" },
@@ -219,6 +218,7 @@ app.post("/callback", express.json(), async (req, res) => {
 
         const duration_ms = Math.max(2000, speakText.length * 300);
 
+        // LINEにカードと音声を送る
         await client.replyMessage(event.replyToken, [
           flexMessage,
           {
@@ -231,10 +231,10 @@ app.post("/callback", express.json(), async (req, res) => {
         
       } catch (err) {
         console.error("音声作成エラー:", err);
-        errorMessage = err.message; // エラーの原因をメモ
+        errorMessage = err.message;
       }
 
-      // ★もし音声が失敗したら、LINEのトーク画面に直接エラーの原因を返信する
+      // もし音声が失敗したら、LINEのトーク画面に直接エラーの原因を返信する
       await client.replyMessage(event.replyToken, [
         flexMessage,
         { type: "text", text: `(裏側のエラーメモ: ${errorMessage})` }
