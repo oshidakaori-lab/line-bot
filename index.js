@@ -36,15 +36,15 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS_PATH) {
   ttsClient = new textToSpeech.TextToSpeechClient();
 }
 
-const client = new line.Client({
-  channelSecret: process.env.LINE_CHANNEL_SECRET,
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
-});
-
 const lineConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || "",
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || ""
 };
+
+const client = new line.Client({
+  channelSecret: process.env.LINE_CHANNEL_SECRET,
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN,
+});
 
 const hexagrams = [];
 const hexagramLines = [];
