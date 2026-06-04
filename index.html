@@ -211,7 +211,9 @@
             <optgroup label="🎬 特殊エフェクト卦">
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡・終着)</option>
+                <option value="64">64 火水未済 (永遠の途中・循環)</option> <!-- 👈 これを追加！ -->
             </optgroup>
+
 
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
                 <option value="創空族">✨ 創空族 (光の瞬き)</option>
@@ -268,8 +270,8 @@
 
             document.body.classList.remove('theme-well', 'theme-jiji');
 
-            const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
+            const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済"))); // 👈 追加
 
             if (isWell) {
                 document.body.classList.add('theme-well');
@@ -277,9 +279,13 @@
             } else if (isJiji) {
                 document.body.classList.add('theme-jiji');
                 startJijiEffect();
+            } else if (isBisei) { // 👈 追加
+                document.body.classList.add('theme-bisei');
+                startBiseiEffect();
             } else {
                 startWeatherEffect(species);
             }
+
 
             if (data) {
                 document.getElementById('title').innerText = `${data.name} (${l_name})`;
@@ -301,7 +307,9 @@
 
             const mockData = {
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
-                "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" }
+                "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
+                "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
+
             };
 
             if (mockData[val]) { // 👈 mockDataの中にあれば自動でそっちを再生するよ！
@@ -362,6 +370,29 @@
                     p.style.animationDelay = '0s'; 
                     container.appendChild(p);
                 }
+            }
+        }
+
+        // 🎬 64 火水未済：完成と崩壊の無限ループエフェクト
+        function startBiseiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            for (let i = 0; i < 45; i++) {
+                let p = document.createElement('div'); p.className = 'bisei-particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.top = Math.random() * 100 + 'vh';
+                
+                const size = (Math.random() * 10 + 5) + 'px';
+                p.style.width = size; p.style.height = size;
+                
+                // 行き交うようなランダムな移動方向（完成に向かうがズレる動き）
+                const driftX = (Math.random() * 120 - 60) + 'px';
+                const driftY = (Math.random() * 120 - 60) + 'px';
+                p.style.setProperty('--drift-x', driftX);
+                p.style.setProperty('--drift-y', driftY);
+                
+                // 全粒子が完全に同時シンクロして6秒のループを刻む
+                p.style.animationDelay = '0s'; 
+                container.appendChild(p);
             }
         }
 
