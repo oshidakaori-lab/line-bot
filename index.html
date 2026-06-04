@@ -67,7 +67,17 @@
             98.0% { transform: scale(1.04) translate(-0.4px, 1.2px); filter: brightness(0.90); }
             100% { transform: scale(1.03) translate(0, 0); filter: brightness(1.0) contrast(1.0) saturate(1.0); }
         }
-
+        
+        /* 🎥 【64 火水未済】専用カメラ（巻き戻るような違和感とループ） */
+        .theme-bisei .bg-layer { animation: biseiRewindCamera 6.0s cubic-bezier(0.45, 0, 0.55, 1) infinite !important; transform: scale(1.05) !important; }
+        @keyframes biseiRewindCamera {
+            0% { transform: scale(1.05) translate(0, 0); filter: hue-rotate(0deg); }
+            40% { transform: scale(1.03) translate(1%, 1%); }
+            60% { transform: scale(1.04) translate(-0.5%, -0.5%); filter: hue-rotate(15deg); } /* 二重状態の時のブレ */
+            80% { transform: scale(1.08) translate(0.5%, 0%); } /* 再起動に向かって拡大 */
+            100% { transform: scale(1.05) translate(0, 0); filter: hue-rotate(0deg); } /* ピタッと最初に戻る */
+        }
+    
         #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
 
         /* UIレイアウト */
@@ -199,6 +209,39 @@
                 transform: translate(0, 0) scale(1); opacity: 0.95; 
             }
         }
+                /* 🎬 64 火水未済 専用パーティクル（永遠の途中・二重状態） */
+        .bisei-particle {
+            position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+            animation: biseiEternalLoop 6.0s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+        }
+        @keyframes biseiEternalLoop {
+            0%, 16.5% { /* Phase1：既済の余韻 */
+                background-color: #3F5F5A; box-shadow: 0 0 10px #3F5F5A;
+                transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.85;
+            }
+            16.6%, 33.2% { /* Phase2：揺らぎ */
+                background-color: #5F8F8A; box-shadow: 0 0 15px #5F8F8A;
+                transform: translate(var(--drift-x), var(--drift-y)) scale(0.9); opacity: 0.9;
+            }
+            33.3%, 49.9% { /* Phase3：未完成固定 */
+                background-color: #7FBFB2; box-shadow: 0 0 20px #7FBFB2;
+                transform: translate(calc(var(--drift-x) * 1.5), calc(var(--drift-y) * 1.5)) scale(0.8); opacity: 0.85;
+            }
+            50.0%, 66.5% { /* Phase4：二重状態 (左右に分離するような影で表現) */
+                background-color: #7FBFB2; box-shadow: -10px 0 15px #5F8F8A, 10px 0 15px #A6E0D2;
+                transform: translate(calc(var(--drift-x) * 0.5), calc(var(--drift-y) * 0.5)) scale(1.1); opacity: 0.9;
+            }
+            66.6%, 83.2% { /* Phase5：循環のピーク */
+                background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2;
+                transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8;
+            }
+            83.3%, 100% { /* Phase6：再起動の白 (無限循環の再接続) */
+                background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff;
+                transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1;
+            }
+        }
+
+        
     </style>
 </head>
 <body class="mode-normal">
@@ -211,6 +254,7 @@
             <optgroup label="🎬 特殊エフェクト卦">
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡・終着)</option>
+                <option value="64">64 火水未済 (永遠の途中・循環)</option> <!-- 👈 これを追加！ -->
             </optgroup>
 
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
@@ -247,6 +291,20 @@
         const params = new URLSearchParams(window.location.search);
         const hid = params.get('hid') || "1"; 
         const l_name = params.get('l_name') || "1"; 
+        const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済"))); // 👈 追加
+
+            if (isWell) {
+                document.body.classList.add('theme-well');
+                startWellEffect();
+            } else if (isJiji) {
+                document.body.classList.add('theme-jiji');
+                startJijiEffect();
+            } else if (isBisei) { // 👈 追加
+                document.body.classList.add('theme-bisei');
+                startBiseiEffect();
+            } else {
+                startWeatherEffect(species);
+            }
 
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
@@ -302,6 +360,8 @@
             const mockData = {
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" }
+                "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
+
             };
 
             if (mockData[val]) { // 👈 mockDataの中にあれば自動でそっちを再生するよ！
@@ -364,6 +424,29 @@
                 }
             }
         }
+                // 🎬 64 火水未済：完成と崩壊の無限ループエフェクト
+        function startBiseiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            for (let i = 0; i < 45; i++) {
+                let p = document.createElement('div'); p.className = 'bisei-particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.top = Math.random() * 100 + 'vh';
+                
+                const size = (Math.random() * 10 + 5) + 'px';
+                p.style.width = size; p.style.height = size;
+                
+                // 行き交うようなランダムな移動方向（完成に向かうがズレる動き）
+                const driftX = (Math.random() * 120 - 60) + 'px';
+                const driftY = (Math.random() * 120 - 60) + 'px';
+                p.style.setProperty('--drift-x', driftX);
+                p.style.setProperty('--drift-y', driftY);
+                
+                // 全粒子が完全に同時シンクロして6秒のループを刻む
+                p.style.animationDelay = '0s'; 
+                container.appendChild(p);
+            }
+        }
+
 
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect'); container.innerHTML = ''; 
