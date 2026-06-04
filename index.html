@@ -145,16 +145,28 @@
 </head>
 <body class="mode-normal">
 
-    <!-- 📱 開発用の切り替えドロップダウンメニュー -->
+   <!-- 📱 開発用の切り替えドロップダウンメニュー -->
     <div id="dev-control-panel" onclick="event.stopPropagation();">
-        <span>🛠️ 卦を選択:</span>
+        <span>🛠️ 選択:</span>
         <select id="dev-selector" onchange="switchPreviewEffect(this.value)">
             <option value="API">📡 本番モード (API連動)</option>
-            <option value="48">48 水風井 (静的循環)</option>
-            <option value="63">63 水火既済 (完全均衡)</option>
-            <!-- 🐣 今後新しい卦を作ったら、ここに選択肢を一行足すだけ！ -->
-            <option value="雨巡族">🌧️ (テスト) 雨巡族エフェクト</option>
-            <option value="受雲族">☁️ (テスト) 受雲族オーブ</option>
+            
+            <optgroup label="🎬 特殊エフェクト卦">
+                <option value="48">48 水風井 (静的循環)</option>
+                <option value="63">63 水火既済 (完全均衡)</option>
+                <!-- 🐣 今後新しい卦を作ったら、ここに選択肢を一行足すだけ！ -->
+            </optgroup>
+            
+            <optgroup label="🌤️ 8つの基本天候（族）テスト">
+                <option value="創空族">✨ 創空族 (光の瞬き)</option>
+                <option value="受雲族">☁️ 受雲族 (ふんわりオーブ)</option>
+                <option value="雷芽族">⚡ 雷芽族 (雷光と雨)</option>
+                <option value="雨巡族">🌧️ 雨巡族 (降り注ぐ雨)</option>
+                <option value="風旅族">🍃 風旅族 (吹き抜ける風)</option>
+                <option value="虹結族">🌈 虹結族 (カラフルバブル)</option>
+                <option value="雪守族">❄️ 雪守族 (舞い散る雪)</option>
+                <option value="炎灯族">🔥 炎灯族 (燃え上がる火の粉)</option>
+            </optgroup>
         </select>
     </div>
 
