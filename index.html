@@ -16,7 +16,9 @@
             width: 100%; min-height: 100vh; min-height: 100dvh; 
             font-family: 'M PLUS Rounded 1c', sans-serif;
             display: flex; justify-content: center; align-items: center;
-            padding: 20px 15px; background-color: transparent; overflow-x: hidden; color: #f8fafc; cursor: pointer;
+            padding: 20px 15px; 
+            background-color: transparent; /* 👈 黒い板を消去し、完全透明化！ */
+            overflow-x: hidden; color: #f8fafc; cursor: pointer;
         }
 
         /* 📱 スマホ用：開発者用エフェクト切り替えパネル */
@@ -32,7 +34,6 @@
             background: #ffffff; color: #0f172a; border: none; padding: 4px 8px;
             border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer;
         }
-        /* ギャラリーモードの時は開発パネルを綺麗に隠す */
         .mode-gallery #dev-control-panel { opacity: 0; pointer-events: none; transform: translateY(-10px); }
 
         /* 🌟 カメラワーク設定 */
@@ -54,15 +55,17 @@
             100% { transform: scale(1.02) translate(-1px, 0.5px); filter: brightness(1.05) contrast(1.05); }
         }
 
-        /* 🎬 【63 水火既済】専用カメラワーク（完全静止 ＋ 5秒後の微小シェイク） */
-        .theme-jiji .bg-layer { animation: jijiTension 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; transform: scale(1.02) !important; }
+        /* 🎬 【63 水火既済】シネマティックカメラ（6.0秒の完璧な静寂 ＋ 5.0秒[83.3%]からの極微細な崩壊シェイク） */
+        .theme-jiji .bg-layer { animation: jijiTension 6.0s steps(144) infinite !important; transform: scale(1.03) !important; }
         @keyframes jijiTension {
-            0%, 83.2% { transform: scale(1.02) translate(0, 0); filter: brightness(1.0) contrast(1.0); }
-            83.3% { transform: scale(1.02) translate(0.5px, -0.5px); filter: brightness(0.95); }
-            87.0% { transform: scale(1.02) translate(-1.0px, 0.5px); }
-            91.0% { transform: scale(1.02) translate(1.0px, 1.0px); }
-            95.0% { transform: scale(1.02) translate(-1.5px, -1.0px); filter: brightness(0.9); }
-            100% { transform: scale(1.02) translate(0, 0); filter: brightness(1.0) contrast(1.0); }
+            0%, 83.2% { transform: scale(1.03) translate(0, 0); filter: brightness(1.0) contrast(1.0) saturate(1.0); }
+            83.3% { transform: scale(1.03) translate(0.5px, -0.5px); filter: brightness(0.98) saturate(1.05); }
+            86.0% { transform: scale(1.033) translate(-0.8px, 0.4px); filter: contrast(1.08); }
+            89.0% { transform: scale(1.03) translate(0.8px, 0.8px); }
+            92.0% { transform: scale(1.035) translate(-1.2px, -0.8px); filter: brightness(0.93) contrast(1.1); }
+            95.0% { transform: scale(1.03) translate(1.0px, -0.2px); }
+            98.0% { transform: scale(1.04) translate(-0.4px, 1.2px); filter: brightness(0.90); }
+            100% { transform: scale(1.03) translate(0, 0); filter: brightness(1.0) contrast(1.0) saturate(1.0); }
         }
 
         #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
@@ -128,24 +131,61 @@
         .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
         @keyframes wellFeedbackLoop { 0% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } 15% { opacity: 0.8; } 40% { transform: translate(-50%, -15vh) scale(1.1); opacity: 0.9; } 55% { transform: translate(calc(-50% + var(--dir-x)), -10vh) scale(1.0); opacity: 0.7; } 85% { transform: translate(calc(-50% + var(--dir-x) * 0.9), 35vh) scale(0.5); opacity: 0.2; } 100% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } }
 
-        /* 63 水火既済 */
-        .jiji-particle { position: absolute; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; animation: jijiLifecycle 6.0s linear infinite; }
+        /* 🎬 63 水火既済 専用映画レベルパーティクル */
+        .jiji-particle {
+            position: absolute; width: 6px; height: 6px; border-radius: 50%; pointer-events: none;
+            /* 24fps映画的なソリッドな質感を出すため、steps(144)で6秒間をきざむ */
+            animation: jijiLifecycle 6.0s steps(144) infinite;
+            mix-blend-mode: screen;
+        }
+        /* カラー設計：#FFFFFF(完全均衡) → #C7F0E6(安定) → #7FBFB2(固定) → #6EAA9E(微歪み) → #5F8F8A(究極完成) → #3F5F5A(崩壊前夜) */
         @keyframes jijiLifecycle {
-            0%, 16.5% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; }
-            16.6%, 33.2% { background-color: #C7F0E6; box-shadow: 0 0 12px rgba(199,240,230,0.7); transform: translate(0, 0) scale(0.96); opacity: 0.85; }
-            33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 10px rgba(127,191,178,0.6); transform: translate(0, 0) scale(0.92); opacity: 0.8; }
-            50.0%, 66.5% { background-color: #6EAA9E; box-shadow: 0 0 8px rgba(110,170,158,0.5); transform: translate(0.5px, -0.5px) scale(0.88); opacity: 0.7; }
-            66.6%, 83.2% { background-color: #5F8F8A; box-shadow: 0 0 10px rgba(95,143,138,0.6); transform: translate(0, 0) scale(0.85); opacity: 0.8; }
-            83.3% { background-color: #3F5F5A; box-shadow: 0 0 12px rgba(63,95,90,0.8); transform: translate(0.5px, 0.5px) scale(0.85); opacity: 0.9; }
-            89.0% { background-color: #3F5F5A; box-shadow: 0 0 18px rgba(63,95,90,1); transform: translate(-1px, 1px) scale(0.95); opacity: 0.95; }
-            95.0% { background-color: #1F3F3A; box-shadow: 0 0 25px rgba(31,63,58,1); transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.15); opacity: 1; }
-            100% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; }
+            0%, 16.5% { 
+                background-color: #FFFFFF; box-shadow: 0 0 12px rgba(255,255,255,0.9); 
+                transform: translate(0, 0) scale(1); opacity: 0.95; 
+            }
+            16.6%, 33.2% { 
+                background-color: #C7F0E6; box-shadow: 0 0 10px rgba(199,240,230,0.8); 
+                transform: translate(0, 0) scale(0.98); opacity: 0.85; 
+            }
+            33.3%, 49.9% { 
+                background-color: #7FBFB2; box-shadow: 0 0 8px rgba(127,191,178,0.7); 
+                transform: translate(0, 0) scale(0.95); opacity: 0.8; 
+            }
+            50.0%, 66.5% { 
+                background-color: #6EAA9E; box-shadow: 0 0 10px rgba(110,170,158,0.6); 
+                transform: translate(0.3px, -0.3px) scale(0.95); opacity: 0.75; 
+            }
+            66.6%, 83.2% { 
+                background-color: #5F8F8A; box-shadow: 0 0 14px rgba(95,143,138,0.7); 
+                transform: translate(0, 0) scale(1.0); opacity: 0.9; 
+            }
+            /* ⏱️ Phase 6 (5.0秒〜) 崩壊前夜の内部グリッチ・構造歪みの視覚化 */
+            83.3% { 
+                background-color: #3F5F5A; box-shadow: 0 0 16px rgba(63,95,90,0.9); 
+                transform: translate(0.5px, 0.5px) scale(1.02); opacity: 0.9; 
+            }
+            88.0% { 
+                background-color: #3F5F5A; box-shadow: 0 0 22px rgba(63,95,90,1); 
+                transform: translate(-1.2px, 0.8px) scale(1.05); opacity: 0.95; 
+            }
+            93.0% { 
+                background-color: #2F4F4A; box-shadow: 0 0 4px rgba(255,255,255,0.3), 0 0 25px #3F5F5A; 
+                transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.12); opacity: 1; 
+            }
+            97.0% {
+                background-color: #5F8F8A; box-shadow: 0 0 30px rgba(95,143,138,1);
+                transform: translate(calc(var(--glitch-x) * -0.5), calc(var(--glitch-y) * -0.5)) scale(0.9); opacity: 0.8;
+            }
+            100% { 
+                background-color: #FFFFFF; box-shadow: 0 0 12px rgba(255,255,255,0.9); 
+                transform: translate(0, 0) scale(1); opacity: 0.95; 
+            }
         }
     </style>
 </head>
 <body class="mode-normal">
 
-   <!-- 📱 開発用の切り替えドロップダウンメニュー -->
     <div id="dev-control-panel" onclick="event.stopPropagation();">
         <span>🛠️ 選択:</span>
         <select id="dev-selector" onchange="switchPreviewEffect(this.value)">
@@ -153,10 +193,9 @@
             
             <optgroup label="🎬 特殊エフェクト卦">
                 <option value="48">48 水風井 (静的循環)</option>
-                <option value="63">63 水火既済 (完全均衡)</option>
-                <!-- 🐣 今後新しい卦を作ったら、ここに選択肢を一行足すだけ！ -->
+                <option value="63">63 水火既済 (完全均衡・終着)</option>
             </optgroup>
-            
+
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
                 <option value="創空族">✨ 創空族 (光の瞬き)</option>
                 <option value="受雲族">☁️ 受雲族 (ふんわりオーブ)</option>
@@ -187,19 +226,15 @@
             "風旅族": "wind.png", "虹結族": "rainbow.png", "雪守族": "snow.png", "炎灯族": "fire.png"
         };
 
-        // グローバルにデータを保持（切り替え用）
         let loadedApiData = null;
-
         const params = new URLSearchParams(window.location.search);
         const hid = params.get('hid') || "1"; 
         const l_name = params.get('l_name') || "1"; 
 
-        // 📡 本番のデータ読み込み
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
                 loadedApiData = data;
-                // 初期表示はURLパラメータ（本番）に従う
                 document.getElementById('dev-selector').value = "API";
                 applyData(data, hid);
             })
@@ -209,13 +244,11 @@
                 document.getElementById('scene').innerText = "左上のメニューからエフェクトを選んでテストしてね！";
             });
 
-        // 🌟 画面にデータを反映し、エフェクトを適用するメイン関数
         function applyData(data, currentHid, fallbackSpecies = "創空族") {
             const species = data ? (data.species_8 || fallbackSpecies) : fallbackSpecies;
             const imageFile = speciesImages[species] || "sky.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
-            // カメラワーク用のクラスを一旦キレイにリセット
             document.body.classList.remove('theme-well', 'theme-jiji');
 
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
@@ -243,14 +276,12 @@
             }
         }
 
-        // 📱 【メニュー切り替え用関数】ここに追加した卦のロジックを増やしていきます
         function switchPreviewEffect(val) {
             if (val === "API") {
                 if (loadedApiData) { applyData(loadedApiData, hid); }
                 return;
             }
 
-            // モック（仮）のテキストデータ（スマホ確認用）
             const mockData = {
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" }
@@ -259,12 +290,10 @@
             if (val === "48" || val === "63") {
                 applyData(mockData[val], val);
             } else {
-                // 族エフェクトの単体テスト用
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
             }
         }
 
-        // モード切り替え（画面タップ）
         let currentMode = 0; 
         document.body.addEventListener('click', () => {
             currentMode = (currentMode + 1) % 3;
@@ -281,7 +310,6 @@
             else if (currentMode === 2) { body.classList.add('mode-gallery'); }
         });
 
-        // 🌊 【エフェクトロジック】水風井
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
@@ -293,23 +321,32 @@
                 p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
             }
         }
-
-        // 🌊 【エフェクトロジック】水火既済
+    
+        // 🎬 【映画レベル大改造】63 水火既済の幾何学・完全整合グリッドエフェクト
         function startJijiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            // 水と火の「完全な構造的整合」を表現するため、グリッド状に完璧に整列配置
             const cols = 6; const rows = 11;
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     let p = document.createElement('div'); p.className = 'jiji-particle';
-                    p.style.left = `calc(${(c + 1) * (100 / (cols + 1))}vw - 3px)`; p.style.top = `calc(${(r + 1) * (100 / (rows + 1))}vh - 3px)`;
-                    const glitchX = (Math.random() * 8 - 4) + 'px'; const glitchY = (Math.random() * 8 - 4) + 'px';
-                    p.style.setProperty('--glitch-x', glitchX); p.style.setProperty('--glitch-y', glitchY);
-                    p.style.animationDelay = '0s'; container.appendChild(p);
+                    // 画面全体に均等に計算配置
+                    p.style.left = `calc(${(c + 1) * (100 / (cols + 1))}vw - 3px)`; 
+                    p.style.top = `calc(${(r + 1) * (100 / (rows + 1))}vh - 3px)`;
+                    
+                    // 5.0秒以降のPhase 6で粒子個別に発生する微細なグリッチの移動幅を設定
+                    const glitchX = (Math.random() * 10 - 5) + 'px'; 
+                    const glitchY = (Math.random() * 10 - 5) + 'px';
+                    p.style.setProperty('--glitch-x', glitchX); 
+                    p.style.setProperty('--glitch-y', glitchY);
+                    
+                    // 全粒子が完全に同時シンクロして時間（カラー）遷移するため、delayは一律0秒
+                    p.style.animationDelay = '0s'; 
+                    container.appendChild(p);
                 }
             }
         }
 
-        // 通常の天候エフェクト関数
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect'); container.innerHTML = ''; 
             if (species === "雨巡族") {
@@ -318,7 +355,7 @@
                 for(let i=0; i<35; i++) { let flake = document.createElement('div'); flake.className = 'orb-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 12 + 4) + 'px'; flake.style.width = size; flake.style.height = size; flake.style.animationDuration = (Math.random() * 10 + 8) + 's'; flake.style.animationDelay = (Math.random() * -15) + 's'; container.appendChild(flake); }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
-                for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
+                for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.style.left = Math.random() * 100 + 'vw'; drop.className = 'rain'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
             } else if (species === "創空族") {
                 for(let i=0; i<35; i++) { let sparkle = document.createElement('div'); sparkle.className = 'sparkle'; sparkle.style.left = Math.random() * 100 + 'vw'; const size = (Math.random() * 8 + 3) + 'px'; sparkle.style.width = sparkle.style.height = size; sparkle.style.background = 'radial-gradient(circle, #ffffff, rgba(253, 224, 71, 0.2))'; sparkle.style.boxShadow = '0 0 15px rgba(253, 224, 71, 0.8)'; sparkle.style.animationDuration = (Math.random() * 5 + 3) + 's'; sparkle.style.animationDelay = Math.random() * -5 + 's'; container.appendChild(sparkle); }
             } else if (species === "炎灯族") {
@@ -334,4 +371,11 @@
         }
     </script>
 </body>
-</html>
+</html>    
+    
+    
+    
+    
+    
+    
+   
