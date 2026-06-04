@@ -199,6 +199,39 @@
                 transform: translate(0, 0) scale(1); opacity: 0.95; 
             }
         }
+        
+        /* 🎬 64 火水未済 専用パーティクル（永遠の途中・二重状態） */
+        .bisei-particle {
+            position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
+            animation: biseiEternalLoop 6.0s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
+        }
+        @keyframes biseiEternalLoop {
+            0%, 16.5% { /* Phase1：既済の余韻 */
+                background-color: #3F5F5A; box-shadow: 0 0 10px #3F5F5A;
+                transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.85;
+            }
+            16.6%, 33.2% { /* Phase2：揺らぎ */
+                background-color: #5F8F8A; box-shadow: 0 0 15px #5F8F8A;
+                transform: translate(var(--drift-x), var(--drift-y)) scale(0.9); opacity: 0.9;
+            }
+            33.3%, 49.9% { /* Phase3：未完成固定 */
+                background-color: #7FBFB2; box-shadow: 0 0 20px #7FBFB2;
+                transform: translate(calc(var(--drift-x) * 1.5), calc(var(--drift-y) * 1.5)) scale(0.8); opacity: 0.85;
+            }
+            50.0%, 66.5% { /* Phase4：二重状態 (左右に分離するような影で表現) */
+                background-color: #7FBFB2; box-shadow: -10px 0 15px #5F8F8A, 10px 0 15px #A6E0D2;
+                transform: translate(calc(var(--drift-x) * 0.5), calc(var(--drift-y) * 0.5)) scale(1.1); opacity: 0.9;
+            }
+            66.6%, 83.2% { /* Phase5：循環のピーク */
+                background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2;
+                transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8;
+            }
+            83.3%, 100% { /* Phase6：再起動の白 (無限循環の再接続) */
+                background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff;
+                transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1;
+            }
+        }
+        
     </style>
 </head>
 <body class="mode-normal">
