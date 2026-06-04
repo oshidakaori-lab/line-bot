@@ -126,6 +126,23 @@
         @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
         .orb-particle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); animation: orbDrift ease-in-out infinite; pointer-events: none; }
         @keyframes orbDrift { 0% { transform: translateY(5vh) translateX(0) scale(0.8); opacity: 0; } 25% { opacity: 0.8; } 50% { transform: translateY(-40vh) translateX(30px) scale(1.2); opacity: 0.4; } 75% { opacity: 0.8; } 100% { transform: translateY(-90vh) translateX(-20px) scale(0.9); opacity: 0; } }
+        /* ❄️ 雪守族 専用：ひらひら舞い落ちる雪の見た目 */
+        .snow-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(0.5px);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            animation: snowFall linear infinite;
+        }
+        /* 上から下へ、左右に揺れながら落ちるアニメーション */
+        @keyframes snowFall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; }
+        }
         
         /* 48 水風井 */
         .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
@@ -367,6 +384,26 @@
                 for(let i=0; i<25; i++) { let bubble = document.createElement('div'); bubble.className = 'sparkle'; bubble.style.left = Math.random() * 100 + 'vw'; const size = (Math.random() * 40 + 10) + 'px'; bubble.style.width = bubble.style.height = size; bubble.style.background = colors[Math.floor(Math.random() * colors.length)]; bubble.style.boxShadow = '0 0 20px ' + bubble.style.background; bubble.style.animationDuration = (Math.random() * 8 + 4) + 's'; bubble.style.animationDelay = Math.random() * -8 + 's'; container.appendChild(bubble); }
             } else if (species === "受雲族") {
                 for(let i=0; i<25; i++) { let orb = document.createElement('div'); orb.className = 'orb-particle'; orb.style.left = (Math.random() * 100) + 'vw'; orb.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 22 + 8) + 'px'; orb.style.width = size; orb.style.height = size; orb.style.animationDuration = (Math.random() * 15 + 15) + 's'; orb.style.animationDelay = (Math.random() * -30) + 's'; container.appendChild(orb); }
+            } else if (species === "雪守族") {
+                // ❄️ 画面の上からハラハラと舞い落ちる正しい雪のロジック
+                for(let i=0; i<40; i++) { 
+                    let flake = document.createElement('div'); 
+                    flake.className = 'snow-particle'; 
+                    flake.style.left = Math.random() * 100 + 'vw'; 
+                    flake.style.top = (Math.random() * -20) + 'vh'; // ちゃんと画面の上から降らせるよ！
+                    
+                    const size = (Math.random() * 8 + 3) + 'px'; 
+                    flake.style.width = size; 
+                    flake.style.height = size; 
+                    
+                    // 左右にひらひら揺れる幅をランダムに設定
+                    const swayX = (Math.random() * 50 - 25) + 'px';
+                    flake.style.setProperty('--sway-x', swayX);
+                    
+                    flake.style.animationDuration = (Math.random() * 4 + 5) + 's'; // 風に乗ってゆっくり落ちる速度
+                    flake.style.animationDelay = (Math.random() * -8) + 's'; 
+                    container.appendChild(flake); 
+                }
             }
         }
     </script>
