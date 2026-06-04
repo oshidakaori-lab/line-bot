@@ -304,9 +304,10 @@
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" }
             };
 
-            if (val === "48" || val === "63") {
+            if (mockData[val]) { // 👈 mockDataの中にあれば自動でそっちを再生するよ！
                 applyData(mockData[val], val);
             } else {
+                
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
             }
         }
