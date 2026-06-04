@@ -368,8 +368,6 @@
             const container = document.getElementById('weather-effect'); container.innerHTML = ''; 
             if (species === "雨巡族") {
                 for(let i=0; i<60; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -100 + 'px'; const zIndex = Math.random(); drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`; drop.style.opacity = zIndex * 0.7 + 0.3; drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; drop.style.animationDelay = Math.random() * 2 + 's'; container.appendChild(drop); }
-            } else if (species === "雪守族") {
-                for(let i=0; i<35; i++) { let flake = document.createElement('div'); flake.className = 'orb-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 12 + 4) + 'px'; flake.style.width = size; flake.style.height = size; flake.style.animationDuration = (Math.random() * 10 + 8) + 's'; flake.style.animationDelay = (Math.random() * -15) + 's'; container.appendChild(flake); }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
                 for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.style.left = Math.random() * 100 + 'vw'; drop.className = 'rain'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
