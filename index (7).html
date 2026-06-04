@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空の易 - エフェクトテスト</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; min-height: 100%;
+            font-family: 'Zen Maru Gothic', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            
+            /* 背景画像の設定 */
+            background-color: #0f172a;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-image 1.2s ease-in-out;
+            position: relative;
+            z-index: 0;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(15, 23, 42, 0.65));
+            z-index: -1;
+        }
+
+        #weather-effect {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .card-wrapper {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            justify-content: center;
+            animation: floatAnimation 5s ease-in-out infinite;
+        }
+
+        @keyframes floatAnimation {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(14px);
+            padding: 30px;
+            border-radius: 32px;
+            text-align: center;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-size: 1.6rem; margin-bottom: 4px; color: #f8fafc; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .sky-title { font-size: 0.95rem; color: #38bdf8; margin-bottom: 20px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
+        /* 天候切り替えボタン（テスト用） */
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .test-btn {
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .test-btn:hover { background: rgba(255, 255, 255, 0.4); }
+
+        /* ――― 各天候エフェクト用のパーツCSS ――― */
+        .rain { position: absolute; background: rgba(255,255,255,0.4); width: 1.5px; height: 25px; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(105vh); } }
+
+        .snow { position: absolute; color: rgba(255,255,255,0.85); animation: snowFall linear infinite; }
+        @keyframes snowFall {
+            0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh) translateX(40px) rotate(360deg); opacity: 0; }
+        }
+
+        .sparkle { position: absolute; border-radius: 50%; animation: riseUp ease-in-out infinite; }
+        @keyframes riseUp {
+            0% { transform: translateY(105vh) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-5vh) scale(1.2); opacity: 0; }
+        }
+
+        .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.3), rgba(255,255,255,0)); height: 2px; animation: blow linear infinite; }
+        @keyframes blow { 0% { transform: translateX(-100vw); } 100% { transform: translateX(100vw); } }
+
+        .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 1; animation: lightning 5s ease-in-out infinite; }
+        @keyframes lightning { 0%, 92%, 94%, 96%, 100% { opacity: 0; } 93%, 95% { opacity: 0.2; } }
+
+        .cloud-particle { position: absolute; background: rgba(255,255,255,0.12); border-radius: 50%; filter: blur(25px); animation: drift linear infinite; }
+        @keyframes drift { 0% { transform: translateX(-250px); } 100% { transform: translateX(105vw); } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+    <div id="weather-effect"></div>
+
+    <div class="card-wrapper">
+        <div class="card" id="main-card">
+            <h1>エフェクト確認モード</h1>
+            <div id="sky-title" class="sky-title">下のボタンを押してね</div>
+            
+            <!-- AIのエラーに関係なく表示を確認できるボタンたち！ -->
+            <div class="test-buttons">
+                <button class="test-btn" onclick="changeWeather('sky.png', '創空族')">✨ 創空族 (キラキラ)</button>
+                <button class="test-btn" onclick="changeWeather('cloud.png', '受雲族')">☁️ 受雲族 (くも)</button>
+                <button class="test-btn" onclick="changeWeather('thunder.png', '雷芽族')">⚡ 雷芽族 (かみなり)</button>
+                <button class="test-btn" onclick="changeWeather('rain.png', '雨巡族')">☔ 雨巡族 (あめ)</button>
+                <button class="test-btn" onclick="changeWeather('wind.png', '風旅族')">💨 風旅族 (かぜ)</button>
+                <button class="test-btn" onclick="changeWeather('rainbow.png', '虹結族')">🌈 虹結族 (シャボン玉)</button>
+                <button class="test-btn" onclick="changeWeather('snow.png', '雪守族')">❄️ 雪守族 (ゆき)</button>
+                <button class="test-btn" onclick="changeWeather('fire.png', '炎灯族')">🔥 炎灯族 (ひかり)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ボタンを押すと、背景画像とエフェクトが切り替わる魔法の関数
+        function changeWeather(imageFile, species) {
+            document.body.style.backgroundImage = `url('${imageFile}')`;
+            document.getElementById('sky-title').innerText = `現在表示中：${species}`;
+            startWeatherEffect(species);
+        }
+
+        // 🌟 動きのあるお天気エフェクト
+        function startWeatherEffect(species) {
+            const container = document.getElementById('weather-effect');
+            container.innerHTML = ''; 
+            
+            if (species === "雨巡族") {
+                for(let i=0; i<45; i++) {
+                    let drop = document.createElement('div');
+                    drop.className = 'rain';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.top = Math.random() * -50 + 'px';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                    drop.style.animationDelay = Math.random() * 2 + 's';
+                    container.appendChild(drop);
+                }
+            } else if (species === "雪守族") {
+                for(let i=0; i<25; i++) {
+                    let flake = document.createElement('div');
+                    flake.className = 'snow';
+                    flake.innerHTML = Math.random() > 0.4 ? '❄' : '･';
+                    flake.style.left = Math.random() * 100 + 'vw';
+                    flake.style.fontSize = (Math.random() * 14 + 10) + 'px';
+                    flake.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    flake.style.animationDelay = Math.random() * 5 + 's';
+                    container.appendChild(flake);
+                }
+            } else if (species === "雷芽族") {
+                let flash = document.createElement('div');
+                flash.className = 'lightning-flash';
+                container.appendChild(flash);
+                for(let i=0; i<20; i++) {
+                    let drop = document.createElement('div');
+                    drop.className = 'rain';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                    container.appendChild(drop);
+                }
+            } else if (species === "創空族") {
+                for(let i=0; i<20; i++) {
+                    let sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + 'vw';
+                    sparkle.style.width = sparkle.style.height = (Math.random() * 6 + 4) + 'px';
+                    sparkle.style.background = 'radial-gradient(circle, #fffdf0, rgba(251,191,36,0.6))';
+                    sparkle.style.boxShadow = '0 0 10px #fef08a';
+                    sparkle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                    sparkle.style.animationDelay = Math.random() * 4 + 's';
+                    container.appendChild(sparkle);
+                }
+            } else if (species === "炎灯族") {
+                for(let i=0; i<20; i++) {
+                    let spark = document.createElement('div');
+                    spark.className = 'sparkle';
+                    spark.style.left = Math.random() * 100 + 'vw';
+                    spark.style.width = spark.style.height = (Math.random() * 5 + 3) + 'px';
+                    spark.style.background = 'radial-gradient(circle, #fff, #f97316)';
+                    spark.style.boxShadow = '0 0 12px #ea580c';
+                    spark.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    spark.style.animationDelay = Math.random() * 3 + 's';
+                    container.appendChild(spark);
+                }
+            } else if (species === "風旅族") {
+                for(let i=0; i<8; i++) {
+                    let wind = document.createElement('div');
+                    wind.className = 'wind-line';
+                    wind.style.top = (Math.random() * 100) + 'vh';
+                    wind.style.width = (Math.random() * 150 + 100) + 'px';
+                    wind.style.animationDuration = (Math.random() * 1.6 + 1.4) + 's';
+                    wind.style.animationDelay = Math.random() * 3 + 's';
+                    container.appendChild(wind);
+                }
+            } else if (species === "虹結族") {
+                const colors = ['rgba(254,205,211,0.45)', 'rgba(191,219,254,0.45)', 'rgba(253,230,138,0.45)', 'rgba(187,247,208,0.45)'];
+                for(let i=0; i<15; i++) {
+                    let bubble = document.createElement('div');
+                    bubble.className = 'sparkle';
+                    bubble.style.left = Math.random() * 100 + 'vw';
+                    const size = (Math.random() * 25 + 15) + 'px';
+                    bubble.style.width = bubble.style.height = size;
+                    bubble.style.background = colors[Math.random() % colors.length];
+                    bubble.style.border = '1px solid rgba(255,255,255,0.25)';
+                    bubble.style.animationDuration = (Math.random() * 6 + 5) + 's';
+                    bubble.style.animationDelay = Math.random() * 5 + 's';
+                    container.appendChild(bubble);
+                }
+            } else if (species === "受雲族") {
+                for(let i=0; i<6; i++) {
+                    let cloud = document.createElement('div');
+                    cloud.className = 'cloud-particle';
+                    cloud.style.top = (Math.random() * 70) + 'vh';
+                    const size = (Math.random() * 160 + 140) + 'px';
+                    cloud.style.width = cloud.style.height = size;
+                    cloud.style.animationDuration = (Math.random() * 25 + 20) + 's';
+                    cloud.style.animationDelay = Math.random() * -12 + 's'; 
+                    container.appendChild(cloud);
+                }
+            }
+        }
+        
+        // 最初に画面を開いたときは、創空族を表示しておくよ
+        changeWeather('sky.png', '創空族');
+    </script>
+</body>
+</html>
