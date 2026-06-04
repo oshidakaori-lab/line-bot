@@ -5,34 +5,10 @@ const fs = require("fs");
 const csv = require("csv-parser");
 const path = require("path");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const cloudinary = require("cloudinary").v2;
-const textToSpeech = require("@google-cloud/text-to-speech");
 
 const app = express();
 
-// Cloudinaryの設定
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-  secure: true
-});
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-// Google Cloud TTSの設定
-let ttsClient;
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  try {
-    const creds = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
-    ttsClient = new textToSpeech.TextToSpeechClient({ credentials: creds });
-  } catch (e) {
-    console.error("Google credentials JSON parse failed:", e);
-    ttsClient = new textToSpeech.TextToSpeechClient();
-  }
-} else {
-  ttsClient = new textToSpeech.TextToSpeechClient();
-}
 
 const lineConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || "",
@@ -84,13 +60,13 @@ app.get("/api/fortune", async (req, res) => {
 ・卦名: ${h.name} (${h.sky_name || h.soranoeki_sky || "不思議な空"})
 ・空の様子: ${h.soranoeki_sky_description || h.sky_description || "いつもと違う特別な空模様。"}
 ・みんなの雰囲気: ${h.feeling_kawaii || h.emotion_description || "みんなで空を見上げているよ。"}
-・変化の様子（爻の状況）: ${l ? l.line_name_kawaii : "全体の雰囲気"}
+* 変化の様子（爻の状況）: ${l ? l.line_name_kawaii : "全体の雰囲気"}
 
 【セリフと情景の厳格なルール】
 1. ちいかわは文章で喋らせず、「…」「…ンショ」「…わぁ」「…ッ」のような短い健気なつぶやきに。
 2. ハチワレのセリフから「ちいかわちゃん」という呼びかけを省略。
 3. うさぎは「ヤハ！」「ウララララ！」「プルャ！」などの叫び声のみ。
-4. 鎧さんは、さらにほんの少し優しく、包み込むような口調に。
+4. 鎧さんは、ぶっきらぼうだけど最高に優しい包み込むような兄貴肌な口調（語尾は「〜だぞ」「〜な」「〜か？」など）
 5. 「あなた」「三者三様」などの人称や難しい言葉は含めない。
 6. chiikawa_sceneは、絵本のようにふんわりとしたやわらかい雰囲気に。
 
@@ -122,7 +98,7 @@ app.get("/api/fortune", async (req, res) => {
   }
 });
 
-// LINE送受信
+// LINE送受信（案内を省略して、カードだけをスッキリ送る形にしました）
 app.post("/callback", line.middleware(lineConfig), express.json(), async (req, res) => {
   try {
     const events = req.body.events;
@@ -208,48 +184,8 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
         }
       };
 
-      const speakText = `${h.name}のカードが届いたよ！開いてみてね！`;
-
-      try {
-        const [ttsResponse] = await ttsClient.synthesizeSpeech({
-          input: { text: speakText },
-          voice: {
-            languageCode: "ja-JP",
-            name: "ja-JP-Wavenet-B"
-          },
-          audioConfig: { audioEncoding: "MP3" },
-        });
-
-        const buffer = ttsResponse.audioContent;
-
-        const uploadResult = await new Promise((resolve, reject) => {
-          const uploadStream = cloudinary.uploader.upload_stream(
-            { resource_type: "video", format: "mp3" }, // video(音声)としてアップロード
-            (error, result) => {
-              if (error) reject(new Error(`Cloudinaryエラー: ${error.message}`));
-              else resolve(result);
-            }
-          );
-          uploadStream.end(Buffer.from(buffer));
-        });
-
-        const duration_ms = Math.max(2000, speakText.length * 300);
-
-        await client.replyMessage(event.replyToken, [
-          flexMessage,
-          {
-            type: "audio",
-            originalContentUrl: uploadResult.secure_url,
-            duration: duration_ms
-          }
-        ]);
-      } catch (err) {
-        console.error("音声作成/アップロードエラー:", err);
-        await client.replyMessage(event.replyToken, [
-          flexMessage,
-          { type: "text", text: "ごめんね、声の準備がうまくいかなかったの…テキストで届いてるよ！" }
-        ]);
-      }
+      // 純粋にFlex Message（カード）だけをリプライします
+      await client.replyMessage(event.replyToken, flexMessage);
     }
 
     res.sendStatus(200);
@@ -259,7 +195,6 @@ app.post("/callback", line.middleware(lineConfig), express.json(), async (req, r
   }
 });
 
-// サーバー起動
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
