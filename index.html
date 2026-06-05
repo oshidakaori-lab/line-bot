@@ -113,6 +113,23 @@
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
         /* --- 各天候エフェクトのCSS --- */
+        /* ❄️ 雪守族 専用：ひらひら舞い落ちる雪の見た目 */
+        .snow-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(0.5px);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            animation: snowFall linear infinite;
+        }
+        /* 上から下へ、左右に揺れながら落ちるアニメーション */
+        @keyframes snowFall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; }
+        }
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
         .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
@@ -315,7 +332,25 @@
             if (species === "雨巡族") {
                 for(let i=0; i<60; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -100 + 'px'; const zIndex = Math.random(); drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`; drop.style.opacity = zIndex * 0.7 + 0.3; drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; drop.style.animationDelay = Math.random() * 2 + 's'; container.appendChild(drop); }
             } else if (species === "雪守族") {
-                for(let i=0; i<35; i++) { let flake = document.createElement('div'); flake.className = 'orb-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 12 + 4) + 'px'; flake.style.width = size; flake.style.height = size; flake.style.animationDuration = (Math.random() * 10 + 8) + 's'; flake.style.animationDelay = (Math.random() * -15) + 's'; container.appendChild(flake); }
+                // ❄️ 画面の上からハラハラと舞い落ちる正しい雪のロジック
+                for(let i=0; i<40; i++) { 
+                    let flake = document.createElement('div'); 
+                    flake.className = 'snow-particle'; 
+                    flake.style.left = Math.random() * 100 + 'vw'; 
+                    flake.style.top = (Math.random() * -20) + 'vh'; // ちゃんと画面の上から降らせるよ！
+                    
+                    const size = (Math.random() * 8 + 3) + 'px'; 
+                    flake.style.width = size; 
+                    flake.style.height = size; 
+                    
+                    // 左右にひらひら揺れる幅をランダムに設定
+                    const swayX = (Math.random() * 50 - 25) + 'px';
+                    flake.style.setProperty('--sway-x', swayX);
+                    
+                    flake.style.animationDuration = (Math.random() * 4 + 5) + 's'; // 風に乗ってゆっくり落ちる速度
+                    flake.style.animationDelay = (Math.random() * -8) + 's'; 
+                    container.appendChild(flake); 
+                }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
                 for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
