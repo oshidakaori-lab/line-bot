@@ -48,14 +48,26 @@
         /* 🎬 【01 乾為天】専用カメラ＆ライトタイムライン（無意識の呼吸ズーム ＋ 陽極まる露出飽和） */
         .theme-ten .bg-layer { animation: tenTimelineAndCamera 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
         @keyframes tenTimelineAndCamera {
-            0% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } /* Phase1: 淡い青（露出-0.3） */
-            16.6% { transform: scale(1.035); filter: brightness(1.1) contrast(1.05) saturate(1.1); } /* Phase2: 彩度+10% 太陽光上昇 */
-            33.3% { transform: scale(1.05); filter: brightness(1.25) contrast(1.1) saturate(1.1); } /* Phase3: 光強度+25% 揺らぎ開始 */
-            50.0% { transform: scale(1.04); filter: brightness(1.4) contrast(1.15) saturate(0.9); } /* Phase4: 転換（青→白寄り） */
-            66.6% { transform: scale(1.03); filter: brightness(2.0) contrast(1.2) saturate(0.4); } /* Phase5: ピーク（露出+0.7白飛び・雲消失） */
-            83.3% { transform: scale(1.022); filter: brightness(2.3) contrast(0.9) saturate(0.2); } /* Phase6: 飽和・存在の虚無化（崩壊寸前ノイズ） */
-            95.0% { transform: scale(1.02); filter: brightness(1.5) contrast(1.0) saturate(0.7); } /* ループ接続用のフェード復帰 */
-            100% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } /* 0.0sへ再生接続 */
+            0% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
+            16.6% { transform: scale(1.035); filter: brightness(1.1) contrast(1.05) saturate(1.1); } 
+            33.3% { transform: scale(1.05); filter: brightness(1.25) contrast(1.1) saturate(1.1); } 
+            50.0% { transform: scale(1.04); filter: brightness(1.4) contrast(1.15) saturate(0.9); } 
+            66.6% { transform: scale(1.03); filter: brightness(2.0) contrast(1.2) saturate(0.4); } 
+            83.3% { transform: scale(1.022); filter: brightness(2.3) contrast(0.9) saturate(0.2); } 
+            95.0% { transform: scale(1.02); filter: brightness(1.5) contrast(1.0) saturate(0.7); } 
+            100% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
+        }
+
+        /* 🎬 【02 坤為地】専用カメラ＆ライトタイムライン（完全固定・コントラスト低下・空間圧縮） */
+        .theme-kon .bg-layer { animation: konTimeline 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; transform: scale(1.0) !important; }
+        @keyframes konTimeline {
+            0% { filter: brightness(1.0) contrast(0.9) grayscale(0.5); } /* Phase1: 薄曇り */
+            16.6% { filter: brightness(0.95) contrast(0.85) grayscale(0.6); } /* Phase2: 空がグレー寄りへ */
+            33.3% { filter: brightness(0.9) contrast(0.8) grayscale(0.7); } /* Phase3: コントラスト低下、沈む */
+            50.0% { filter: brightness(0.85) contrast(0.7) grayscale(0.8); } /* Phase4: 空気が止まる */
+            66.6% { filter: brightness(0.75) contrast(0.6) grayscale(0.95); } /* Phase5: ピーク（最も暗いグレー・圧迫感） */
+            83.3% { filter: brightness(0.78) contrast(0.65) grayscale(0.9); } /* Phase6: 微かな回復（気づかない変化） */
+            100% { filter: brightness(1.0) contrast(0.9) grayscale(0.5); } /* 0.0sへ再生接続 */
         }
 
         /* 🎬 【48 水風井】専用カメラワーク */
@@ -135,7 +147,8 @@
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
         /* --- 各天候エフェクトのCSS --- */
-        /* 🌤️ 01 乾為天 専用ブルームフレアレイヤー（中心から溢れる強烈な飽和光） */
+        
+        /* 🌤️ 01 乾為天 専用ブルームフレアレイヤー */
         .ten-bloom-core {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
@@ -148,15 +161,14 @@
             33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); }
             50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); }
             66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); }
-            83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } /* 存在の消失（白化） */
+            83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 
             95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); }
             100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); }
         }
 
-        /* 🌤️ 01 乾為天 専用：風レイヤー（円環時間・六角形を模した有機的な大気波紋） */
         .ten-hex-ripple {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; /* 揺らめくヒートヘイズ感 */
+            border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; 
             pointer-events: none; mix-blend-mode: overlay;
             animation: tenRippleWave 6.0s linear infinite;
         }
@@ -169,17 +181,40 @@
             100% { width: 0vw; height: 0vw; opacity: 0; }
         }
 
+        /* 🌫️ 02 坤為地 専用：Fog Layer（空間を埋める霧・圧迫感） */
+        .kon-fog-layer {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(120,125,130,0.8) 100%);
+            mix-blend-mode: multiply; pointer-events: none;
+            animation: konFogFill 6.0s linear infinite;
+        }
+        @keyframes konFogFill {
+            0% { opacity: 0; } /* Phase1: 拡散 */
+            33.3% { opacity: 0.3; } /* Phase3: 奥行き消失 */
+            50.0% { opacity: 0.6; } /* Phase4: 停滞 */
+            66.6% { opacity: 1.0; } /* Phase5: 圧迫感最大 */
+            83.3% { opacity: 0.8; } /* Phase6: わずかな回復 */
+            100% { opacity: 0; }
+        }
+
+        /* ☁️ 02 坤為地 専用：重い雲レイヤー（動かず、ただ重なり合う） */
+        .kon-heavy-cloud {
+            position: absolute; border-radius: 50%;
+            background: rgba(200, 204, 208, 0.5);
+            filter: blur(50px); pointer-events: none; mix-blend-mode: normal;
+            animation: konCloudWeight 6.0s ease-in-out infinite;
+        }
+        @keyframes konCloudWeight {
+            0% { transform: scale(1.0); opacity: 0.4; background: rgba(214, 217, 220, 0.4); }
+            33.3% { transform: scale(1.02); opacity: 0.6; background: rgba(191, 195, 199, 0.6); }
+            66.6% { transform: scale(1.05); opacity: 0.9; background: rgba(159, 164, 168, 0.8); } /* Phase5: 密度最大 */
+            83.3% { transform: scale(1.03); opacity: 0.7; background: rgba(200, 204, 208, 0.6); }
+            100% { transform: scale(1.0); opacity: 0.4; background: rgba(214, 217, 220, 0.4); }
+        }
+
         /* ❄️ 雪守族 専用 */
-        .snow-particle {
-            position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%;
-            pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-            animation: snowFall linear infinite;
-        }
-        @keyframes snowFall {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; } 90% { opacity: 1; }
-            100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; }
-        }
+        .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
+        @keyframes snowFall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; } }
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; animation: fall linear infinite; }
         @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
         .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
@@ -223,11 +258,6 @@
             83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; }
         }
 
-
-        /* ======================================= */
-        /* 📱【コピペ専用駅】新しいCSSはココから下へ追加！ */
-        /* ======================================= */
-
     </style>
 </head>
 <body class="mode-normal">
@@ -239,10 +269,10 @@
             
             <optgroup label="🎬 特殊エフェクト卦">
                 <option value="1">01 乾為天 (極大の陽光・飽和)</option>
+                <option value="2" selected>02 坤為地 (絶対の静寂・受容)</option>
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
-                <!-- 🐣 新しい卦のoptionはココへ追加！ -->
             </optgroup>
             
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
@@ -278,7 +308,7 @@
         let loadedApiData = null;
 
         const params = new URLSearchParams(window.location.search);
-        const hid = params.get('hid') || "1"; 
+        const hid = params.get('hid') || "2"; // Default to 2 for preview 
         const l_name = params.get('l_name') || "1"; 
 
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
@@ -290,35 +320,33 @@
             })
             .catch(err => {
                 console.error(err);
-                document.getElementById('title').innerText = "図鑑マスタープレビュー";
-                document.getElementById('scene').innerText = "左上のメニューからエフェクトを選んでテストしてね！";
+                switchPreviewEffect("2"); // Error fallback to Kun
             });
 
-        function applyData(data, currentHid, fallbackSpecies = "創空族") {
+        function applyData(data, currentHid, fallbackSpecies = "受雲族") {
             const species = data ? (data.species_8 || fallbackSpecies) : fallbackSpecies;
-            const imageFile = speciesImages[species] || "sky.png";
+            const imageFile = speciesImages[species] || "cloud.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
+            const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
 
             if (isTen) {
-                document.body.classList.add('theme-ten');
-                startTenEffect();
+                document.body.classList.add('theme-ten'); startTenEffect();
+            } else if (isKon) {
+                document.body.classList.add('theme-kon'); startKonEffect();
             } else if (isWell) {
-                document.body.classList.add('theme-well');
-                startWellEffect();
+                document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
-                document.body.classList.add('theme-jiji');
-                startJijiEffect();
+                document.body.classList.add('theme-jiji'); startJijiEffect();
             } else if (isBisei) {
-                document.body.classList.add('theme-bisei');
-                startBiseiEffect();
+                document.body.classList.add('theme-bisei'); startBiseiEffect();
             } else {
                 startWeatherEffect(species);
             }
@@ -344,24 +372,20 @@
             // 🌟 モックデータ（全自動判別型）
             const mockData = {
                 "1": { 
-                    name: "乾為天", 
-                    sky_name: "極大陽気の飽和空", 
-                    chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", 
-                    chiikawa: "わァ……ッ（まぶしくて目が開かない）", 
-                    hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", 
-                    usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", 
-                    advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" 
+                    name: "乾為天", sky_name: "極大陽気の飽和空", chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", 
+                    chiikawa: "わァ……ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" 
+                },
+                "2": { 
+                    name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", 
+                    chiikawa: "ハァ…ハァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" 
                 },
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
-                "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" },
-                // =======================================
-                // 📱【コピペ専用駅】新しいモックデータはココから下へ追加！
-                // =======================================
+                "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
             };
 
             if (mockData[val]) { 
-                applyData(mockData[val], val);
+                applyData(mockData[val], val, (val==="2"?"受雲族":"創空族"));
             } else {
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
             }
@@ -383,25 +407,40 @@
             else if (currentMode === 2) { body.classList.add('mode-gallery'); }
         });
 
-        // 🌤️ 【エフェクトロジック】01 乾為天
+        // 🌤️ 【01 乾為天】エフェクト
         function startTenEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // 強烈な中心ブルームコア（光強度、露出飽和レイヤー）
-            let core = document.createElement('div');
-            core.className = 'ten-bloom-core';
-            container.appendChild(core);
-            
-            // 六角形・円環の循環時間を描く「可視化された風の波紋（4重レイヤー）」
+            let core = document.createElement('div'); core.className = 'ten-bloom-core'; container.appendChild(core);
             for (let i = 0; i < 4; i++) {
-                let ripple = document.createElement('div');
-                ripple.className = 'ten-hex-ripple';
-                ripple.style.animationDelay = (i * 1.5) + 's'; // 6秒周期の中で1.5秒ずつ美しくズレて循環
-                container.appendChild(ripple);
+                let ripple = document.createElement('div'); ripple.className = 'ten-hex-ripple';
+                ripple.style.animationDelay = (i * 1.5) + 's'; container.appendChild(ripple);
             }
         }
 
-        // 🌊 【エフェクトロジック】水風井
+        // 🌫️ 【02 坤為地】エフェクト（絶対の静寂・霧・重い雲）
+        function startKonEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // 空間を徐々に埋め尽くすグレーの霧（乗算レイヤーで明度を落とす）
+            let fog = document.createElement('div');
+            fog.className = 'kon-fog-layer';
+            container.appendChild(fog);
+            
+            // 動かずにその場で厚みを増していく「重い雲」の集まり
+            for (let i = 0; i < 5; i++) {
+                let cloud = document.createElement('div');
+                cloud.className = 'kon-heavy-cloud';
+                // 画面全体に覆い被さるように大きく配置
+                cloud.style.width = (Math.random() * 80 + 100) + 'vw';
+                cloud.style.height = (Math.random() * 80 + 100) + 'vh';
+                cloud.style.top = (Math.random() * -20) + 'vh';
+                cloud.style.left = (Math.random() * -20) + 'vw';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(cloud);
+            }
+        }
+
+        // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
@@ -414,7 +453,7 @@
             }
         }
 
-        // 🌊 【エフェクトロジック】水火既済
+        // 🌊 【63 水火既済】エフェクト
         function startJijiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             const cols = 6; const rows = 11;
@@ -429,7 +468,7 @@
             }
         }
 
-        // 🎬 64 火水未済：完成と崩壊の無限ループエフェクト
+        // 🎬 【64 火水未済】エフェクト
         function startBiseiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for (let i = 0; i < 45; i++) {
