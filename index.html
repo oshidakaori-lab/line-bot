@@ -59,15 +59,19 @@
         }
 
         /* 🎬 【02 坤為地】専用カメラ＆ライトタイムライン（完全固定・コントラスト低下・空間圧縮） */
-        .theme-kon .bg-layer { animation: konTimeline 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; transform: scale(1.0) !important; }
+        .theme-kon .bg-layer { 
+            animation: konTimeline 6.0s ease-in-out infinite !important; 
+            transform: scale(1.0) !important; 
+            will-change: filter; /* 描画の最適化 */
+        }
         @keyframes konTimeline {
-            0% { filter: brightness(1.0) contrast(0.9) grayscale(0.5); } /* Phase1: 薄曇り */
-            16.6% { filter: brightness(0.95) contrast(0.85) grayscale(0.6); } /* Phase2: 空がグレー寄りへ */
-            33.3% { filter: brightness(0.9) contrast(0.8) grayscale(0.7); } /* Phase3: コントラスト低下、沈む */
-            50.0% { filter: brightness(0.85) contrast(0.7) grayscale(0.8); } /* Phase4: 空気が止まる */
-            66.6% { filter: brightness(0.75) contrast(0.6) grayscale(0.95); } /* Phase5: ピーク（最も暗いグレー・圧迫感） */
-            83.3% { filter: brightness(0.78) contrast(0.65) grayscale(0.9); } /* Phase6: 微かな回復（気づかない変化） */
-            100% { filter: brightness(1.0) contrast(0.9) grayscale(0.5); } /* 0.0sへ再生接続 */
+            0% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); }
+            16.6% { filter: brightness(0.9) contrast(0.8) grayscale(0.6); }
+            33.3% { filter: brightness(0.85) contrast(0.7) grayscale(0.7); }
+            50.0% { filter: brightness(0.8) contrast(0.65) grayscale(0.8); }
+            66.6% { filter: brightness(0.7) contrast(0.55) grayscale(0.95); } /* Phase5: ピーク */
+            83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } /* Phase6: 微かな回復 */
+            100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } /* 0.0sへシームレス接続 */
         }
 
         /* 🎬 【48 水風井】専用カメラワーク */
@@ -181,35 +185,38 @@
             100% { width: 0vw; height: 0vw; opacity: 0; }
         }
 
-        /* 🌫️ 02 坤為地 専用：Fog Layer（空間を埋める霧・圧迫感） */
+      /* 🌫️ 02 坤為地 専用：Fog Layer（空間を埋める霧・圧迫感） */
         .kon-fog-layer {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(120,125,130,0.8) 100%);
+            background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%);
             mix-blend-mode: multiply; pointer-events: none;
-            animation: konFogFill 6.0s linear infinite;
+            animation: konFogFill 6.0s ease-in-out infinite;
+            will-change: opacity;
         }
         @keyframes konFogFill {
-            0% { opacity: 0; } /* Phase1: 拡散 */
-            33.3% { opacity: 0.3; } /* Phase3: 奥行き消失 */
-            50.0% { opacity: 0.6; } /* Phase4: 停滞 */
-            66.6% { opacity: 1.0; } /* Phase5: 圧迫感最大 */
-            83.3% { opacity: 0.8; } /* Phase6: わずかな回復 */
-            100% { opacity: 0; }
+            0% { opacity: 0.1; }
+            33.3% { opacity: 0.4; }
+            50.0% { opacity: 0.7; }
+            66.6% { opacity: 1.0; } /* 圧迫感最大 */
+            83.3% { opacity: 0.8; }
+            100% { opacity: 0.1; }
         }
-
-        /* ☁️ 02 坤為地 専用：重い雲レイヤー（動かず、ただ重なり合う） */
+        /* ☁️ 02 坤為地 専用：重い雲レイヤー（動かず、た        /* ☁️ 02 坤為地 専用：重い雲レイヤー（GPU最適化版） */
         .kon-heavy-cloud {
-            position: absolute; border-radius: 50%;
-            background: rgba(200, 204, 208, 0.5);
-            filter: blur(50px); pointer-events: none; mix-blend-mode: normal;
+            position: absolute; 
+            border-radius: 50%;
+            /* filter: blurの代わりにグラデーションでボケを表現（圧倒的に軽い） */
+            background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%);
+            pointer-events: none; mix-blend-mode: normal;
             animation: konCloudWeight 6.0s ease-in-out infinite;
+            will-change: transform, opacity;
         }
         @keyframes konCloudWeight {
-            0% { transform: scale(1.0); opacity: 0.4; background: rgba(214, 217, 220, 0.4); }
-            33.3% { transform: scale(1.02); opacity: 0.6; background: rgba(191, 195, 199, 0.6); }
-            66.6% { transform: scale(1.05); opacity: 0.9; background: rgba(159, 164, 168, 0.8); } /* Phase5: 密度最大 */
-            83.3% { transform: scale(1.03); opacity: 0.7; background: rgba(200, 204, 208, 0.6); }
-            100% { transform: scale(1.0); opacity: 0.4; background: rgba(214, 217, 220, 0.4); }
+            0% { transform: scale(1.0); opacity: 0.4; }
+            33.3% { transform: scale(1.02); opacity: 0.6; }
+            66.6% { transform: scale(1.06); opacity: 0.9; } /* 密度最大 */
+            83.3% { transform: scale(1.03); opacity: 0.7; }
+            100% { transform: scale(1.0); opacity: 0.4; }
         }
 
         /* ❄️ 雪守族 専用 */
