@@ -73,6 +73,9 @@
             83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } /* Phase6: 微かな回復 */
             100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } /* 0.0sへシームレス接続 */
         }
+/*======================================= */
+/* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
+/*======================================= */      
 
         /* 🎬 【48 水風井】専用カメラワーク */
         .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
@@ -201,7 +204,7 @@
             83.3% { opacity: 0.8; }
             100% { opacity: 0.1; }
         }
-        /* ☁️ 02 坤為地 専用：重い雲レイヤー（動かず、た        /* ☁️ 02 坤為地 専用：重い雲レイヤー（GPU最適化版） */
+        /* ☁️ 02 坤為地 専用：重い雲レイヤー（GPU最適化版） */
         .kon-heavy-cloud {
             position: absolute; 
             border-radius: 50%;
@@ -218,6 +221,10 @@
             83.3% { transform: scale(1.03); opacity: 0.7; }
             100% { transform: scale(1.0); opacity: 0.4; }
         }
+/*======================================= */
+/* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
+/*======================================= */
+        
 
         /* ❄️ 雪守族 専用 */
         .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
@@ -266,6 +273,7 @@
         }
 
     </style>
+
 </head>
 <body class="mode-normal">
 
@@ -277,7 +285,10 @@
             <optgroup label="🎬 特殊エフェクト卦">
                 <option value="1">01 乾為天 (極大の陽光・飽和)</option>
                 <option value="2" selected>02 坤為地 (絶対の静寂・受容)</option>
-                <option value="48">48 水風井 (静的循環)</option>
+/*======================================= */
+/* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
+/*======================================= */ 
+            　　 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
             </optgroup>
@@ -335,11 +346,16 @@
             const imageFile = speciesImages[species] || "cloud.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
-            // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-well', 'theme-jiji', 'theme-bisei');
+            // クラスを一旦キレイにリセット（theme-chun を追加）
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
+            const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
+            /*======================================= */
+/* 📱🐱【コピペ専用駅】🐸ココへ追加！ 🐤*/
+/*======================================= */ 
+
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
@@ -348,6 +364,10 @@
                 document.body.classList.add('theme-ten'); startTenEffect();
             } else if (isKon) {
                 document.body.classList.add('theme-kon'); startKonEffect();
+            } else if (isChun) {                /*======================================= */
+/* 📱【コピペ専用駅】ココへ追加！ */
+/*======================================= */ 
+document.body.classList.add('theme-chun'); startChunEffect();
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -370,6 +390,7 @@
             }
         }
 
+
         function switchPreviewEffect(val) {
             if (val === "API") {
                 if (loadedApiData) { applyData(loadedApiData, hid); }
@@ -385,14 +406,21 @@
                 "2": { 
                     name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", 
                     chiikawa: "ハァ…ハァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" 
-                },
+                },      
+    　　　　　　  "3": { 
+                    name: "水雷屯", sky_name: "混沌と発生の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！雨も降ってきたよォ…！", 
+                    chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" 
+                },                /*======================================= */
+/* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
+/*======================================= */ 
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
                 "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
             };
 
             if (mockData[val]) { 
-                applyData(mockData[val], val, (val==="2"?"受雲族":"創空族"));
+                // 「屯」の場合は背景画像を「雨」っぽくするためにデフォルトを雨巡族に設定
+                applyData(mockData[val], val, (val==="2"?"受雲族": val==="3"?"雨巡族" :"創空族"));
             } else {
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
             }
@@ -446,8 +474,44 @@
                 container.appendChild(cloud);
             }
         }
+        
+        // 🌧️ 【03 水雷屯】エフェクト（発生・混乱・雷雨・減衰）
+        function startChunEffect() {
+            // 背景にテーマクラスをセット（色とカメラ振動の適用）
+            const bgLayer = document.querySelector('.bg-layer');
+            bgLayer.className = 'bg-layer theme-chun';
 
-        // 🌊 【48 水風井】エフェクト
+            const container = document.getElementById('weather-effect'); 
+            container.innerHTML = '';
+            
+            // 霧（発生と減衰のベース）
+            let mist = document.createElement('div');
+            mist.className = 'chun-mist';
+            container.appendChild(mist);
+
+            // カオス雲（逆方向に交差させる2枚）
+            for (let i = 1; i <= 2; i++) {
+                let cloud = document.createElement('div');
+                cloud.className = `chun-cloud-${i}`;
+                cloud.style.width = '150vw';
+                cloud.style.height = '150vw'; 
+                container.appendChild(cloud);
+            }
+
+            // 微雨（序盤と終盤に降る縦の雨）
+            let rainWeak = document.createElement('div');
+            rainWeak.className = 'chun-rain-weak';
+            container.appendChild(rainWeak);
+
+            // 強風雨（中盤〜ピークに降る斜めの乱れた雨）
+            let rainStrong = document.createElement('div');
+            rainStrong.className = 'chun-rain-strong';
+            container.appendChild(rainStrong);
+        }
+/*======================================= */
+/* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
+/*======================================= */       
+    　// 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
