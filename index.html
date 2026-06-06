@@ -73,6 +73,31 @@
             83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } /* Phase6: 微かな回復 */
             100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } /* 0.0sへシームレス接続 */
         }
+　       /* 🎬 【03 水雷屯】専用カメラ＆ベースタイムライン（混沌・不安定・雷） */
+        .theme-chun .bg-layer {
+            animation: chunTimeline 6.0s ease-in-out infinite !important;
+            will-change: background-color, transform;
+        }
+        @keyframes chunTimeline {
+            0% { background-color: #8FA3B8; transform: translate(0, 0); } /* Phase1: 冷たい始まり */
+            16.6% { background-color: #8fa3b8; transform: translate(-1px, 1px); } /* Phase2: 微風（揺れ開始） */
+            33.3% { background-color: #6E7F91; transform: translate(2px, -1px); } /* Phase3: 混濁 */
+            50.0% { background-color: #7b8e9f; transform: translate(-1px, 0px); } /* Phase4: 仮の秩序(少し光が差す) */
+            64.0% { background-color: #3F4F60; transform: translate(4px, 3px); } /* Phase5: 混沌の最大化(最暗) */
+            66.6% { background-color: #e0f0ff; transform: translate(-6px, -4px); } /* ⚡ 雷の遠距離フラッシュ */
+            68.0% { background-color: #3F4F60; transform: translate(3px, 5px); } /* ⚡ 雷後の余韻揺れ */
+            83.3% { background-color: #9AAFC4; transform: translate(1px, -1px); } /* Phase6: 回復・減衰開始 */
+            100% { background-color: #8FA3B8; transform: translate(0, 0); } /* 未完成のままループ */
+        }
+
+
+
+
+        
+
+
+
+        
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
 /*======================================= */      
@@ -221,6 +246,112 @@
             83.3% { transform: scale(1.03); opacity: 0.7; }
             100% { transform: scale(1.0); opacity: 0.4; }
         }
+
+
+
+        /* 🌫️ 03 水雷屯 専用：Mist Layer（発生と減衰の霧） */
+        .chun-mist {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%);
+            mix-blend-mode: screen; pointer-events: none;
+            animation: chunMistAnim 6.0s ease-in-out infinite;
+            will-change: opacity;
+        }
+        @keyframes chunMistAnim {
+            0% { opacity: 0.9; } /* Phase1: 強い霧 */
+            33.3% { opacity: 0.3; } /* 霧が減り雨へ */
+            50.0% { opacity: 0.1; } /* Phase4: 霧が切れそう */
+            66.6% { opacity: 0.5; } /* Phase5: 嵐のガス */
+            83.3% { opacity: 0.8; } /* Phase6: 再び霧へ */
+            100% { opacity: 0.9; }
+        }
+
+        /* ☁️ 03 水雷屯 専用：Cloud Chaos Layer（交差する雲） */
+        .chun-cloud-1, .chun-cloud-2 {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%);
+            pointer-events: none; mix-blend-mode: multiply;
+            will-change: transform, opacity;
+        }
+        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; }
+        .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
+        @keyframes chunCloud1 {
+            0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; }
+            33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; }
+            66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; }
+            100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; }
+        }
+        @keyframes chunCloud2 {
+            0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; }
+            33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; }
+            66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; }
+            100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; }
+        }
+
+        /* 🌧️ 03 水雷屯 専用：Rain System（激軽CSSハック雨） */
+        .chun-rain-weak, .chun-rain-strong {
+            position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh;
+            pointer-events: none; will-change: background-position, opacity;
+        }
+        /* 微雨（縦方向） */
+        .chun-rain-weak {
+            background-image: 
+                linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%),
+                linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%);
+            background-size: 30px 100px, 50px 150px;
+            animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite;
+        }
+        /* 強雨（斜め・交差） */
+        .chun-rain-strong {
+            background-image: 
+                linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%),
+                linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%),
+                linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%);
+            background-size: 20px 120px, 35px 160px, 50px 140px;
+            animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite;
+        }
+
+        /* 雨が落ちる角度を三角関数レベルで調整し、不自然な滑りを防止 */
+        @keyframes rainDropWeak {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: -8px 100px, -13px 150px; }
+        }
+        @keyframes rainDropStrong {
+            0% { background-position: 0 0, 0 0, 0 0; }
+            100% { background-position: -56px 120px, -74px 160px, -65px 140px; }
+        }
+
+        /* タイムラインに合わせた雨の強弱 */
+        @keyframes rainWeakOpacity {
+            0% { opacity: 0.3; } /* Phase1: 微雨 */
+            16.6% { opacity: 0.7; } /* Phase2: 増加 */
+            33.3% { opacity: 0.2; }
+            50.0% { opacity: 0; } /* Phase4: 一瞬止む */
+            66.6% { opacity: 0; }
+            83.3% { opacity: 0.5; } /* Phase6: 減衰して残る */
+            100% { opacity: 0.3; }
+        }
+        @keyframes rainStrongOpacity {
+            0% { opacity: 0; }
+            16.6% { opacity: 0; }
+            33.3% { opacity: 0.6; } /* Phase3: 斜めに乱れる */
+            50.0% { opacity: 0.2; } /* Phase4: 仮の秩序 */
+            66.6% { opacity: 1.0; } /* Phase5: 雷雨ピーク */
+            83.3% { opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+
+
+
+
+
+
+
+
+
+
+        
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
 /*======================================= */
