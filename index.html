@@ -484,7 +484,7 @@
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
-            /*======================================= */
+/*======================================= */
 /* 📱🐱【コピペ専用駅】🐸ココへ追加！ 🐤*/
 /*======================================= */ 
 
@@ -537,12 +537,15 @@ document.body.classList.add('theme-chun'); startChunEffect();
                 },
                 "2": { 
                     name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", 
-                    chiikawa: "ハァ…ハァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" 
-                },      
+                    chiikawa: "ハァ…ハァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
     　　　　　　  "3": { 
                     name: "水雷屯", sky_name: "混沌と発生の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！雨も降ってきたよォ…！", 
-                    chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" 
-                },                /*======================================= */
+                    chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
+                "4": { 
+                    name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", 
+                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" 
+                },
+/*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
@@ -640,10 +643,24 @@ document.body.classList.add('theme-chun'); startChunEffect();
             rainStrong.className = 'chun-rain-strong';
             container.appendChild(rainStrong);
         }
+            // 🌫️ 【エフェクトロジック】04 山水蒙（霧ボリュームと微粒子の生成）
+        function startMouEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① ムラのある霧階層レイヤー
+            let fog = document.createElement('div');
+            fog.className = 'mou-fog-layer';
+            container.appendChild(fog);
+
+            // ② 微粒子（チリ）レイヤー
+            let particle = document.createElement('div');
+            particle.className = 'mou-particle-layer';
+            container.appendChild(particle);
+        }
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
 /*======================================= */       
-    　// 🌊 【48 水風井】エフェクト
+         // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
