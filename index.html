@@ -90,14 +90,21 @@
             100% { background-color: #8FA3B8; transform: translate(0, 0); } /* 未完成のままループ */
         }
 
-
-
-
-        
-
-
-
-        
+        /* 🎬 【04 山水蒙】専用スタイル（深い霧・フォーカスの揺らぎ・ホワイトアウト） */
+        .theme-mou .bg-layer {
+            animation: mouTimeline 6.0s ease-in-out infinite !important;
+            will-change: background-color, filter;
+        }
+        @keyframes mouTimeline {
+            0% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } /* Phase1: 薄霧・認識のボヤけ */
+            16.6% { background-color: #bec5cc; filter: blur(8px) brightness(0.95) contrast(0.85); } /* Phase2: 密度+20%・境界の曖昧化 */
+            33.3% { background-color: #B0B7BF; filter: blur(18px) brightness(0.85) contrast(0.6); } /* Phase3: 急激な悪化・奥行きの喪失 */
+            50.0% { background-color: #b8bfc7; filter: blur(10px) brightness(1.1) contrast(0.75); } /* Phase4: 一瞬の揺らぎ・謎の拡散光 */
+            66.6% { background-color: #E8ECEF; filter: blur(28px) brightness(1.25) contrast(0.4); } /* Phase5: ピーク・完全なホワイトアウト */
+            83.3% { background-color: #C8CFD6; filter: blur(12px) brightness(1.0) contrast(0.8); } /* Phase6: 未解決のままわずかに薄れる */
+            100% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } /* ループ接続 */
+        } 
+           
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
 /*======================================= */      
@@ -248,7 +255,6 @@
         }
 
 
-
         /* 🌫️ 03 水雷屯 専用：Mist Layer（発生と減衰の霧） */
         .chun-mist {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -340,17 +346,27 @@
             83.3% { opacity: 0; }
             100% { opacity: 0; }
         }
-
-
-
-
-
-
-
-
-
-
-
+    
+    
+        /* 🌫️ 04 山水蒙 専用：Fog Volume（ムラのある階層霧） */
+        .mou-fog-layer {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 60%, rgba(240,244,248,0.5) 0%, transparent 70%);
+            mix-blend-mode: overlay; pointer-events: none;
+            animation: mouFogAnim 6.0s ease-in-out infinite;
+            will-change: opacity, transform;
+        }
+        @keyframes mouFogAnim {
+            0% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
+            33.3% { opacity: 0.8; transform: scale(1.1) translate(-2%, 2%); }
+            50% { opacity: 0.5; transform: scale(1.05) translate(1%, -1%); }
+            66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } /* 最濃ホワイトアウト */
+            83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); }
+            100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
+        }    
+    
+      
         
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
@@ -370,6 +386,25 @@
         @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
         .orb-particle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); animation: orbDrift ease-in-out infinite; pointer-events: none; }
         @keyframes orbDrift { 0% { transform: translateY(5vh) translateX(0) scale(0.8); opacity: 0; } 25% { opacity: 0.8; } 50% { transform: translateY(-40vh) translateX(30px) scale(1.2); opacity: 0.4; } 75% { opacity: 0.8; } 100% { transform: translateY(-90vh) translateX(-20px) scale(0.9); opacity: 0; } }
+    
+          /* ⚪ 04 山水蒙 専用：Particle Micro Layer（霧の微粒子・チリ表現） */
+        .mou-particle-layer {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; mix-blend-mode: screen;
+            background-image: 
+                radial-gradient(rgba(255,255,255,0.2) 1px, transparent 0),
+                radial-gradient(rgba(255,255,255,0.15) 2px, transparent 0);
+            background-size: 60px 60px, 110px 110px;
+            animation: mouParticleAnim 6.0s linear infinite;
+            will-change: opacity, background-position;
+        }
+        @keyframes mouParticleAnim {
+            0% { opacity: 0.2; background-position: 0 0, 0 0; }
+            33.3% { opacity: 0.5; background-position: 15px -20px, -10px 15px; }
+            66.6% { opacity: 0.9; background-position: 30px -40px, -20px 30px; } /* Phase5で最大密度 */
+            83.3% { opacity: 0.4; background-position: 15px -20px, -10px 15px; }
+            100% { opacity: 0.2; background-position: 0 0, 0 0; }
+        }  
         
         /* 48 水風井 */
         .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
@@ -417,9 +452,12 @@
                 <option value="1">01 乾為天 (極大の陽光・飽和)</option>
                 <option value="2" selected>02 坤為地 (絶対の静寂・受容)</option>
                 <option value="3">03 水雷屯 (混沌と発生・雷雨)</option>
+                <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
+                
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
 /*======================================= */ 
+                
             　　 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -478,12 +516,14 @@
             const imageFile = speciesImages[species] || "cloud.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
-            // クラスを一旦キレイにリセット（theme-chun を追加）
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-well', 'theme-jiji', 'theme-bisei');
+            // クラスを一旦キレイにリセット
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
+            const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
+            
 /*======================================= */
 /* 📱🐱【コピペ専用駅】🐸ココへ追加！ 🐤*/
 /*======================================= */ 
@@ -496,10 +536,16 @@
                 document.body.classList.add('theme-ten'); startTenEffect();
             } else if (isKon) {
                 document.body.classList.add('theme-kon'); startKonEffect();
-            } else if (isChun) {                /*======================================= */
+            } else if (isChun) { 
+                document.body.classList.add('theme-chun'); startChunEffect();
+            } else if (isMou) { 
+                document.body.classList.add('theme-mou'); startMouEffect();
+                
+/*======================================= */
 /* 📱【コピペ専用駅】ココへ追加！ */
-/*======================================= */ 
-document.body.classList.add('theme-chun'); startChunEffect();
+/*======================================= */                               
+                
+                
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -543,8 +589,7 @@ document.body.classList.add('theme-chun'); startChunEffect();
                     chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
                 "4": { 
                     name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", 
-                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" 
-                },
+                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" },
 /*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
@@ -657,9 +702,26 @@ document.body.classList.add('theme-chun'); startChunEffect();
             particle.className = 'mou-particle-layer';
             container.appendChild(particle);
         }
+    
+        // 🌫️ 【エフェクトロジック】04 山水蒙（霧ボリュームと微粒子の生成）
+        function startMouEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① ムラのある霧階層レイヤー
+            let fog = document.createElement('div');
+            fog.className = 'mou-fog-layer';
+            container.appendChild(fog);
+
+            // ② 微粒子（チリ）レイヤー
+            let particle = document.createElement('div');
+            particle.className = 'mou-particle-layer';
+            container.appendChild(particle);
+        }  
+    
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
 /*======================================= */       
+    
          // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
