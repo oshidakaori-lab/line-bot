@@ -83,7 +83,7 @@ app.get("/api/fortune", async (req, res) => {
     const result = await model.generateContent(prompt);
     const cleanText = result.response.text().replace(/```json|```/g, "").trim();
     const aiData = JSON.parse(cleanText);
-    res.json({ ...h, ...aiData, bgm: h.bgm || "default.mp3" });
+    res.json({ ...h, ...aiData, bgm: h.bgm || "	satori.mp3" });
   } catch (e) {
     console.error("AI generateContent error:", e);
     res.json({
@@ -93,7 +93,7 @@ app.get("/api/fortune", async (req, res) => {
       usagi: "ヤハ！！",
       advice: "大丈夫だぞ、のんびりいこうな。",
       chiikawa_scene: "淡い光がやさしく広がって、みんなでゆったり空を見上げているね…",
-      bgm: h.bgm || "default.mp3"
+      bgm: h.bgm || "	satori.mp3"
     });
   }
 });
