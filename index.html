@@ -45,6 +45,217 @@
             66% { transform: scale(1.10) translateX(-1.5%); } 100% { transform: scale(1.00) translateX(0%); }    
         }
 
+        /* 🎬 【01 乾為天】専用カメラ＆ライトタイムライン */
+        .theme-ten .bg-layer { animation: tenTimelineAndCamera 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
+        @keyframes tenTimelineAndCamera {
+            0% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
+            16.6% { transform: scale(1.035); filter: brightness(1.1) contrast(1.05) saturate(1.1); } 
+            33.3% { transform: scale(1.05); filter: brightness(1.25) contrast(1.1) saturate(1.1); } 
+            50.0% { transform: scale(1.04); filter: brightness(1.4) contrast(1.15) saturate(0.9); } 
+            66.6% { transform: scale(1.03); filter: brightness(2.0) contrast(1.2) saturate(0.4); } 
+            83.3% { transform: scale(1.022); filter: brightness(2.3) contrast(0.9) saturate(0.2); } 
+            95.0% { transform: scale(1.02); filter: brightness(1.5) contrast(1.0) saturate(0.7); } 
+            100% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
+        }
+
+        /* 🎬 【02 坤為地】専用カメラ＆ライトタイムライン */
+        .theme-kon .bg-layer { animation: konTimeline 6.0s ease-in-out infinite !important; transform: scale(1.0) !important; will-change: filter; }
+        @keyframes konTimeline {
+            0% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); }
+            16.6% { filter: brightness(0.9) contrast(0.8) grayscale(0.6); }
+            33.3% { filter: brightness(0.85) contrast(0.7) grayscale(0.7); }
+            50.0% { filter: brightness(0.8) contrast(0.65) grayscale(0.8); }
+            66.6% { filter: brightness(0.7) contrast(0.55) grayscale(0.95); } 
+            83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } 
+            100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } 
+        }
+
+        /* 🎬 【03 水雷屯】専用カメラ＆ベースタイムライン */
+        .theme-chun .bg-layer { animation: chunTimeline 6.0s ease-in-out infinite !important; will-change: background-color, transform; }
+        @keyframes chunTimeline {
+            0% { background-color: #8FA3B8; transform: translate(0, 0); } 
+            16.6% { background-color: #8fa3b8; transform: translate(-1px, 1px); } 
+            33.3% { background-color: #6E7F91; transform: translate(2px, -1px); } 
+            50.0% { background-color: #7b8e9f; transform: translate(-1px, 0px); } 
+            64.0% { background-color: #3F4F60; transform: translate(4px, 3px); } 
+            66.6% { background-color: #e0f0ff; transform: translate(-6px, -4px); } 
+            68.0% { background-color: #3F4F60; transform: translate(3px, 5px); } 
+            83.3% { background-color: #9AAFC4; transform: translate(1px, -1px); } 
+            100% { background-color: #8FA3B8; transform: translate(0, 0); } 
+        }
+
+        /* 🎬 【04 山水蒙】専用スタイル */
+        .theme-mou .bg-layer { animation: mouTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; }
+        @keyframes mouTimeline {
+            0% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } 
+            16.6% { background-color: #bec5cc; filter: blur(8px) brightness(0.95) contrast(0.85); } 
+            33.3% { background-color: #B0B7BF; filter: blur(18px) brightness(0.85) contrast(0.6); } 
+            50.0% { background-color: #b8bfc7; filter: blur(10px) brightness(1.1) contrast(0.75); } 
+            66.6% { background-color: #E8ECEF; filter: blur(28px) brightness(1.25) contrast(0.4); } 
+            83.3% { background-color: #C8CFD6; filter: blur(12px) brightness(1.0) contrast(0.8); } 
+            100% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } 
+        } 
+
+        /* 🎬 【05 水天需】専用スタイル */
+        .theme-xu .bg-layer { animation: xuTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; }
+        @keyframes xuTimeline {
+            0% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } 
+            16.6% { background-color: #8fa0b2; filter: brightness(0.9) contrast(0.85) saturate(0.8); } 
+            33.3% { background-color: #7F8F9F; filter: brightness(0.8) contrast(0.7) saturate(0.7); } 
+            50.0% { background-color: #95a5b5; filter: brightness(1.05) contrast(0.85) saturate(0.9); } 
+            66.6% { background-color: #5F6F7F; filter: brightness(0.7) contrast(0.6) saturate(0.6); } 
+            83.3% { background-color: #8899AA; filter: brightness(0.9) contrast(0.85) saturate(0.8); } 
+            100% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } 
+        }
+
+        /* 🎬 【06 天水訟】専用スタイル */
+        .theme-song .bg-layer { animation: songCamera 6.0s ease-in-out infinite !important; background-color: #7A8FA3; will-change: transform; }
+        @keyframes songCamera {
+            0%, 33.2% { transform: scale(1.02) translateX(0); } 
+            38% { transform: scale(1.03) translateX(2px); } 
+            45% { transform: scale(1.03) translateX(-2px); }
+            55% { transform: scale(1.03) translateX(3px); }
+            64% { transform: scale(1.04) translateX(-4px); }
+            66.6% { transform: scale(1.06) translateX(8px); filter: contrast(1.3); } 
+            75% { transform: scale(1.03) translateX(-2px); }
+            83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } 
+        }
+
+        /* 🎬 【07 地水師】専用スタイル（均一な雲・直線的で統制された雨） */
+        .theme-shi .bg-layer { animation: shiTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; transform: scale(1.0) !important; }
+        @keyframes shiTimeline {
+            0% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
+            16.6% { background-color: #677787; filter: brightness(0.9) contrast(0.8); } 
+            33.3% { background-color: #5F6F7F; filter: brightness(0.85) contrast(0.8); } 
+            50.0% { background-color: #576777; filter: brightness(0.8) contrast(0.85); } 
+            66.6% { background-color: #4F5F6F; filter: brightness(0.7) contrast(0.9); } 
+            83.3% { background-color: #6A7A8A; filter: brightness(0.85) contrast(0.8); } 
+            100% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
+        }
+
+        /* ======================================= */
+        /* 🐣📱【コピペ専用駅 1】CSS追加はココ！🐸🐤 */
+        /* ======================================= */
+
+        #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+
+        /* UIレイアウト */
+        .ui-wrapper { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 40px 0 20px; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
+        .floater-1 { animation: floatAnim1 5.5s ease-in-out infinite; width: 100%; }
+        .floater-2 { animation: floatAnim2 6.5s ease-in-out infinite 0.5s; width: 100%; }
+        .floater-3 { animation: floatAnim3 6s ease-in-out infinite 1s; width: 100%; }
+        @keyframes floatAnim1 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes floatAnim2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+        @keyframes floatAnim3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+        .card-block { border-radius: 32px; padding: 24px 20px; text-align: left; width: 100%; opacity: 0; transition: all 0.6s ease; }
+        .mode-normal .card-block { animation: frameInRight 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, boxPulse 6s infinite alternate ease-in-out 1s; }
+        .mode-normal .delay-1 { animation-delay: 0.5s, 1.5s; } .mode-normal .delay-2 { animation-delay: 2.0s, 3.0s; } .mode-normal .delay-3 { animation-delay: 7.0s, 8.0s; } 
+        @keyframes frameInRight { 0% { opacity: 0; transform: translateX(30vw); } 100% { opacity: 1; transform: translateX(0); } }
+        @keyframes boxPulse {
+            0% { background: rgba(15, 23, 42, 0.0); border: 2px solid rgba(255, 255, 255, 0.05); box-shadow: none; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+            100% { background: rgba(15, 23, 42, 0.4); border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+        }
+
+        .dialogue-line { opacity: 0; transform: translateX(40px); }
+        .mode-normal .char-reveal { animation: charSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes charSlideIn { 0% { opacity: 0; transform: translateX(40px); } 100% { opacity: 1; transform: translateX(0); } }
+        .mode-normal .delay-chiikawa { animation-delay: 3.0s; } .mode-normal .delay-hachiware { animation-delay: 4.5s; } .mode-normal .delay-usagi { animation-delay: 5.8s; }
+
+        .mode-reading .card-block { opacity: 1; transform: translateX(0); background: rgba(15, 23, 42, 0.85) !important; border: 2px solid rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1) !important; animation: none !important; }
+        .mode-reading .dialogue-line { opacity: 1; transform: translateX(0); animation: none !important; }
+        .mode-gallery .ui-wrapper { opacity: 0; pointer-events: none; transform: scale(1.05); }
+        #gallery-hint { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
+        .mode-gallery #gallery-hint { opacity: 1; }
+
+        @keyframes firefly { 0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; } 50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; } }
+        .firefly-text-1 { animation: firefly 4.0s ease-in-out infinite 0.7s; } .firefly-text-2 { animation: firefly 4.8s ease-in-out infinite 0.8s; } .firefly-text-3 { animation: firefly 3.5s ease-in-out infinite 0.95s; } .firefly-text-4 { animation: firefly 5.2s ease-in-out infinite 1.05s; } .firefly-text-5 { animation: firefly 3.9s ease-in-out infinite 1.2s; }
+
+        .header-area { text-align: center; margin-bottom: 16px; }
+        h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; color: #ffffff; letter-spacing: 1.5px; }
+        .sky-title { font-size: 1.05rem; color: #f8fafc; font-weight: 500; letter-spacing: 1px; }
+        #scene { font-size: 1.05rem; line-height: 1.8; color: #ffffff; font-weight: 500; text-align: center; }
+        .dialogue-container { display: flex; flex-direction: column; gap: 20px; }
+        .dialogue-line { font-size: 1.1rem; line-height: 1.7; font-weight: 800; display: flex; flex-direction: column; letter-spacing: 0.5px; }
+        .char-name { font-size: 0.85rem; opacity: 0.9; margin-bottom: 6px; color: #ffffff; font-weight: 700; }
+        .chiikawa-text { color: #fecdd3; } .hachiware-text { color: #bfdbfe; } .usagi-text { color: #fef08a; } 
+        .advice-box { text-align: left; }
+        .yoroi-name { font-size: 0.85rem; opacity: 0.9; color: #ffffff; margin-bottom: 8px; display: block; font-weight: 700; }
+        .yoroi-text { color: #fed7aa; font-size: 1.1rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
+        .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
+
+        /* --- 各天候エフェクト＆個別卦CSS --- */
+        
+        /* 01 乾為天 */
+        .ten-bloom-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen; background: radial-gradient(circle, #ffffff 0%, rgba(175,203,255,0.7) 35%, rgba(111,168,255,0) 70%); animation: tenPureLight 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes tenPureLight { 0% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } 16.6% { width: 35vw; height: 35vw; opacity: 0.5; filter: blur(12px); } 33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); } 50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); } 66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); } 83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); } 100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } }
+        .ten-hex-ripple { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; pointer-events: none; mix-blend-mode: overlay; animation: tenRippleWave 6.0s linear infinite; }
+        @keyframes tenRippleWave { 0% { width: 0vw; height: 0vw; opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.8); } 33.3% { width: 30vw; height: 30vw; opacity: 0.4; border-color: rgba(111,168,255,0.5); filter: blur(1px); } 50.0% { width: 80vw; height: 80vw; opacity: 0.7; border-color: rgba(255,255,255,0.7); transform: translate(-50%, -50%) rotate(180deg) scale(1.1); filter: blur(3px); } 66.6% { width: 150vw; height: 150vw; opacity: 0.9; border-color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) rotate(360deg) scale(1.2); filter: blur(6px); } 83.3% { width: 240vw; height: 240vw; opacity: 0; border-color: rgba(255,255,255,0); transform: translate(-50%, -50%) rotate(540deg) scale(1.4); } 100% { width: 0vw; height: 0vw; opacity: 0; } }
+
+        /* 02 坤為地 */
+        .kon-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%); mix-blend-mode: multiply; pointer-events: none; animation: konFogFill 6.0s ease-in-out infinite; will-change: opacity; }
+        @keyframes konFogFill { 0% { opacity: 0.1; } 33.3% { opacity: 0.4; } 50.0% { opacity: 0.7; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.8; } 100% { opacity: 0.1; } }
+        .kon-heavy-cloud { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%); pointer-events: none; mix-blend-mode: normal; animation: konCloudWeight 6.0s ease-in-out infinite; will-change: transform, opacity; }
+        @keyframes konCloudWeight { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.6; } 66.6% { transform: scale(1.06); opacity: 0.9; } 83.3% { transform: scale(1.03); opacity: 0.7; } 100% { transform: scale(1.0); opacity: 0.4; } }
+
+        /* 03 水雷屯 */
+        .chun-mist { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%); mix-blend-mode: screen; pointer-events: none; animation: chunMistAnim 6.0s ease-in-out infinite; will-change: opacity; }
+        @keyframes chunMistAnim { 0% { opacity: 0.9; } 33.3% { opacity: 0.3; } 50.0% { opacity: 0.1; } 66.6% { opacity: 0.5; } 83.3% { opacity: 0.8; } 100% { opacity: 0.9; } }
+        .chun-cloud-1, .chun-cloud-2 { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%); pointer-events: none; mix-blend-mode: multiply; will-change: transform, opacity; }
+        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; } .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
+        @keyframes chunCloud1 { 0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } 33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; } 66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; } 100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } }
+        @keyframes chunCloud2 { 0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } 33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; } 66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; } 100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } }
+        .chun-rain-weak, .chun-rain-strong { position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh; pointer-events: none; will-change: background-position, opacity; }
+        .chun-rain-weak { background-image: linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%), linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%); background-size: 30px 100px, 50px 150px; animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite; }
+        .chun-rain-strong { background-image: linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%), linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%), linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%); background-size: 20px 120px, 35px 160px, 50px 140px; animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite; }
+        @keyframes rainDropWeak { 0% { background-position: 0 0, 0 0; } 100% { background-position: -8px 100px, -13px 150px; } }
+        @keyframes rainDropStrong { 0% { background-position: 0 0, 0 0, 0 0; } 100% { background-position: -56px <!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>空の易 - 64卦エフェクトマスタープレビュー</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght=500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            width: 100%; min-height: 100vh; min-height: 100dvh; 
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            padding: 20px 15px; background-color: transparent; overflow-x: hidden; color: #f8fafc; cursor: pointer;
+        }
+
+        /* 📱 スマホ用：開発者用エフェクト切り替えパネル */
+        #dev-control-panel {
+            position: fixed; top: 12px; left: 12px; z-index: 9999;
+            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 10px; border-radius: 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        #dev-control-panel span { font-size: 0.75rem; font-weight: 800; color: #cbd5e1; }
+        #dev-selector {
+            background: #ffffff; color: #0f172a; border: none; padding: 4px 8px;
+            border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer;
+        }
+        .mode-gallery #dev-control-panel { opacity: 0; pointer-events: none; transform: translateY(-10px); }
+
+        /* 🌟 カメラワーク基本設定 */
+        .bg-layer {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background-size: cover; background-position: center; z-index: -2;
+            animation: cameraReadPan 40s ease-in-out infinite alternate;
+        }
+        @keyframes cameraReadPan {
+            0% { transform: scale(1.30) translateX(-4.5%); } 33% { transform: scale(1.20) translateX(3.0%); }  
+            66% { transform: scale(1.10) translateX(-1.5%); } 100% { transform: scale(1.00) translateX(0%); }    
+        }
+
         /* 🎬 【01 乾為天】専用カメラ＆ライトタイムライン（無意識の呼吸ズーム ＋ 陽極まる露出飽和） */
         .theme-ten .bg-layer { animation: tenTimelineAndCamera 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
         @keyframes tenTimelineAndCamera {
@@ -232,6 +443,11 @@
             66.6% { opacity: 1.0; } /* Phase5: 激突ピークの強雨 */
             83.3%, 100% { opacity: 0; } /* Phase6: 分離と共に止む */
         }
+
+
+/*======================================= */
+/* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
+/*======================================= */      
 
         /* 🎬 【48 水風井】専用カメラワーク */
         .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
@@ -488,8 +704,15 @@
             66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } /* 最濃ホワイトアウト */
             83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); }
             100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
-        }  
+        }    
+    
+      
         
+/*======================================= */
+/* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
+/*======================================= */
+        
+
         /* ❄️ 雪守族 専用 */
         .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
         @keyframes snowFall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; } }
@@ -554,67 +777,6 @@
             66.6%, 83.2% { background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2; transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8; }
             83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; }
         }
-                /* 🎬 【07 地水師】専用スタイル（均一な雲・直線的で統制された雨） */
-        .theme-shi .bg-layer {
-            animation: shiTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, filter;
-            transform: scale(1.0) !important; /* カメラ完全固定・ブレなし */
-        }
-        @keyframes shiTimeline {
-            0% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } /* Phase1: 整った始まり */
-            16.6% { background-color: #677787; filter: brightness(0.9) contrast(0.8); } /* Phase2: 統率された拡大 */
-            33.3% { background-color: #5F6F7F; filter: brightness(0.85) contrast(0.8); } /* Phase3: 持久 */
-            50.0% { background-color: #576777; filter: brightness(0.8) contrast(0.85); } /* Phase4: 規律ある揺れ */
-            66.6% { background-color: #4F5F6F; filter: brightness(0.7) contrast(0.9); } /* Phase5: ピーク・完成された秩序 */
-            83.3% { background-color: #6A7A8A; filter: brightness(0.85) contrast(0.8); } /* Phase6: 終わらない持続 */
-            100% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } /* ループ接続 */
-        }
-
-        /* ☁️ 07 地水師 専用：Uniform Cloud Layer（均一で変化の少ない厚い雲） */
-        .shi-uniform-cloud {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 50%, rgba(111,127,143,0.3) 0%, rgba(79,95,111,0.8) 100%);
-            mix-blend-mode: multiply; pointer-events: none;
-            animation: shiCloudAnim 6.0s ease-in-out infinite;
-        }
-        @keyframes shiCloudAnim {
-            0%, 100% { opacity: 0.5; }
-            66.6% { opacity: 0.9; } /* Phase5で最も重く均一になる */
-        }
-
-        /* 🌧️ 07 地水師 専用：Rain Grid Layer（完全統制された垂直の雨） */
-        .shi-rain-grid {
-            position: absolute; top: -10vh; left: 0; width: 100vw; height: 120vh;
-            pointer-events: none; mix-blend-mode: screen;
-            /* ランダムを排除し、X軸の幅(40px, 60px)で完璧に整列した雨粒を描画 */
-            background-image: 
-                linear-gradient(to bottom, transparent 30%, rgba(200, 215, 230, 0.7) 60%, transparent 80%),
-                linear-gradient(to bottom, transparent 10%, rgba(180, 200, 220, 0.5) 40%, transparent 60%);
-            background-size: 40px 150px, 60px 200px;
-            /* 風(X軸移動)を完全にゼロにし、Y軸方向のみに正確に落とす */
-            animation: shiRainDrop 0.25s linear infinite, shiRainDensity 6.0s ease-in-out infinite;
-            will-change: background-position, opacity;
-        }
-        
-        @keyframes shiRainDrop {
-            0% { background-position: 0 0, 0 0; }
-            100% { background-position: 0 150px, 0 200px; } /* X軸は0のまま、完全な垂直落下 */
-        }
-        
-        /* タイムラインに合わせた規律ある雨量コントロール */
-        @keyframes shiRainDensity {
-            0% { opacity: 0.15; } /* Phase1: 静かな降り始め */
-            16.6% { opacity: 0.4; } /* Phase2: 拡大 */
-            33.3% { opacity: 0.7; } /* Phase3: 持久 */
-            50.0% { opacity: 0.6; } /* Phase4: わずかな揺れ（統制） */
-            66.6% { opacity: 1.0; } /* Phase5: 安定した最強雨 */
-            83.3% { opacity: 0.5; } /* Phase6: 終わらない持続 */
-            100% { opacity: 0.15; }
-        }
-        
-/*====================== */
-/* 📱【コピペ専用駅】🐤 */
-/*====================== */ 
 
     </style>
 
@@ -633,10 +795,11 @@
                 <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
-                <option value="7">07 地水師 (統率された長雨・規律)</option>
-/*====================== */
-/* 📱【コピペ専用駅】🐤 */
-/*====================== */                 
+                
+/*======================================= */
+/* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
+/*======================================= */ 
+                
             　　 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -696,7 +859,7 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-shi', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
@@ -704,11 +867,11 @@
             const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
             const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
             const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
-            const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
             
-/*====================== */
-/* 📱【コピペ専用駅】🐤 */
-/*====================== */ 
+/*======================================= */
+/* 📱【コピペ専用駅】ココへ追加！*/
+/*======================================= */ 
+
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
@@ -723,10 +886,8 @@
                 document.body.classList.add('theme-mou'); startMouEffect();
             } else if (isXu) { 
                 document.body.classList.add('theme-xu'); startXuEffect(); 
-            } else if (isSong) {
+            } else if (isSong) { 
                 document.body.classList.add('theme-song'); startSongEffect();
-            } else if (isShi) { 
-                document.body.classList.add('theme-shi'); startShiEffect();
 /*======================================= */
 /* 📱【コピペ専用駅】ココへ追加！ */
 /*======================================= */                               
@@ -782,11 +943,6 @@
                 "6": { 
                     name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", 
                     chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
-                "7": { 
-                    name: "地水師", sky_name: "統制された持久の雨空", chiikawa_scene: "雨が…まっすぐ、きれいに降ってる…！なんか、並んでるみたい！", 
-                    chiikawa: "わァ……（気をつけの姿勢で、まっすぐ降る雨を静かに見上げている）", hachiware: "風もないし、ザーーーッて音が、なんだかひとつの音楽みたいに聞こえるね…！", usagi: "フンッ！フンッ！（雨の一定なリズムに合わせて、正確に足踏みしている）", advice: "衝突のエネルギーは、放置すれば崩壊を招き、束ねれば強大な軍（ちから）となる。荒ぶる気を規律で縛り、静かなる脅威として持続させよ。" 
-                },
-                
 /*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
@@ -953,34 +1109,6 @@
             let lightning = document.createElement('div');
             lightning.className = 'song-lightning';
             container.appendChild(lightning);
-        }
-        // 🛡️ 【エフェクトロジック】07 地水師（均一な雲・統制されたグリッド雨）
-        function startShiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① 均一で厚い雲レイヤー
-            let cloud = document.createElement('div');
-            cloud.className = 'shi-uniform-cloud';
-            container.appendChild(cloud);
-
-            // ② 風のない、完全統制された直線の雨（グリッドレイヤー）
-            let rain = document.createElement('div');
-            rain.className = 'shi-rain-grid';
-            container.appendChild(rain);
-        }
-        // 🛡️ 【エフェクトロジック】07 地水師（均一な雲・統制されたグリッド雨）
-        function startShiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① 均一で厚い雲レイヤー
-            let cloud = document.createElement('div');
-            cloud.className = 'shi-uniform-cloud';
-            container.appendChild(cloud);
-
-            // ② 風のない、完全統制された直線の雨（グリッドレイヤー）
-            let rain = document.createElement('div');
-            rain.className = 'shi-rain-grid';
-            container.appendChild(rain);
         }
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
