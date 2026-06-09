@@ -233,11 +233,6 @@
             83.3%, 100% { opacity: 0; } /* Phase6: 分離と共に止む */
         }
 
-
-/*======================================= */
-/* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
-/*======================================= */      
-
         /* 🎬 【48 水風井】専用カメラワーク */
         .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
         @keyframes wellStaticWater {
@@ -493,15 +488,8 @@
             66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } /* 最濃ホワイトアウト */
             83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); }
             100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
-        }    
-    
-      
+        }  
         
-/*======================================= */
-/* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
-/*======================================= */
-        
-
         /* ❄️ 雪守族 専用 */
         .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
         @keyframes snowFall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; } }
@@ -566,6 +554,67 @@
             66.6%, 83.2% { background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2; transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8; }
             83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; }
         }
+                /* 🎬 【07 地水師】専用スタイル（均一な雲・直線的で統制された雨） */
+        .theme-shi .bg-layer {
+            animation: shiTimeline 6.0s ease-in-out infinite !important;
+            will-change: background-color, filter;
+            transform: scale(1.0) !important; /* カメラ完全固定・ブレなし */
+        }
+        @keyframes shiTimeline {
+            0% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } /* Phase1: 整った始まり */
+            16.6% { background-color: #677787; filter: brightness(0.9) contrast(0.8); } /* Phase2: 統率された拡大 */
+            33.3% { background-color: #5F6F7F; filter: brightness(0.85) contrast(0.8); } /* Phase3: 持久 */
+            50.0% { background-color: #576777; filter: brightness(0.8) contrast(0.85); } /* Phase4: 規律ある揺れ */
+            66.6% { background-color: #4F5F6F; filter: brightness(0.7) contrast(0.9); } /* Phase5: ピーク・完成された秩序 */
+            83.3% { background-color: #6A7A8A; filter: brightness(0.85) contrast(0.8); } /* Phase6: 終わらない持続 */
+            100% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } /* ループ接続 */
+        }
+
+        /* ☁️ 07 地水師 専用：Uniform Cloud Layer（均一で変化の少ない厚い雲） */
+        .shi-uniform-cloud {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 50%, rgba(111,127,143,0.3) 0%, rgba(79,95,111,0.8) 100%);
+            mix-blend-mode: multiply; pointer-events: none;
+            animation: shiCloudAnim 6.0s ease-in-out infinite;
+        }
+        @keyframes shiCloudAnim {
+            0%, 100% { opacity: 0.5; }
+            66.6% { opacity: 0.9; } /* Phase5で最も重く均一になる */
+        }
+
+        /* 🌧️ 07 地水師 専用：Rain Grid Layer（完全統制された垂直の雨） */
+        .shi-rain-grid {
+            position: absolute; top: -10vh; left: 0; width: 100vw; height: 120vh;
+            pointer-events: none; mix-blend-mode: screen;
+            /* ランダムを排除し、X軸の幅(40px, 60px)で完璧に整列した雨粒を描画 */
+            background-image: 
+                linear-gradient(to bottom, transparent 30%, rgba(200, 215, 230, 0.7) 60%, transparent 80%),
+                linear-gradient(to bottom, transparent 10%, rgba(180, 200, 220, 0.5) 40%, transparent 60%);
+            background-size: 40px 150px, 60px 200px;
+            /* 風(X軸移動)を完全にゼロにし、Y軸方向のみに正確に落とす */
+            animation: shiRainDrop 0.25s linear infinite, shiRainDensity 6.0s ease-in-out infinite;
+            will-change: background-position, opacity;
+        }
+        
+        @keyframes shiRainDrop {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 0 150px, 0 200px; } /* X軸は0のまま、完全な垂直落下 */
+        }
+        
+        /* タイムラインに合わせた規律ある雨量コントロール */
+        @keyframes shiRainDensity {
+            0% { opacity: 0.15; } /* Phase1: 静かな降り始め */
+            16.6% { opacity: 0.4; } /* Phase2: 拡大 */
+            33.3% { opacity: 0.7; } /* Phase3: 持久 */
+            50.0% { opacity: 0.6; } /* Phase4: わずかな揺れ（統制） */
+            66.6% { opacity: 1.0; } /* Phase5: 安定した最強雨 */
+            83.3% { opacity: 0.5; } /* Phase6: 終わらない持続 */
+            100% { opacity: 0.15; }
+        }
+        
+/*====================== */
+/* 📱【コピペ専用駅】🐤 */
+/*====================== */ 
 
     </style>
 
@@ -584,11 +633,10 @@
                 <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
-                
-/*======================================= */
-/* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
-/*======================================= */ 
-                
+                <option value="7">07 地水師 (統率された長雨・規律)</option>
+/*====================== */
+/* 📱【コピペ専用駅】🐤 */
+/*====================== */                 
             　　 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -648,7 +696,7 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-shi', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
@@ -656,11 +704,11 @@
             const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
             const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
             const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
+            const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
             
-/*======================================= */
-/* 📱【コピペ専用駅】ココへ追加！*/
-/*======================================= */ 
-
+/*====================== */
+/* 📱【コピペ専用駅】🐤 */
+/*====================== */ 
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
@@ -675,8 +723,10 @@
                 document.body.classList.add('theme-mou'); startMouEffect();
             } else if (isXu) { 
                 document.body.classList.add('theme-xu'); startXuEffect(); 
-            } else if (isSong) { 
+            } else if (isSong) {
                 document.body.classList.add('theme-song'); startSongEffect();
+            } else if (isShi) { 
+                document.body.classList.add('theme-shi'); startShiEffect();
 /*======================================= */
 /* 📱【コピペ専用駅】ココへ追加！ */
 /*======================================= */                               
@@ -732,6 +782,11 @@
                 "6": { 
                     name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", 
                     chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
+                "7": { 
+                    name: "地水師", sky_name: "統制された持久の雨空", chiikawa_scene: "雨が…まっすぐ、きれいに降ってる…！なんか、並んでるみたい！", 
+                    chiikawa: "わァ……（気をつけの姿勢で、まっすぐ降る雨を静かに見上げている）", hachiware: "風もないし、ザーーーッて音が、なんだかひとつの音楽みたいに聞こえるね…！", usagi: "フンッ！フンッ！（雨の一定なリズムに合わせて、正確に足踏みしている）", advice: "衝突のエネルギーは、放置すれば崩壊を招き、束ねれば強大な軍（ちから）となる。荒ぶる気を規律で縛り、静かなる脅威として持続させよ。" 
+                },
+                
 /*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
@@ -898,6 +953,34 @@
             let lightning = document.createElement('div');
             lightning.className = 'song-lightning';
             container.appendChild(lightning);
+        }
+        // 🛡️ 【エフェクトロジック】07 地水師（均一な雲・統制されたグリッド雨）
+        function startShiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① 均一で厚い雲レイヤー
+            let cloud = document.createElement('div');
+            cloud.className = 'shi-uniform-cloud';
+            container.appendChild(cloud);
+
+            // ② 風のない、完全統制された直線の雨（グリッドレイヤー）
+            let rain = document.createElement('div');
+            rain.className = 'shi-rain-grid';
+            container.appendChild(rain);
+        }
+        // 🛡️ 【エフェクトロジック】07 地水師（均一な雲・統制されたグリッド雨）
+        function startShiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① 均一で厚い雲レイヤー
+            let cloud = document.createElement('div');
+            cloud.className = 'shi-uniform-cloud';
+            container.appendChild(cloud);
+
+            // ② 風のない、完全統制された直線の雨（グリッドレイヤー）
+            let rain = document.createElement('div');
+            rain.className = 'shi-rain-grid';
+            container.appendChild(rain);
         }
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
