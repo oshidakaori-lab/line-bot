@@ -105,6 +105,56 @@
             100% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } /* ループ接続 */
         } 
            
+
+                /* 🎬 【05 水天需】専用スタイル（極限待機・視覚的圧迫・光の抑え込み） */
+        .theme-xu .bg-layer {
+            animation: xuTimeline 6.0s ease-in-out infinite !important;
+            will-change: background-color, filter;
+        }
+        @keyframes xuTimeline {
+            0% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } /* Phase1: 遠い予兆 */
+            16.6% { background-color: #8fa0b2; filter: brightness(0.9) contrast(0.85) saturate(0.8); } /* Phase2: 接近・重くなる空気 */
+            33.3% { background-color: #7F8F9F; filter: brightness(0.8) contrast(0.7) saturate(0.7); } /* Phase3: 張りつめ・コントラスト低下 */
+            50.0% { background-color: #95a5b5; filter: brightness(1.05) contrast(0.85) saturate(0.9); } /* Phase4: 偽の希望・一瞬の光の割れ */
+            66.6% { background-color: #5F6F7F; filter: brightness(0.7) contrast(0.6) saturate(0.6); } /* Phase5: ピーク・極限待機（最も重い静寂） */
+            83.3% { background-color: #8899AA; filter: brightness(0.9) contrast(0.85) saturate(0.8); } /* Phase6: 未発動・わずかな緩み */
+            100% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } /* 未解決のままループへ */
+        }
+
+        /* ☁️ 05 水天需 専用：Heavy Cloud Mass（極めてゆっくり膨張する、厚みのある巨大雲） */
+        .xu-heavy-cloud {
+            position: absolute; top: -15%; left: -15%; width: 130vw; height: 130vh;
+            background: radial-gradient(ellipse at 50% 30%, rgba(79, 95, 111, 0.7) 0%, rgba(63, 79, 96, 0.4) 40%, transparent 70%);
+            pointer-events: none; mix-blend-mode: multiply;
+            animation: xuCloudAnim 6.0s ease-in-out infinite;
+            will-change: transform, opacity;
+        }
+        @keyframes xuCloudAnim {
+            0% { transform: scale(1.0); opacity: 0.4; }
+            33.3% { transform: scale(1.02); opacity: 0.7; }
+            50.0% { transform: scale(1.01); opacity: 0.3; } /* 一瞬の光の割れ目で薄くなる */
+            66.6% { transform: scale(1.05); opacity: 0.95; } /* 最大の膨張・圧迫 */
+            83.3% { transform: scale(1.02); opacity: 0.6; }
+            100% { transform: scale(1.0); opacity: 0.4; }
+        }
+
+        /* 🌫️ 05 水天需 専用：Pressure Layer（遠近感を潰す、空間圧縮の圧迫層） */
+        .xu-pressure-layer {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(to bottom, rgba(50, 60, 70, 0.4) 0%, rgba(127, 143, 159, 0.1) 100%);
+            mix-blend-mode: darken; pointer-events: none;
+            animation: xuPressureAnim 6.0s ease-in-out infinite;
+            will-change: opacity;
+        }
+        @keyframes xuPressureAnim {
+            0% { opacity: 0.2; }
+            33.3% { opacity: 0.6; }
+            50.0% { opacity: 0.1; } /* 偽の緩み */
+            66.6% { opacity: 1.0; } /* 極限状態（音が消えるような静寂の圧） */
+            83.3% { opacity: 0.4; }
+            100% { opacity: 0.2; }
+        }
+
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
 /*======================================= */      
@@ -453,7 +503,7 @@
                 <option value="2" selected>02 坤為地 (絶対の静寂・受容)</option>
                 <option value="3">03 水雷屯 (混沌と発生・雷雨)</option>
                 <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
-                
+                <option value="5">05 水天需 (極限待機・空間圧縮)</option>
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
 /*======================================= */ 
@@ -517,13 +567,13 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
             const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
-            
+            const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
 /*======================================= */
 /* 📱🐱【コピペ専用駅】🐸ココへ追加！ 🐤*/
 /*======================================= */ 
@@ -540,7 +590,8 @@
                 document.body.classList.add('theme-chun'); startChunEffect();
             } else if (isMou) { 
                 document.body.classList.add('theme-mou'); startMouEffect();
-                
+            } else if (isXu) { 
+                document.body.classList.add('theme-xu'); startXuEffect();    
 /*======================================= */
 /* 📱【コピペ専用駅】ココへ追加！ */
 /*======================================= */                               
@@ -589,7 +640,10 @@
                     chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
                 "4": { 
                     name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", 
-                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" },
+                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" }, 
+                "5": { 
+                    name: "水天需", sky_name: "極限待機の圧縮空", chiikawa_scene: "雨も風もないのに、お空がすっごく重たい……。なんだか、息をのんじゃうね……ゴクリ……。", 
+                    chiikawa: "……っ（ごくり……何かすごいものが来る気がする……怖くて動けない）", hachiware: "嵐の前って、こんなに静かだったっけ……？あ！一瞬お空が割れて光った！……って思ったら、すぐ閉じちゃった……", usagi: "……フゥー。（じっとお空を睨みつけ、微動だにせず臨戦態勢のまま『待って』いる）", advice: "起きないことが最大の緊張を孕む。焦って暴風雨に飛び出すな。今は『待つこと』自体が最大の戦略であり、来るべき時に備えて牙を研げ。" }, 
 /*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
@@ -717,7 +771,20 @@
             particle.className = 'mou-particle-layer';
             container.appendChild(particle);
         }  
-    
+        // ☁️ 【エフェクトロジック】05 水天需（ゆっくりと膨張する巨大雲と圧迫層）
+        function startXuEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① ゆっくりと膨張・変形する巨大雲（空間圧縮用）
+            let cloud = document.createElement('div');
+            cloud.className = 'xu-heavy-cloud';
+            container.appendChild(cloud);
+
+            // ② 光を力で押さえつける圧迫レイヤー
+            let pressure = document.createElement('div');
+            pressure.className = 'xu-pressure-layer';
+            container.appendChild(pressure);
+        }
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
 /*======================================= */       
