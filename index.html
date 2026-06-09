@@ -1,3 +1,81 @@
+        /* 🎬 【06 天水訟】専用カメラ＆ベースタイムライン（対立・横揺れの激突） */
+        .theme-song .bg-layer {
+            animation: songCamera 6.0s ease-in-out infinite !important;
+            background-color: #7A8FA3; /* 衝突部の混色ベース */
+            will-change: transform;
+        }
+        @keyframes songCamera {
+            0%, 33.2% { transform: scale(1.02) translateX(0); } /* Phase1-2: 接近中（揺れなし） */
+            38% { transform: scale(1.03) translateX(2px); } /* Phase3-4: 摩擦・微振動開始 */
+            45% { transform: scale(1.03) translateX(-2px); }
+            55% { transform: scale(1.03) translateX(3px); }
+            64% { transform: scale(1.04) translateX(-4px); }
+            66.6% { transform: scale(1.06) translateX(8px); filter: contrast(1.3); } /* Phase5: 激突のピーク（強い揺れ） */
+            75% { transform: scale(1.03) translateX(-2px); }
+            83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } /* Phase6: 分離・揺れ収束 */
+        }
+
+        /* ☁️ 06 天水訟 専用：Dual Sky Layer（逆方向に動く上下の空） */
+        .song-upper-layer, .song-lower-layer {
+            position: absolute; left: -20vw; width: 140vw; height: 60vh;
+            pointer-events: none; will-change: transform, opacity;
+        }
+        /* 上層：明るい光の層（右へ進み、下へ降りる） */
+        .song-upper-layer {
+            top: 0; background: linear-gradient(to bottom, rgba(207,227,255,0.95), rgba(207,227,255,0));
+            animation: songUpperAnim 6.0s ease-in-out infinite;
+        }
+        /* 下層：重い雨雲の層（左へ進み、上へ上がる） */
+        .song-lower-layer {
+            bottom: 0; background: linear-gradient(to top, rgba(62,76,90,0.95), rgba(62,76,90,0));
+            animation: songLowerAnim 6.0s ease-in-out infinite;
+        }
+        @keyframes songUpperAnim {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0.8; }
+            33.3% { transform: translateY(5vh) translateX(10vw); opacity: 0.9; } /* 接近・摩擦 */
+            66.6% { transform: translateY(20vh) translateX(25vw); opacity: 1; mix-blend-mode: hard-light; } /* 激突・交差 */
+            100% { transform: translateY(-10vh) translateX(40vw); opacity: 0.6; } /* 分離して流れ去る */
+        }
+        @keyframes songLowerAnim {
+            0% { transform: translateY(10vh) translateX(0); opacity: 0.8; }
+            33.3% { transform: translateY(-5vh) translateX(-10vw); opacity: 0.9; }
+            66.6% { transform: translateY(-20vh) translateX(-25vw); opacity: 1; mix-blend-mode: multiply; }
+            100% { transform: translateY(10vh) translateX(-40vw); opacity: 0.6; }
+        }
+
+        /* ⚡ 06 天水訟 専用：Lightning Layer（横方向に空を裂く閃光） */
+        .song-lightning {
+            position: absolute; top: 50%; left: -20vw; width: 140vw; height: 8px;
+            background: #FFFFFF; box-shadow: 0 0 15px #FFFFFF, 0 0 30px #CFE3FF;
+            transform: translateY(-50%) rotate(-4deg); /* 相克の斜め線 */
+            opacity: 0; pointer-events: none; mix-blend-mode: screen;
+            animation: songLightningAnim 6.0s ease-in-out infinite;
+        }
+        @keyframes songLightningAnim {
+            0%, 65% { opacity: 0; transform: translateY(-50%) rotate(-4deg) scaleY(1); }
+            66.6% { opacity: 1; transform: translateY(-50%) rotate(-4deg) scaleY(3); } /* Phase5: 激突の瞬間の裂け目 */
+            69% { opacity: 0.3; transform: translateY(-50%) rotate(-4deg) scaleY(0.5); }
+            72%, 100% { opacity: 0; }
+        }
+
+        /* 🌧️ 06 天水訟 専用：Rain Layer（衝突によって生まれる雨） */
+        .song-rain {
+            position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh;
+            background-image: linear-gradient(15deg, transparent 40%, rgba(207,227,255,0.4) 41%, transparent 42%);
+            background-size: 30px 120px; pointer-events: none;
+            animation: songRainDrop 0.3s linear infinite, songRainOpacity 6.0s ease-in-out infinite;
+        }
+        @keyframes songRainDrop {
+            0% { background-position: 0 0; }
+            100% { background-position: -30px 120px; }
+        }
+        @keyframes songRainOpacity {
+            0%, 16.6% { opacity: 0; }
+            33.3% { opacity: 0.5; } /* Phase3: 乱流により降り始め */
+            50.0% { opacity: 0.3; }
+            66.6% { opacity: 1.0; } /* Phase5: 激突ピークの強雨 */
+            83.3%, 100% { opacity: 0; } /* Phase6: 分離と共に止む */
+        }
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -154,6 +232,85 @@
             83.3% { opacity: 0.4; }
             100% { opacity: 0.2; }
         }
+                /* 🎬 【06 天水訟】専用カメラ＆ベースタイムライン（対立・横揺れの激突） */
+        .theme-song .bg-layer {
+            animation: songCamera 6.0s ease-in-out infinite !important;
+            background-color: #7A8FA3; /* 衝突部の混色ベース */
+            will-change: transform;
+        }
+        @keyframes songCamera {
+            0%, 33.2% { transform: scale(1.02) translateX(0); } /* Phase1-2: 接近中（揺れなし） */
+            38% { transform: scale(1.03) translateX(2px); } /* Phase3-4: 摩擦・微振動開始 */
+            45% { transform: scale(1.03) translateX(-2px); }
+            55% { transform: scale(1.03) translateX(3px); }
+            64% { transform: scale(1.04) translateX(-4px); }
+            66.6% { transform: scale(1.06) translateX(8px); filter: contrast(1.3); } /* Phase5: 激突のピーク（強い揺れ） */
+            75% { transform: scale(1.03) translateX(-2px); }
+            83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } /* Phase6: 分離・揺れ収束 */
+        }
+
+        /* ☁️ 06 天水訟 専用：Dual Sky Layer（逆方向に動く上下の空） */
+        .song-upper-layer, .song-lower-layer {
+            position: absolute; left: -20vw; width: 140vw; height: 60vh;
+            pointer-events: none; will-change: transform, opacity;
+        }
+        /* 上層：明るい光の層（右へ進み、下へ降りる） */
+        .song-upper-layer {
+            top: 0; background: linear-gradient(to bottom, rgba(207,227,255,0.95), rgba(207,227,255,0));
+            animation: songUpperAnim 6.0s ease-in-out infinite;
+        }
+        /* 下層：重い雨雲の層（左へ進み、上へ上がる） */
+        .song-lower-layer {
+            bottom: 0; background: linear-gradient(to top, rgba(62,76,90,0.95), rgba(62,76,90,0));
+            animation: songLowerAnim 6.0s ease-in-out infinite;
+        }
+        @keyframes songUpperAnim {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0.8; }
+            33.3% { transform: translateY(5vh) translateX(10vw); opacity: 0.9; } /* 接近・摩擦 */
+            66.6% { transform: translateY(20vh) translateX(25vw); opacity: 1; mix-blend-mode: hard-light; } /* 激突・交差 */
+            100% { transform: translateY(-10vh) translateX(40vw); opacity: 0.6; } /* 分離して流れ去る */
+        }
+        @keyframes songLowerAnim {
+            0% { transform: translateY(10vh) translateX(0); opacity: 0.8; }
+            33.3% { transform: translateY(-5vh) translateX(-10vw); opacity: 0.9; }
+            66.6% { transform: translateY(-20vh) translateX(-25vw); opacity: 1; mix-blend-mode: multiply; }
+            100% { transform: translateY(10vh) translateX(-40vw); opacity: 0.6; }
+        }
+
+        /* ⚡ 06 天水訟 専用：Lightning Layer（横方向に空を裂く閃光） */
+        .song-lightning {
+            position: absolute; top: 50%; left: -20vw; width: 140vw; height: 8px;
+            background: #FFFFFF; box-shadow: 0 0 15px #FFFFFF, 0 0 30px #CFE3FF;
+            transform: translateY(-50%) rotate(-4deg); /* 相克の斜め線 */
+            opacity: 0; pointer-events: none; mix-blend-mode: screen;
+            animation: songLightningAnim 6.0s ease-in-out infinite;
+        }
+        @keyframes songLightningAnim {
+            0%, 65% { opacity: 0; transform: translateY(-50%) rotate(-4deg) scaleY(1); }
+            66.6% { opacity: 1; transform: translateY(-50%) rotate(-4deg) scaleY(3); } /* Phase5: 激突の瞬間の裂け目 */
+            69% { opacity: 0.3; transform: translateY(-50%) rotate(-4deg) scaleY(0.5); }
+            72%, 100% { opacity: 0; }
+        }
+
+        /* 🌧️ 06 天水訟 専用：Rain Layer（衝突によって生まれる雨） */
+        .song-rain {
+            position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh;
+            background-image: linear-gradient(15deg, transparent 40%, rgba(207,227,255,0.4) 41%, transparent 42%);
+            background-size: 30px 120px; pointer-events: none;
+            animation: songRainDrop 0.3s linear infinite, songRainOpacity 6.0s ease-in-out infinite;
+        }
+        @keyframes songRainDrop {
+            0% { background-position: 0 0; }
+            100% { background-position: -30px 120px; }
+        }
+        @keyframes songRainOpacity {
+            0%, 16.6% { opacity: 0; }
+            33.3% { opacity: 0.5; } /* Phase3: 乱流により降り始め */
+            50.0% { opacity: 0.3; }
+            66.6% { opacity: 1.0; } /* Phase5: 激突ピークの強雨 */
+            83.3%, 100% { opacity: 0; } /* Phase6: 分離と共に止む */
+        }
+
 
 /*======================================= */
 /* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
@@ -504,6 +661,8 @@
                 <option value="3">03 水雷屯 (混沌と発生・雷雨)</option>
                 <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
+                <option value="6">06 天水訟 (対立の可視化・激突)</option>
+                
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
 /*======================================= */ 
@@ -567,15 +726,17 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
             const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
             const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
+            const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
+            
 /*======================================= */
-/* 📱🐱【コピペ専用駅】🐸ココへ追加！ 🐤*/
+/* 📱【コピペ専用駅】ココへ追加！*/
 /*======================================= */ 
 
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
@@ -591,7 +752,9 @@
             } else if (isMou) { 
                 document.body.classList.add('theme-mou'); startMouEffect();
             } else if (isXu) { 
-                document.body.classList.add('theme-xu'); startXuEffect();    
+                document.body.classList.add('theme-xu'); startXuEffect(); 
+            } else if (isSong) { 
+                document.body.classList.add('theme-song'); startSongEffect();
 /*======================================= */
 /* 📱【コピペ専用駅】ココへ追加！ */
 /*======================================= */                               
@@ -630,20 +793,23 @@
             const mockData = {
                 "1": { 
                     name: "乾為天", sky_name: "極大陽気の飽和空", chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", 
-                    chiikawa: "わァ……ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" 
+                    chiikawa: "わァ…ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" 
                 },
                 "2": { 
                     name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", 
-                    chiikawa: "ハァ…ハァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
+                    chiikawa: "ヮァ…ヮァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
     　　　　　　  "3": { 
                     name: "水雷屯", sky_name: "混沌と発生の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！雨も降ってきたよォ…！", 
                     chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
                 "4": { 
                     name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", 
-                    chiikawa: "ふえぇ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" }, 
+                    chiikawa: "ワヮッ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" }, 
                 "5": { 
                     name: "水天需", sky_name: "極限待機の圧縮空", chiikawa_scene: "雨も風もないのに、お空がすっごく重たい……。なんだか、息をのんじゃうね……ゴクリ……。", 
-                    chiikawa: "……っ（ごくり……何かすごいものが来る気がする……怖くて動けない）", hachiware: "嵐の前って、こんなに静かだったっけ……？あ！一瞬お空が割れて光った！……って思ったら、すぐ閉じちゃった……", usagi: "……フゥー。（じっとお空を睨みつけ、微動だにせず臨戦態勢のまま『待って』いる）", advice: "起きないことが最大の緊張を孕む。焦って暴風雨に飛び出すな。今は『待つこと』自体が最大の戦略であり、来るべき時に備えて牙を研げ。" }, 
+                    chiikawa: "…っ（…何かすごいものが来る気がする……怖くて動けない）", hachiware: "嵐の前って、こんなに静かだったっけ……？あ！一瞬お空が割れて光った！……って思ったら、すぐ閉じちゃった……", usagi: "……フゥー。（じっとお空を睨みつけ、微動だにせず臨戦態勢のまま『待って』いる）", advice: "起きないことが最大の緊張を孕む。焦って暴風雨に飛び出すな。今は『待つこと』自体が最大の戦略であり、来るべき時に備えて牙を研げ。" }, 
+                "6": { 
+                    name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", 
+                    chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。"
 /*======================================= */
 /* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
 /*======================================= */ 
@@ -770,7 +936,8 @@
             let particle = document.createElement('div');
             particle.className = 'mou-particle-layer';
             container.appendChild(particle);
-        }  
+        } 
+        
         // ☁️ 【エフェクトロジック】05 水天需（ゆっくりと膨張する巨大雲と圧迫層）
         function startXuEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
@@ -784,6 +951,31 @@
             let pressure = document.createElement('div');
             pressure.className = 'xu-pressure-layer';
             container.appendChild(pressure);
+        } 
+        
+        // 💥 【エフェクトロジック】06 天水訟（逆行する上下の空・激突・横閃光）
+        function startSongEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // ① 上層：明るい光の層（右下へ交差）
+            let upperSky = document.createElement('div');
+            upperSky.className = 'song-upper-layer';
+            container.appendChild(upperSky);
+
+            // ② 下層：重い雨雲の層（左上へ交差）
+            let lowerSky = document.createElement('div');
+            lowerSky.className = 'song-lower-layer';
+            container.appendChild(lowerSky);
+
+            // ③ 衝突時の雨レイヤー
+            let rain = document.createElement('div');
+            rain.className = 'song-rain';
+            container.appendChild(rain);
+
+            // ④ 激突ピーク時に空を裂く横方向の雷
+            let lightning = document.createElement('div');
+            lightning.className = 'song-lightning';
+            container.appendChild(lightning);
         }
 /*======================================= */
 /* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
