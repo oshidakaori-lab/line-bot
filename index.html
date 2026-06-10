@@ -121,17 +121,49 @@
             83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } 
         }
 
-        /* 🎬 【07 地水師】専用スタイル */
-        .theme-shi .bg-layer { animation: shiTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; transform: scale(1.0) !important; }
-        @keyframes shiTimeline {
-            0% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
-            16.6% { background-color: #677787; filter: brightness(0.9) contrast(0.8); } 
-            33.3% { background-color: #5F6F7F; filter: brightness(0.85) contrast(0.8); } 
-            50.0% { background-color: #576777; filter: brightness(0.8) contrast(0.85); } 
-            66.6% { background-color: #4F5F6F; filter: brightness(0.7) contrast(0.9); } 
-            83.3% { background-color: #6A7A8A; filter: brightness(0.85) contrast(0.8); } 
-            100% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
+        /* 🎬 【07 地水師】映画レベル・グリッド長雨エフェクト */
+        .shi-cloud-cover {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.15);
+            backdrop-filter: contrast(1.15);
+            pointer-events: none;
+            z-index: 1;
         }
+
+        /* 密度統制ガバナー：6秒周期で全体の雨量を完璧に管理 */
+        .shi-density-governor {
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            animation: shiDensityTimeline 6.0s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes shiDensityTimeline {
+            0% { opacity: 0.2; }       /* Phase 1 (0.0-1.0s)：静かな始まり */
+            16.6% { opacity: 0.5; }    /* Phase 2 (1.0-2.0s)：統率された拡大 */
+            33.3% { opacity: 0.6; }    /* Phase 3 (2.0-3.0s)：持久 */
+            50.0% { opacity: 0.75; }   /* Phase 4 (3.0-4.0s)：統制（密度の揺れ） */
+            66.6% { opacity: 1.0; }    /* Phase 5 (4.0-5.0s)：完成された秩序（最大） */
+            83.3% { opacity: 0.45; }   /* Phase 6 (5.0-6.0s)：終わらない持続（減衰） */
+            100% { opacity: 0.2; }     /* 0.0sへシームレスにループ接続 */
+        }
+
+        /* 直線性を強調した規律ある雨粒 */
+        .shi-rain-line {
+            position: absolute;
+            top: -150px;
+            width: 1.5px;
+            height: 120px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.45));
+            animation: shiRainFall 0.55s linear infinite;
+        }
+
+        @keyframes shiRainFall {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(calc(100vh + 150px)); }
+        }
+
     
         .theme-bi {
         background: linear-gradient(to bottom, #7A8FA3, #C6D8EA) !important;
@@ -413,7 +445,7 @@
             } else if (isSong) { 
                 document.body.classList.add('theme-song'); startSongEffect();
             } else if (isShi) { 
-                document.body.classList.add('theme-shi'); // 師のエフェクトは基本CSSのみ
+                document.body.classList.add('theme-shi'); startShiEffect(); // 👈 映画仕様エフェクトを起動！
             } else if (isBi) { 
                 document.body.classList.add('theme-bi'); startSuichibiEffect();
             } else if (isWell) {
@@ -581,12 +613,43 @@
             let rain = document.createElement('div'); rain.className = 'song-rain'; container.appendChild(rain);
             let lightning = document.createElement('div'); lightning.className = 'song-lightning'; container.appendChild(lightning);
         }
-                // 🛡️ 07 地水師
+                        // 🌧 【07 地水師】エフェクト（組織された流れ・Grid Rain）
         function startShiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            let cloud = document.createElement('div'); cloud.className = 'shi-uniform-cloud'; container.appendChild(cloud);
-            let rain = document.createElement('div'); rain.className = 'shi-rain-grid'; container.appendChild(rain);
+            const container = document.getElementById('weather-effect'); 
+            container.innerHTML = '';
+            
+            // ① Uniform Cloud Layer（変化を最小限に抑えた均一な雲面）
+            let cloud = document.createElement('div');
+            cloud.className = 'shi-cloud-cover';
+            container.appendChild(cloud);
+            
+            // ③ Density Control（タイムラインを統制する親レイヤー）
+            let governor = document.createElement('div');
+            governor.className = 'shi-density-governor';
+            container.appendChild(governor);
+
+            // ② Rain Grid Layer（完璧に整列した縦の流れ）
+            const columnCount = 35; // 画面を35等分のグリッドに分割
+            for (let i = 0; i < columnCount; i++) {
+                // 1つの列に対して、時間差で途切れなく落ちるように2つの雨粒を配置
+                for (let j = 0; j < 2; j++) {
+                    let rain = document.createElement('div');
+                    rain.className = 'shi-rain-line';
+                    
+                    // 横位置を完璧に等間隔配置（ランダム禁止）
+                    const leftPos = (i / columnCount) * 100;
+                    rain.style.left = leftPos + 'vw';
+                    
+                    // 規律あるディレイ設計（カオスを排除し、等間隔にずらす）
+                    const baseDelay = j * 0.275;
+                    const patternDelay = (i % 4) * 0.08; // 4列周期の規則正しいズレ
+                    rain.style.animationDelay = (baseDelay + patternDelay) + 's';
+                    
+                    governor.appendChild(rain);
+                }
+            }
         }
+
                 // 💧 【08 水地比】エフェクト
         function startSuichibiEffect() {
             const container = document.getElementById('weather-effect'); 
