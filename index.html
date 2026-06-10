@@ -583,20 +583,6 @@
             let cloud = document.createElement('div'); cloud.className = 'shi-uniform-cloud'; container.appendChild(cloud);
             let rain = document.createElement('div'); rain.className = 'shi-rain-grid'; container.appendChild(rain);
         }
-        
-
-        // 🌊 【48 水風井】エフェクト
-        function startWellEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            for(let i=0; i<30; i++) {
-                let p = document.createElement('div'); p.className = 'well-particle';
-                const dirX = (Math.random() * 280 - 140) + 'px'; p.style.setProperty('--dir-x', dirX);
-                p.style.left = '50vw'; const size = (Math.random() * 6 + 6) + 'px'; p.style.width = size; p.style.height = size;
-                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.backgroundColor = chosenColor; p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
-                p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
-            }
-        }
         // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
