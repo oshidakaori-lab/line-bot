@@ -447,7 +447,7 @@
             } else if (isShi) { 
                 document.body.classList.add('theme-shi'); startShiEffect(); // 👈 映画仕様エフェクトを起動！
             } else if (isBi) { 
-                document.body.classList.add('theme-bi'); startSuichibiEffect();
+                document.body.classList.add('theme-bi'); startBiEffect();
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -650,26 +650,43 @@
             }
         }
 
-                // 💧 【08 水地比】エフェクト
-        function startSuichibiEffect() {
-            const container = document.getElementById('weather-effect'); 
+                        // 💧 【08 水地比】エフェクト（自然な結びつき・調和）
+        function startBiEffect() {
+            const container = document.getElementById('weather-effect');
             container.innerHTML = '';
-            // 雰囲気に合わせた背景色の適用
-            container.style.background = 'linear-gradient(to bottom, #7A8FA3, #C6D8EA)';
 
-            for(let i = 0; i < 15; i++) {
-                let mist = document.createElement('div');
-                mist.className = 'mist-particle'; // CSSで定義したスタイルを使用
-                
-                // ランダムな配置とサイズ
-                mist.style.left = Math.random() * 100 + 'vw';
-                mist.style.top = Math.random() * 100 + 'vh';
-                const size = (Math.random() * 200 + 100) + 'px';
-                mist.style.width = size;
-                mist.style.height = size;
-                mist.style.animationDelay = (Math.random() * -10) + 's';
-                
-                container.appendChild(mist);
+            // ② 湿度・霞のレイヤー
+            let moisture = document.createElement('div');
+            moisture.className = 'bi-moisture-layer';
+            container.appendChild(moisture);
+
+            // ① ほぐれる雲のレイヤー
+            for (let i = 0; i < 4; i++) {
+                let cloud = document.createElement('div');
+                cloud.className = 'bi-soft-cloud';
+                const size = (Math.random() * 50 + 60) + 'vw';
+                cloud.style.width = size;
+                cloud.style.height = size;
+                cloud.style.left = (Math.random() * 80 - 10) + 'vw';
+                cloud.style.top = (Math.random() * 60 - 20) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(cloud);
+            }
+
+            // ③ 回る光のレイヤー
+            let light = document.createElement('div');
+            light.className = 'bi-light-diffusion';
+            container.appendChild(light);
+
+            // ④ 序盤（Phase 1）の余韻の雨
+            // 師の激しい雨から一転、まばらで弱い雨粒
+            for (let i = 0; i < 15; i++) {
+                let rain = document.createElement('div');
+                rain.className = 'bi-fading-rain';
+                rain.style.left = Math.random() * 100 + 'vw';
+                // 落下アニメーションとフェードアニメーションのディレイを個別に設定
+                rain.style.animationDelay = (Math.random() * -0.8) + 's, 0s';
+                container.appendChild(rain);
             }
         }
 
