@@ -121,7 +121,7 @@
             83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } 
         }
 
-        /* 🎬 【07 地水師】専用スタイル（均一な雲・直線的で統制された雨） */
+        /* 🎬 【07 地水師】専用スタイル */
         .theme-shi .bg-layer { animation: shiTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; transform: scale(1.0) !important; }
         @keyframes shiTimeline {
             0% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
@@ -132,322 +132,6 @@
             83.3% { background-color: #6A7A8A; filter: brightness(0.85) contrast(0.8); } 
             100% { background-color: #6F7F8F; filter: brightness(0.95) contrast(0.85); } 
         }
-
-        /* ======================================= */
-        /* 🐣📱【コピペ専用駅 1】CSS追加はココ！🐸🐤 */
-        /* ======================================= */
-
-        #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-
-        /* UIレイアウト */
-        .ui-wrapper { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 40px 0 20px; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
-        .floater-1 { animation: floatAnim1 5.5s ease-in-out infinite; width: 100%; }
-        .floater-2 { animation: floatAnim2 6.5s ease-in-out infinite 0.5s; width: 100%; }
-        .floater-3 { animation: floatAnim3 6s ease-in-out infinite 1s; width: 100%; }
-        @keyframes floatAnim1 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        @keyframes floatAnim2 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
-        @keyframes floatAnim3 { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-
-        .card-block { border-radius: 32px; padding: 24px 20px; text-align: left; width: 100%; opacity: 0; transition: all 0.6s ease; }
-        .mode-normal .card-block { animation: frameInRight 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, boxPulse 6s infinite alternate ease-in-out 1s; }
-        .mode-normal .delay-1 { animation-delay: 0.5s, 1.5s; } .mode-normal .delay-2 { animation-delay: 2.0s, 3.0s; } .mode-normal .delay-3 { animation-delay: 7.0s, 8.0s; } 
-        @keyframes frameInRight { 0% { opacity: 0; transform: translateX(30vw); } 100% { opacity: 1; transform: translateX(0); } }
-        @keyframes boxPulse {
-            0% { background: rgba(15, 23, 42, 0.0); border: 2px solid rgba(255, 255, 255, 0.05); box-shadow: none; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-            100% { background: rgba(15, 23, 42, 0.4); border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-        }
-
-        .dialogue-line { opacity: 0; transform: translateX(40px); }
-        .mode-normal .char-reveal { animation: charSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes charSlideIn { 0% { opacity: 0; transform: translateX(40px); } 100% { opacity: 1; transform: translateX(0); } }
-        .mode-normal .delay-chiikawa { animation-delay: 3.0s; } .mode-normal .delay-hachiware { animation-delay: 4.5s; } .mode-normal .delay-usagi { animation-delay: 5.8s; }
-
-        .mode-reading .card-block { opacity: 1; transform: translateX(0); background: rgba(15, 23, 42, 0.85) !important; border: 2px solid rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1) !important; animation: none !important; }
-        .mode-reading .dialogue-line { opacity: 1; transform: translateX(0); animation: none !important; }
-        .mode-gallery .ui-wrapper { opacity: 0; pointer-events: none; transform: scale(1.05); }
-        #gallery-hint { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.7); font-size: 0.9rem; font-weight: 500; letter-spacing: 1px; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
-        .mode-gallery #gallery-hint { opacity: 1; }
-
-        @keyframes firefly { 0%, 100% { text-shadow: 0 0 2px currentColor; opacity: 0.85; } 50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; opacity: 1; } }
-        .firefly-text-1 { animation: firefly 4.0s ease-in-out infinite 0.7s; } .firefly-text-2 { animation: firefly 4.8s ease-in-out infinite 0.8s; } .firefly-text-3 { animation: firefly 3.5s ease-in-out infinite 0.95s; } .firefly-text-4 { animation: firefly 5.2s ease-in-out infinite 1.05s; } .firefly-text-5 { animation: firefly 3.9s ease-in-out infinite 1.2s; }
-
-        .header-area { text-align: center; margin-bottom: 16px; }
-        h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; color: #ffffff; letter-spacing: 1.5px; }
-        .sky-title { font-size: 1.05rem; color: #f8fafc; font-weight: 500; letter-spacing: 1px; }
-        #scene { font-size: 1.05rem; line-height: 1.8; color: #ffffff; font-weight: 500; text-align: center; }
-        .dialogue-container { display: flex; flex-direction: column; gap: 20px; }
-        .dialogue-line { font-size: 1.1rem; line-height: 1.7; font-weight: 800; display: flex; flex-direction: column; letter-spacing: 0.5px; }
-        .char-name { font-size: 0.85rem; opacity: 0.9; margin-bottom: 6px; color: #ffffff; font-weight: 700; }
-        .chiikawa-text { color: #fecdd3; } .hachiware-text { color: #bfdbfe; } .usagi-text { color: #fef08a; } 
-        .advice-box { text-align: left; }
-        .yoroi-name { font-size: 0.85rem; opacity: 0.9; color: #ffffff; margin-bottom: 8px; display: block; font-weight: 700; }
-        .yoroi-text { color: #fed7aa; font-size: 1.1rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
-        .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
-
-        /* --- 各天候エフェクト＆個別卦CSS --- */
-        
-        /* 01 乾為天 */
-        .ten-bloom-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen; background: radial-gradient(circle, #ffffff 0%, rgba(175,203,255,0.7) 35%, rgba(111,168,255,0) 70%); animation: tenPureLight 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes tenPureLight { 0% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } 16.6% { width: 35vw; height: 35vw; opacity: 0.5; filter: blur(12px); } 33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); } 50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); } 66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); } 83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); } 100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } }
-        .ten-hex-ripple { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; pointer-events: none; mix-blend-mode: overlay; animation: tenRippleWave 6.0s linear infinite; }
-        @keyframes tenRippleWave { 0% { width: 0vw; height: 0vw; opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.8); } 33.3% { width: 30vw; height: 30vw; opacity: 0.4; border-color: rgba(111,168,255,0.5); filter: blur(1px); } 50.0% { width: 80vw; height: 80vw; opacity: 0.7; border-color: rgba(255,255,255,0.7); transform: translate(-50%, -50%) rotate(180deg) scale(1.1); filter: blur(3px); } 66.6% { width: 150vw; height: 150vw; opacity: 0.9; border-color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) rotate(360deg) scale(1.2); filter: blur(6px); } 83.3% { width: 240vw; height: 240vw; opacity: 0; border-color: rgba(255,255,255,0); transform: translate(-50%, -50%) rotate(540deg) scale(1.4); } 100% { width: 0vw; height: 0vw; opacity: 0; } }
-
-        /* 02 坤為地 */
-        .kon-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%); mix-blend-mode: multiply; pointer-events: none; animation: konFogFill 6.0s ease-in-out infinite; will-change: opacity; }
-        @keyframes konFogFill { 0% { opacity: 0.1; } 33.3% { opacity: 0.4; } 50.0% { opacity: 0.7; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.8; } 100% { opacity: 0.1; } }
-        .kon-heavy-cloud { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%); pointer-events: none; mix-blend-mode: normal; animation: konCloudWeight 6.0s ease-in-out infinite; will-change: transform, opacity; }
-        @keyframes konCloudWeight { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.6; } 66.6% { transform: scale(1.06); opacity: 0.9; } 83.3% { transform: scale(1.03); opacity: 0.7; } 100% { transform: scale(1.0); opacity: 0.4; } }
-
-        /* 03 水雷屯 */
-        .chun-mist { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%); mix-blend-mode: screen; pointer-events: none; animation: chunMistAnim 6.0s ease-in-out infinite; will-change: opacity; }
-        @keyframes chunMistAnim { 0% { opacity: 0.9; } 33.3% { opacity: 0.3; } 50.0% { opacity: 0.1; } 66.6% { opacity: 0.5; } 83.3% { opacity: 0.8; } 100% { opacity: 0.9; } }
-        .chun-cloud-1, .chun-cloud-2 { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%); pointer-events: none; mix-blend-mode: multiply; will-change: transform, opacity; }
-        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; } .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
-        @keyframes chunCloud1 { 0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } 33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; } 66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; } 100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } }
-        @keyframes chunCloud2 { 0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } 33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; } 66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; } 100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } }
-        .chun-rain-weak, .chun-rain-strong { position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh; pointer-events: none; will-change: background-position, opacity; }
-        .chun-rain-weak { background-image: linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%), linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%); background-size: 30px 100px, 50px 150px; animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite; }
-        .chun-rain-strong { background-image: linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%), linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%), linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%); background-size: 20px 120px, 35px 160px, 50px 140px; animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite; }
-        @keyframes rainDropWeak { 0% { background-position: 0 0, 0 0; } 100% { background-position: -8px 100px, -13px 150px; } }
-        @keyframes rainDropStrong { 0% { background-position: 0 0, 0 0, 0 0; } 100% { background-position: -56px <!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>空の易 - 64卦エフェクトマスタープレビュー</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght=500;700;800&display=swap" rel="stylesheet">
-
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body, html {
-            width: 100%; min-height: 100vh; min-height: 100dvh; 
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            padding: 20px 15px; background-color: transparent; overflow-x: hidden; color: #f8fafc; cursor: pointer;
-        }
-
-        /* 📱 スマホ用：開発者用エフェクト切り替えパネル */
-        #dev-control-panel {
-            position: fixed; top: 12px; left: 12px; z-index: 9999;
-            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 6px 10px; border-radius: 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-        #dev-control-panel span { font-size: 0.75rem; font-weight: 800; color: #cbd5e1; }
-        #dev-selector {
-            background: #ffffff; color: #0f172a; border: none; padding: 4px 8px;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer;
-        }
-        .mode-gallery #dev-control-panel { opacity: 0; pointer-events: none; transform: translateY(-10px); }
-
-        /* 🌟 カメラワーク基本設定 */
-        .bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background-size: cover; background-position: center; z-index: -2;
-            animation: cameraReadPan 40s ease-in-out infinite alternate;
-        }
-        @keyframes cameraReadPan {
-            0% { transform: scale(1.30) translateX(-4.5%); } 33% { transform: scale(1.20) translateX(3.0%); }  
-            66% { transform: scale(1.10) translateX(-1.5%); } 100% { transform: scale(1.00) translateX(0%); }    
-        }
-
-        /* 🎬 【01 乾為天】専用カメラ＆ライトタイムライン（無意識の呼吸ズーム ＋ 陽極まる露出飽和） */
-        .theme-ten .bg-layer { animation: tenTimelineAndCamera 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
-        @keyframes tenTimelineAndCamera {
-            0% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
-            16.6% { transform: scale(1.035); filter: brightness(1.1) contrast(1.05) saturate(1.1); } 
-            33.3% { transform: scale(1.05); filter: brightness(1.25) contrast(1.1) saturate(1.1); } 
-            50.0% { transform: scale(1.04); filter: brightness(1.4) contrast(1.15) saturate(0.9); } 
-            66.6% { transform: scale(1.03); filter: brightness(2.0) contrast(1.2) saturate(0.4); } 
-            83.3% { transform: scale(1.022); filter: brightness(2.3) contrast(0.9) saturate(0.2); } 
-            95.0% { transform: scale(1.02); filter: brightness(1.5) contrast(1.0) saturate(0.7); } 
-            100% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
-        }
-
-        /* 🎬 【02 坤為地】専用カメラ＆ライトタイムライン（完全固定・コントラスト低下・空間圧縮） */
-        .theme-kon .bg-layer { 
-            animation: konTimeline 6.0s ease-in-out infinite !important; 
-            transform: scale(1.0) !important; 
-            will-change: filter; /* 描画の最適化 */
-        }
-        @keyframes konTimeline {
-            0% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); }
-            16.6% { filter: brightness(0.9) contrast(0.8) grayscale(0.6); }
-            33.3% { filter: brightness(0.85) contrast(0.7) grayscale(0.7); }
-            50.0% { filter: brightness(0.8) contrast(0.65) grayscale(0.8); }
-            66.6% { filter: brightness(0.7) contrast(0.55) grayscale(0.95); } /* Phase5: ピーク */
-            83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } /* Phase6: 微かな回復 */
-            100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } /* 0.0sへシームレス接続 */
-        }
-　       /* 🎬 【03 水雷屯】専用カメラ＆ベースタイムライン（混沌・不安定・雷） */
-        .theme-chun .bg-layer {
-            animation: chunTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, transform;
-        }
-        @keyframes chunTimeline {
-            0% { background-color: #8FA3B8; transform: translate(0, 0); } /* Phase1: 冷たい始まり */
-            16.6% { background-color: #8fa3b8; transform: translate(-1px, 1px); } /* Phase2: 微風（揺れ開始） */
-            33.3% { background-color: #6E7F91; transform: translate(2px, -1px); } /* Phase3: 混濁 */
-            50.0% { background-color: #7b8e9f; transform: translate(-1px, 0px); } /* Phase4: 仮の秩序(少し光が差す) */
-            64.0% { background-color: #3F4F60; transform: translate(4px, 3px); } /* Phase5: 混沌の最大化(最暗) */
-            66.6% { background-color: #e0f0ff; transform: translate(-6px, -4px); } /* ⚡ 雷の遠距離フラッシュ */
-            68.0% { background-color: #3F4F60; transform: translate(3px, 5px); } /* ⚡ 雷後の余韻揺れ */
-            83.3% { background-color: #9AAFC4; transform: translate(1px, -1px); } /* Phase6: 回復・減衰開始 */
-            100% { background-color: #8FA3B8; transform: translate(0, 0); } /* 未完成のままループ */
-        }
-
-        /* 🎬 【04 山水蒙】専用スタイル（深い霧・フォーカスの揺らぎ・ホワイトアウト） */
-        .theme-mou .bg-layer {
-            animation: mouTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, filter;
-        }
-        @keyframes mouTimeline {
-            0% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } /* Phase1: 薄霧・認識のボヤけ */
-            16.6% { background-color: #bec5cc; filter: blur(8px) brightness(0.95) contrast(0.85); } /* Phase2: 密度+20%・境界の曖昧化 */
-            33.3% { background-color: #B0B7BF; filter: blur(18px) brightness(0.85) contrast(0.6); } /* Phase3: 急激な悪化・奥行きの喪失 */
-            50.0% { background-color: #b8bfc7; filter: blur(10px) brightness(1.1) contrast(0.75); } /* Phase4: 一瞬の揺らぎ・謎の拡散光 */
-            66.6% { background-color: #E8ECEF; filter: blur(28px) brightness(1.25) contrast(0.4); } /* Phase5: ピーク・完全なホワイトアウト */
-            83.3% { background-color: #C8CFD6; filter: blur(12px) brightness(1.0) contrast(0.8); } /* Phase6: 未解決のままわずかに薄れる */
-            100% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } /* ループ接続 */
-        } 
-           
-
-                /* 🎬 【05 水天需】専用スタイル（極限待機・視覚的圧迫・光の抑え込み） */
-        .theme-xu .bg-layer {
-            animation: xuTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, filter;
-        }
-        @keyframes xuTimeline {
-            0% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } /* Phase1: 遠い予兆 */
-            16.6% { background-color: #8fa0b2; filter: brightness(0.9) contrast(0.85) saturate(0.8); } /* Phase2: 接近・重くなる空気 */
-            33.3% { background-color: #7F8F9F; filter: brightness(0.8) contrast(0.7) saturate(0.7); } /* Phase3: 張りつめ・コントラスト低下 */
-            50.0% { background-color: #95a5b5; filter: brightness(1.05) contrast(0.85) saturate(0.9); } /* Phase4: 偽の希望・一瞬の光の割れ */
-            66.6% { background-color: #5F6F7F; filter: brightness(0.7) contrast(0.6) saturate(0.6); } /* Phase5: ピーク・極限待機（最も重い静寂） */
-            83.3% { background-color: #8899AA; filter: brightness(0.9) contrast(0.85) saturate(0.8); } /* Phase6: 未発動・わずかな緩み */
-            100% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } /* 未解決のままループへ */
-        }
-
-        /* ☁️ 05 水天需 専用：Heavy Cloud Mass（極めてゆっくり膨張する、厚みのある巨大雲） */
-        .xu-heavy-cloud {
-            position: absolute; top: -15%; left: -15%; width: 130vw; height: 130vh;
-            background: radial-gradient(ellipse at 50% 30%, rgba(79, 95, 111, 0.7) 0%, rgba(63, 79, 96, 0.4) 40%, transparent 70%);
-            pointer-events: none; mix-blend-mode: multiply;
-            animation: xuCloudAnim 6.0s ease-in-out infinite;
-            will-change: transform, opacity;
-        }
-        @keyframes xuCloudAnim {
-            0% { transform: scale(1.0); opacity: 0.4; }
-            33.3% { transform: scale(1.02); opacity: 0.7; }
-            50.0% { transform: scale(1.01); opacity: 0.3; } /* 一瞬の光の割れ目で薄くなる */
-            66.6% { transform: scale(1.05); opacity: 0.95; } /* 最大の膨張・圧迫 */
-            83.3% { transform: scale(1.02); opacity: 0.6; }
-            100% { transform: scale(1.0); opacity: 0.4; }
-        }
-
-        /* 🌫️ 05 水天需 専用：Pressure Layer（遠近感を潰す、空間圧縮の圧迫層） */
-        .xu-pressure-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to bottom, rgba(50, 60, 70, 0.4) 0%, rgba(127, 143, 159, 0.1) 100%);
-            mix-blend-mode: darken; pointer-events: none;
-            animation: xuPressureAnim 6.0s ease-in-out infinite;
-            will-change: opacity;
-        }
-        @keyframes xuPressureAnim {
-            0% { opacity: 0.2; }
-            33.3% { opacity: 0.6; }
-            50.0% { opacity: 0.1; } /* 偽の緩み */
-            66.6% { opacity: 1.0; } /* 極限状態（音が消えるような静寂の圧） */
-            83.3% { opacity: 0.4; }
-            100% { opacity: 0.2; }
-        }
-                /* 🎬 【06 天水訟】専用カメラ＆ベースタイムライン（対立・横揺れの激突） */
-        .theme-song .bg-layer {
-            animation: songCamera 6.0s ease-in-out infinite !important;
-            background-color: #7A8FA3; /* 衝突部の混色ベース */
-            will-change: transform;
-        }
-        @keyframes songCamera {
-            0%, 33.2% { transform: scale(1.02) translateX(0); } /* Phase1-2: 接近中（揺れなし） */
-            38% { transform: scale(1.03) translateX(2px); } /* Phase3-4: 摩擦・微振動開始 */
-            45% { transform: scale(1.03) translateX(-2px); }
-            55% { transform: scale(1.03) translateX(3px); }
-            64% { transform: scale(1.04) translateX(-4px); }
-            66.6% { transform: scale(1.06) translateX(8px); filter: contrast(1.3); } /* Phase5: 激突のピーク（強い揺れ） */
-            75% { transform: scale(1.03) translateX(-2px); }
-            83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } /* Phase6: 分離・揺れ収束 */
-        }
-
-        /* ☁️ 06 天水訟 専用：Dual Sky Layer（逆方向に動く上下の空） */
-        .song-upper-layer, .song-lower-layer {
-            position: absolute; left: -20vw; width: 140vw; height: 60vh;
-            pointer-events: none; will-change: transform, opacity;
-        }
-        /* 上層：明るい光の層（右へ進み、下へ降りる） */
-        .song-upper-layer {
-            top: 0; background: linear-gradient(to bottom, rgba(207,227,255,0.95), rgba(207,227,255,0));
-            animation: songUpperAnim 6.0s ease-in-out infinite;
-        }
-        /* 下層：重い雨雲の層（左へ進み、上へ上がる） */
-        .song-lower-layer {
-            bottom: 0; background: linear-gradient(to top, rgba(62,76,90,0.95), rgba(62,76,90,0));
-            animation: songLowerAnim 6.0s ease-in-out infinite;
-        }
-        @keyframes songUpperAnim {
-            0% { transform: translateY(-10vh) translateX(0); opacity: 0.8; }
-            33.3% { transform: translateY(5vh) translateX(10vw); opacity: 0.9; } /* 接近・摩擦 */
-            66.6% { transform: translateY(20vh) translateX(25vw); opacity: 1; mix-blend-mode: hard-light; } /* 激突・交差 */
-            100% { transform: translateY(-10vh) translateX(40vw); opacity: 0.6; } /* 分離して流れ去る */
-        }
-        @keyframes songLowerAnim {
-            0% { transform: translateY(10vh) translateX(0); opacity: 0.8; }
-            33.3% { transform: translateY(-5vh) translateX(-10vw); opacity: 0.9; }
-            66.6% { transform: translateY(-20vh) translateX(-25vw); opacity: 1; mix-blend-mode: multiply; }
-            100% { transform: translateY(10vh) translateX(-40vw); opacity: 0.6; }
-        }
-
-        /* ⚡ 06 天水訟 専用：Lightning Layer（横方向に空を裂く閃光） */
-        .song-lightning {
-            position: absolute; top: 50%; left: -20vw; width: 140vw; height: 8px;
-            background: #FFFFFF; box-shadow: 0 0 15px #FFFFFF, 0 0 30px #CFE3FF;
-            transform: translateY(-50%) rotate(-4deg); /* 相克の斜め線 */
-            opacity: 0; pointer-events: none; mix-blend-mode: screen;
-            animation: songLightningAnim 6.0s ease-in-out infinite;
-        }
-        @keyframes songLightningAnim {
-            0%, 65% { opacity: 0; transform: translateY(-50%) rotate(-4deg) scaleY(1); }
-            66.6% { opacity: 1; transform: translateY(-50%) rotate(-4deg) scaleY(3); } /* Phase5: 激突の瞬間の裂け目 */
-            69% { opacity: 0.3; transform: translateY(-50%) rotate(-4deg) scaleY(0.5); }
-            72%, 100% { opacity: 0; }
-        }
-
-        /* 🌧️ 06 天水訟 専用：Rain Layer（衝突によって生まれる雨） */
-        .song-rain {
-            position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh;
-            background-image: linear-gradient(15deg, transparent 40%, rgba(207,227,255,0.4) 41%, transparent 42%);
-            background-size: 30px 120px; pointer-events: none;
-            animation: songRainDrop 0.3s linear infinite, songRainOpacity 6.0s ease-in-out infinite;
-        }
-        @keyframes songRainDrop {
-            0% { background-position: 0 0; }
-            100% { background-position: -30px 120px; }
-        }
-        @keyframes songRainOpacity {
-            0%, 16.6% { opacity: 0; }
-            33.3% { opacity: 0.5; } /* Phase3: 乱流により降り始め */
-            50.0% { opacity: 0.3; }
-            66.6% { opacity: 1.0; } /* Phase5: 激突ピークの強雨 */
-            83.3%, 100% { opacity: 0; } /* Phase6: 分離と共に止む */
-        }
-
-
-/*======================================= */
-/* 🐣📱【コピペ専用駅】🐸ココに追加！🐤 */
-/*======================================= */      
 
         /* 🎬 【48 水風井】専用カメラワーク */
         .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
@@ -478,9 +162,8 @@
             100% { transform: scale(1.05) translate(0, 0); filter: hue-rotate(0deg); }
         }
 
+        /* UIレイアウト共通 */
         #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-
-        /* UIレイアウト */
         .ui-wrapper { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 40px 0 20px; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
         .floater-1 { animation: floatAnim1 5.5s ease-in-out infinite; width: 100%; }
         .floater-2 { animation: floatAnim2 6.5s ease-in-out infinite 0.5s; width: 100%; }
@@ -525,195 +208,72 @@
         .yoroi-text { color: #fed7aa; font-size: 1.1rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
 
-        /* --- 各天候エフェクトのCSS --- */
+                /* --- 各天候エフェクトのCSS --- */
         
         /* 🌤️ 01 乾為天 専用ブルームフレアレイヤー */
-        .ten-bloom-core {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
-            background: radial-gradient(circle, #ffffff 0%, rgba(175,203,255,0.7) 35%, rgba(111,168,255,0) 70%);
-            animation: tenPureLight 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-        @keyframes tenPureLight {
-            0% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); }
-            16.6% { width: 35vw; height: 35vw; opacity: 0.5; filter: blur(12px); }
-            33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); }
-            50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); }
-            66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); }
-            83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 
-            95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); }
-            100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); }
-        }
+        .ten-bloom-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen; background: radial-gradient(circle, #ffffff 0%, rgba(175,203,255,0.7) 35%, rgba(111,168,255,0) 70%); animation: tenPureLight 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes tenPureLight { 0% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } 16.6% { width: 35vw; height: 35vw; opacity: 0.5; filter: blur(12px); } 33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); } 50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); } 66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); } 83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); } 100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } }
+        .ten-hex-ripple { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; pointer-events: none; mix-blend-mode: overlay; animation: tenRippleWave 6.0s linear infinite; }
+        @keyframes tenRippleWave { 0% { width: 0vw; height: 0vw; opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.8); } 33.3% { width: 30vw; height: 30vw; opacity: 0.4; border-color: rgba(111,168,255,0.5); filter: blur(1px); } 50.0% { width: 80vw; height: 80vw; opacity: 0.7; border-color: rgba(255,255,255,0.7); transform: translate(-50%, -50%) rotate(180deg) scale(1.1); filter: blur(3px); } 66.6% { width: 150vw; height: 150vw; opacity: 0.9; border-color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) rotate(360deg) scale(1.2); filter: blur(6px); } 83.3% { width: 240vw; height: 240vw; opacity: 0; border-color: rgba(255,255,255,0); transform: translate(-50%, -50%) rotate(540deg) scale(1.4); } 100% { width: 0vw; height: 0vw; opacity: 0; } }
 
-        .ten-hex-ripple {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; 
-            pointer-events: none; mix-blend-mode: overlay;
-            animation: tenRippleWave 6.0s linear infinite;
-        }
-        @keyframes tenRippleWave {
-            0% { width: 0vw; height: 0vw; opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.8); }
-            33.3% { width: 30vw; height: 30vw; opacity: 0.4; border-color: rgba(111,168,255,0.5); filter: blur(1px); }
-            50.0% { width: 80vw; height: 80vw; opacity: 0.7; border-color: rgba(255,255,255,0.7); transform: translate(-50%, -50%) rotate(180deg) scale(1.1); filter: blur(3px); }
-            66.6% { width: 150vw; height: 150vw; opacity: 0.9; border-color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) rotate(360deg) scale(1.2); filter: blur(6px); }
-            83.3% { width: 240vw; height: 240vw; opacity: 0; border-color: rgba(255,255,255,0); transform: translate(-50%, -50%) rotate(540deg) scale(1.4); }
-            100% { width: 0vw; height: 0vw; opacity: 0; }
-        }
+        /* 🌫️ 02 坤為地 専用 */
+        .kon-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%); mix-blend-mode: multiply; pointer-events: none; animation: konFogFill 6.0s ease-in-out infinite; will-change: opacity; }
+        @keyframes konFogFill { 0% { opacity: 0.1; } 33.3% { opacity: 0.4; } 50.0% { opacity: 0.7; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.8; } 100% { opacity: 0.1; } }
+        .kon-heavy-cloud { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%); pointer-events: none; mix-blend-mode: normal; animation: konCloudWeight 6.0s ease-in-out infinite; will-change: transform, opacity; }
+        @keyframes konCloudWeight { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.6; } 66.6% { transform: scale(1.06); opacity: 0.9; } 83.3% { transform: scale(1.03); opacity: 0.7; } 100% { transform: scale(1.0); opacity: 0.4; } }
 
-      /* 🌫️ 02 坤為地 専用：Fog Layer（空間を埋める霧・圧迫感） */
-        .kon-fog-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%);
-            mix-blend-mode: multiply; pointer-events: none;
-            animation: konFogFill 6.0s ease-in-out infinite;
-            will-change: opacity;
-        }
-        @keyframes konFogFill {
-            0% { opacity: 0.1; }
-            33.3% { opacity: 0.4; }
-            50.0% { opacity: 0.7; }
-            66.6% { opacity: 1.0; } /* 圧迫感最大 */
-            83.3% { opacity: 0.8; }
-            100% { opacity: 0.1; }
-        }
-        /* ☁️ 02 坤為地 専用：重い雲レイヤー（GPU最適化版） */
-        .kon-heavy-cloud {
-            position: absolute; 
-            border-radius: 50%;
-            /* filter: blurの代わりにグラデーションでボケを表現（圧倒的に軽い） */
-            background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%);
-            pointer-events: none; mix-blend-mode: normal;
-            animation: konCloudWeight 6.0s ease-in-out infinite;
-            will-change: transform, opacity;
-        }
-        @keyframes konCloudWeight {
-            0% { transform: scale(1.0); opacity: 0.4; }
-            33.3% { transform: scale(1.02); opacity: 0.6; }
-            66.6% { transform: scale(1.06); opacity: 0.9; } /* 密度最大 */
-            83.3% { transform: scale(1.03); opacity: 0.7; }
-            100% { transform: scale(1.0); opacity: 0.4; }
-        }
+        /* 🌫️ 03 水雷屯 専用 */
+        .chun-mist { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%); mix-blend-mode: screen; pointer-events: none; animation: chunMistAnim 6.0s ease-in-out infinite; will-change: opacity; }
+        @keyframes chunMistAnim { 0% { opacity: 0.9; } 33.3% { opacity: 0.3; } 50.0% { opacity: 0.1; } 66.6% { opacity: 0.5; } 83.3% { opacity: 0.8; } 100% { opacity: 0.9; } }
+        .chun-cloud-1, .chun-cloud-2 { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%); pointer-events: none; mix-blend-mode: multiply; will-change: transform, opacity; }
+        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; } .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
+        @keyframes chunCloud1 { 0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } 33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; } 66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; } 100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } }
+        @keyframes chunCloud2 { 0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } 33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; } 66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; } 100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } }
+        .chun-rain-weak, .chun-rain-strong { position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh; pointer-events: none; will-change: background-position, opacity; }
+        .chun-rain-weak { background-image: linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%), linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%); background-size: 30px 100px, 50px 150px; animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite; }
+        .chun-rain-strong { background-image: linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%), linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%), linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%); background-size: 20px 120px, 35px 160px, 50px 140px; animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite; }
+        @keyframes rainDropWeak { 0% { background-position: 0 0, 0 0; } 100% { background-position: -8px 100px, -13px 150px; } }
+        @keyframes rainDropStrong { 0% { background-position: 0 0, 0 0, 0 0; } 100% { background-position: -56px 120px, -74px 160px, -65px 140px; } }
+        @keyframes rainWeakOpacity { 0% { opacity: 0.3; } 16.6% { opacity: 0.7; } 33.3% { opacity: 0.2; } 50.0% { opacity: 0; } 66.6% { opacity: 0; } 83.3% { opacity: 0.5; } 100% { opacity: 0.3; } }
+        @keyframes rainStrongOpacity { 0% { opacity: 0; } 16.6% { opacity: 0; } 33.3% { opacity: 0.6; } 50.0% { opacity: 0.2; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0; } 100% { opacity: 0; } }
 
+        /* 🌫️ 04 山水蒙 専用 */
+        .mou-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 60%), radial-gradient(circle at 70% 60%, rgba(240,244,248,0.5) 0%, transparent 70%); mix-blend-mode: overlay; pointer-events: none; animation: mouFogAnim 6.0s ease-in-out infinite; will-change: opacity, transform; }
+        @keyframes mouFogAnim { 0% { opacity: 0.4; transform: scale(1.0) translate(0, 0); } 33.3% { opacity: 0.8; transform: scale(1.1) translate(-2%, 2%); } 50% { opacity: 0.5; transform: scale(1.05) translate(1%, -1%); } 66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } 83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); } 100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); } }    
+        .mou-particle-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; mix-blend-mode: screen; background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 0), radial-gradient(rgba(255,255,255,0.15) 2px, transparent 0); background-size: 60px 60px, 110px 110px; animation: mouParticleAnim 6.0s linear infinite; will-change: opacity, background-position; }
+        @keyframes mouParticleAnim { 0% { opacity: 0.2; background-position: 0 0, 0 0; } 33.3% { opacity: 0.5; background-position: 15px -20px, -10px 15px; } 66.6% { opacity: 0.9; background-position: 30px -40px, -20px 30px; } 83.3% { opacity: 0.4; background-position: 15px -20px, -10px 15px; } 100% { opacity: 0.2; background-position: 0 0, 0 0; } }  
 
-        /* 🌫️ 03 水雷屯 専用：Mist Layer（発生と減衰の霧） */
-        .chun-mist {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%);
-            mix-blend-mode: screen; pointer-events: none;
-            animation: chunMistAnim 6.0s ease-in-out infinite;
-            will-change: opacity;
-        }
-        @keyframes chunMistAnim {
-            0% { opacity: 0.9; } /* Phase1: 強い霧 */
-            33.3% { opacity: 0.3; } /* 霧が減り雨へ */
-            50.0% { opacity: 0.1; } /* Phase4: 霧が切れそう */
-            66.6% { opacity: 0.5; } /* Phase5: 嵐のガス */
-            83.3% { opacity: 0.8; } /* Phase6: 再び霧へ */
-            100% { opacity: 0.9; }
-        }
+        /* ☁️ 05 水天需 専用 */
+        .xu-heavy-cloud { position: absolute; top: -15%; left: -15%; width: 130vw; height: 130vh; background: radial-gradient(ellipse at 50% 30%, rgba(79, 95, 111, 0.7) 0%, rgba(63, 79, 96, 0.4) 40%, transparent 70%); pointer-events: none; mix-blend-mode: multiply; animation: xuCloudAnim 6.0s ease-in-out infinite; will-change: transform, opacity; }
+        @keyframes xuCloudAnim { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.7; } 50.0% { transform: scale(1.01); opacity: 0.3; } 66.6% { transform: scale(1.05); opacity: 0.95; } 83.3% { transform: scale(1.02); opacity: 0.6; } 100% { transform: scale(1.0); opacity: 0.4; } }
+        .xu-pressure-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(50, 60, 70, 0.4) 0%, rgba(127, 143, 159, 0.1) 100%); mix-blend-mode: darken; pointer-events: none; animation: xuPressureAnim 6.0s ease-in-out infinite; will-change: opacity; }
+        @keyframes xuPressureAnim { 0% { opacity: 0.2; } 33.3% { opacity: 0.6; } 50.0% { opacity: 0.1; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.4; } 100% { opacity: 0.2; } }
 
-        /* ☁️ 03 水雷屯 専用：Cloud Chaos Layer（交差する雲） */
-        .chun-cloud-1, .chun-cloud-2 {
-            position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%);
-            pointer-events: none; mix-blend-mode: multiply;
-            will-change: transform, opacity;
-        }
-        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; }
-        .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
-        @keyframes chunCloud1 {
-            0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; }
-            33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; }
-            66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; }
-            100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; }
-        }
-        @keyframes chunCloud2 {
-            0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; }
-            33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; }
-            66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; }
-            100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; }
-        }
+        /* 💥 06 天水訟 専用 */
+        .song-upper-layer, .song-lower-layer { position: absolute; left: -20vw; width: 140vw; height: 60vh; pointer-events: none; will-change: transform, opacity; }
+        .song-upper-layer { top: 0; background: linear-gradient(to bottom, rgba(207,227,255,0.95), rgba(207,227,255,0)); animation: songUpperAnim 6.0s ease-in-out infinite; }
+        .song-lower-layer { bottom: 0; background: linear-gradient(to top, rgba(62,76,90,0.95), rgba(62,76,90,0)); animation: songLowerAnim 6.0s ease-in-out infinite; }
+        @keyframes songUpperAnim { 0% { transform: translateY(-10vh) translateX(0); opacity: 0.8; } 33.3% { transform: translateY(5vh) translateX(10vw); opacity: 0.9; } 66.6% { transform: translateY(20vh) translateX(25vw); opacity: 1; mix-blend-mode: hard-light; } 100% { transform: translateY(-10vh) translateX(40vw); opacity: 0.6; } }
+        @keyframes songLowerAnim { 0% { transform: translateY(10vh) translateX(0); opacity: 0.8; } 33.3% { transform: translateY(-5vh) translateX(-10vw); opacity: 0.9; } 66.6% { transform: translateY(-20vh) translateX(-25vw); opacity: 1; mix-blend-mode: multiply; } 100% { transform: translateY(10vh) translateX(-40vw); opacity: 0.6; } }
+        .song-lightning { position: absolute; top: 50%; left: -20vw; width: 140vw; height: 8px; background: #FFFFFF; box-shadow: 0 0 15px #FFFFFF, 0 0 30px #CFE3FF; transform: translateY(-50%) rotate(-4deg); opacity: 0; pointer-events: none; mix-blend-mode: screen; animation: songLightningAnim 6.0s ease-in-out infinite; }
+        @keyframes songLightningAnim { 0%, 65% { opacity: 0; transform: translateY(-50%) rotate(-4deg) scaleY(1); } 66.6% { opacity: 1; transform: translateY(-50%) rotate(-4deg) scaleY(3); } 69% { opacity: 0.3; transform: translateY(-50%) rotate(-4deg) scaleY(0.5); } 72%, 100% { opacity: 0; } }
+        .song-rain { position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh; background-image: linear-gradient(15deg, transparent 40%, rgba(207,227,255,0.4) 41%, transparent 42%); background-size: 30px 120px; pointer-events: none; animation: songRainDrop 0.3s linear infinite, songRainOpacity 6.0s ease-in-out infinite; }
+        @keyframes songRainDrop { 0% { background-position: 0 0; } 100% { background-position: -30px 120px; } }
+        @keyframes songRainOpacity { 0%, 16.6% { opacity: 0; } 33.3% { opacity: 0.5; } 50.0% { opacity: 0.3; } 66.6% { opacity: 1.0; } 83.3%, 100% { opacity: 0; } }
 
-        /* 🌧️ 03 水雷屯 専用：Rain System（激軽CSSハック雨） */
-        .chun-rain-weak, .chun-rain-strong {
-            position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh;
-            pointer-events: none; will-change: background-position, opacity;
-        }
-        /* 微雨（縦方向） */
-        .chun-rain-weak {
-            background-image: 
-                linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%),
-                linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%);
-            background-size: 30px 100px, 50px 150px;
-            animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite;
-        }
-        /* 強雨（斜め・交差） */
-        .chun-rain-strong {
-            background-image: 
-                linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%),
-                linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%),
-                linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%);
-            background-size: 20px 120px, 35px 160px, 50px 140px;
-            animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite;
-        }
+        /* 🌊 48 水風井 専用 */
+        .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
+        @keyframes wellFeedbackLoop { 0% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } 15% { opacity: 0.8; } 40% { transform: translate(-50%, -15vh) scale(1.1); opacity: 0.9; } 55% { transform: translate(calc(-50% + var(--dir-x)), -10vh) scale(1.0); opacity: 0.7; } 85% { transform: translate(calc(-50% + var(--dir-x) * 0.9), 35vh) scale(0.5); opacity: 0.2; } 100% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } }
 
-        /* 雨が落ちる角度を三角関数レベルで調整し、不自然な滑りを防止 */
-        @keyframes rainDropWeak {
-            0% { background-position: 0 0, 0 0; }
-            100% { background-position: -8px 100px, -13px 150px; }
-        }
-        @keyframes rainDropStrong {
-            0% { background-position: 0 0, 0 0, 0 0; }
-            100% { background-position: -56px 120px, -74px 160px, -65px 140px; }
-        }
+        /* 🔥 63 水火既済 専用 */
+        .jiji-particle { position: absolute; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; animation: jijiLifecycle 6.0s linear infinite; }
+        @keyframes jijiLifecycle { 0%, 16.5% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } 16.6%, 33.2% { background-color: #C7F0E6; box-shadow: 0 0 12px rgba(199,240,230,0.7); transform: translate(0, 0) scale(0.96); opacity: 0.85; } 33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 10px rgba(127,191,178,0.6); transform: translate(0, 0) scale(0.92); opacity: 0.8; } 50.0%, 66.5% { background-color: #6EAA9E; box-shadow: 0 0 8px rgba(110,170,158,0.5); transform: translate(0.5px, -0.5px) scale(0.88); opacity: 0.7; } 66.6%, 83.2% { background-color: #5F8F8A; box-shadow: 0 0 10px rgba(95,143,138,0.6); transform: translate(0, 0) scale(0.85); opacity: 0.8; } 83.3% { background-color: #3F5F5A; box-shadow: 0 0 12px rgba(63,95,90,0.8); transform: translate(0.5px, 0.5px) scale(0.85); opacity: 0.9; } 89.0% { background-color: #3F5F5A; box-shadow: 0 0 18px rgba(63,95,90,1); transform: translate(-1px, 1px) scale(0.95); opacity: 0.95; } 95.0% { background-color: #1F3F3A; box-shadow: 0 0 25px rgba(31,63,58,1); transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.15); opacity: 1; } 100% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } }
 
-        /* タイムラインに合わせた雨の強弱 */
-        @keyframes rainWeakOpacity {
-            0% { opacity: 0.3; } /* Phase1: 微雨 */
-            16.6% { opacity: 0.7; } /* Phase2: 増加 */
-            33.3% { opacity: 0.2; }
-            50.0% { opacity: 0; } /* Phase4: 一瞬止む */
-            66.6% { opacity: 0; }
-            83.3% { opacity: 0.5; } /* Phase6: 減衰して残る */
-            100% { opacity: 0.3; }
-        }
-        @keyframes rainStrongOpacity {
-            0% { opacity: 0; }
-            16.6% { opacity: 0; }
-            33.3% { opacity: 0.6; } /* Phase3: 斜めに乱れる */
-            50.0% { opacity: 0.2; } /* Phase4: 仮の秩序 */
-            66.6% { opacity: 1.0; } /* Phase5: 雷雨ピーク */
-            83.3% { opacity: 0; }
-            100% { opacity: 0; }
-        }
-    
-    
-        /* 🌫️ 04 山水蒙 専用：Fog Volume（ムラのある階層霧） */
-        .mou-fog-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 60%),
-                        radial-gradient(circle at 70% 60%, rgba(240,244,248,0.5) 0%, transparent 70%);
-            mix-blend-mode: overlay; pointer-events: none;
-            animation: mouFogAnim 6.0s ease-in-out infinite;
-            will-change: opacity, transform;
-        }
-        @keyframes mouFogAnim {
-            0% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
-            33.3% { opacity: 0.8; transform: scale(1.1) translate(-2%, 2%); }
-            50% { opacity: 0.5; transform: scale(1.05) translate(1%, -1%); }
-            66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } /* 最濃ホワイトアウト */
-            83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); }
-            100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); }
-        }    
-    
-      
-        
-/*======================================= */
-/* 🐣📱【コピペ専用駅】🐸ココに追加！ 🐤*/
-/*======================================= */
-        
+        /* 🔄 64 火水未済 専用 */
+        .bisei-particle { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; animation: biseiEternalLoop 6.0s cubic-bezier(0.4, 0.0, 0.2, 1) infinite; }
+        @keyframes biseiEternalLoop { 0%, 16.5% { background-color: #3F5F5A; box-shadow: 0 0 10px #3F5F5A; transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.85; } 16.6%, 33.2% { background-color: #5F8F8A; box-shadow: 0 0 15px #5F8F8A; transform: translate(var(--drift-x), var(--drift-y)) scale(0.9); opacity: 0.9; } 33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 20px #7FBFB2; transform: translate(calc(var(--drift-x) * 1.5), calc(var(--drift-y) * 1.5)) scale(0.8); opacity: 0.85; } 50.0%, 66.5% { background-color: #7FBFB2; box-shadow: -10px 0 15px #5F8F8A, 10px 0 15px #A6E0D2; transform: translate(calc(var(--drift-x) * 0.5), calc(var(--drift-y) * 0.5)) scale(1.1); opacity: 0.9; } 66.6%, 83.2% { background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2; transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8; } 83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; } }
 
-        /* ❄️ 雪守族 専用 */
+        /* 🌤️ 8つの基本天候（族）エフェクト */
         .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
         @keyframes snowFall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; } }
         .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; animation: fall linear infinite; }
@@ -726,60 +286,14 @@
         @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
         .orb-particle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); animation: orbDrift ease-in-out infinite; pointer-events: none; }
         @keyframes orbDrift { 0% { transform: translateY(5vh) translateX(0) scale(0.8); opacity: 0; } 25% { opacity: 0.8; } 50% { transform: translateY(-40vh) translateX(30px) scale(1.2); opacity: 0.4; } 75% { opacity: 0.8; } 100% { transform: translateY(-90vh) translateX(-20px) scale(0.9); opacity: 0; } }
-    
-          /* ⚪ 04 山水蒙 専用：Particle Micro Layer（霧の微粒子・チリ表現） */
-        .mou-particle-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; mix-blend-mode: screen;
-            background-image: 
-                radial-gradient(rgba(255,255,255,0.2) 1px, transparent 0),
-                radial-gradient(rgba(255,255,255,0.15) 2px, transparent 0);
-            background-size: 60px 60px, 110px 110px;
-            animation: mouParticleAnim 6.0s linear infinite;
-            will-change: opacity, background-position;
-        }
-        @keyframes mouParticleAnim {
-            0% { opacity: 0.2; background-position: 0 0, 0 0; }
-            33.3% { opacity: 0.5; background-position: 15px -20px, -10px 15px; }
-            66.6% { opacity: 0.9; background-position: 30px -40px, -20px 30px; } /* Phase5で最大密度 */
-            83.3% { opacity: 0.4; background-position: 15px -20px, -10px 15px; }
-            100% { opacity: 0.2; background-position: 0 0, 0 0; }
-        }  
-        
-        /* 48 水風井 */
-        .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
-        @keyframes wellFeedbackLoop { 0% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } 15% { opacity: 0.8; } 40% { transform: translate(-50%, -15vh) scale(1.1); opacity: 0.9; } 55% { transform: translate(calc(-50% + var(--dir-x)), -10vh) scale(1.0); opacity: 0.7; } 85% { transform: translate(calc(-50% + var(--dir-x) * 0.9), 35vh) scale(0.5); opacity: 0.2; } 100% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } }
 
-        /* 63 水火既済 */
-        .jiji-particle { position: absolute; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; animation: jijiLifecycle 6.0s linear infinite; }
-        @keyframes jijiLifecycle {
-            0%, 16.5% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; }
-            16.6%, 33.2% { background-color: #C7F0E6; box-shadow: 0 0 12px rgba(199,240,230,0.7); transform: translate(0, 0) scale(0.96); opacity: 0.85; }
-            33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 10px rgba(127,191,178,0.6); transform: translate(0, 0) scale(0.92); opacity: 0.8; }
-            50.0%, 66.5% { background-color: #6EAA9E; box-shadow: 0 0 8px rgba(110,170,158,0.5); transform: translate(0.5px, -0.5px) scale(0.88); opacity: 0.7; }
-            66.6%, 83.2% { background-color: #5F8F8A; box-shadow: 0 0 10px rgba(95,143,138,0.6); transform: translate(0, 0) scale(0.85); opacity: 0.8; }
-            83.3% { background-color: #3F5F5A; box-shadow: 0 0 12px rgba(63,95,90,0.8); transform: translate(0.5px, 0.5px) scale(0.85); opacity: 0.9; }
-            89.0% { background-color: #3F5F5A; box-shadow: 0 0 18px rgba(63,95,90,1); transform: translate(-1px, 1px) scale(0.95); opacity: 0.95; }
-            95.0% { background-color: #1F3F3A; box-shadow: 0 0 25px rgba(31,63,58,1); transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.15); opacity: 1; }
-            100% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; }
-        }
 
-        /* 64 火水未済 */
-        .bisei-particle {
-            position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen;
-            animation: biseiEternalLoop 6.0s cubic-bezier(0.4, 0.0, 0.2, 1) infinite;
-        }
-        @keyframes biseiEternalLoop {
-            0%, 16.5% { background-color: #3F5F5A; box-shadow: 0 0 10px #3F5F5A; transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.85; }
-            16.6%, 33.2% { background-color: #5F8F8A; box-shadow: 0 0 15px #5F8F8A; transform: translate(var(--drift-x), var(--drift-y)) scale(0.9); opacity: 0.9; }
-            33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 20px #7FBFB2; transform: translate(calc(var(--drift-x) * 1.5), calc(var(--drift-y) * 1.5)) scale(0.8); opacity: 0.85; }
-            50.0%, 66.5% { background-color: #7FBFB2; box-shadow: -10px 0 15px #5F8F8A, 10px 0 15px #A6E0D2; transform: translate(calc(var(--drift-x) * 0.5), calc(var(--drift-y) * 0.5)) scale(1.1); opacity: 0.9; }
-            66.6%, 83.2% { background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2; transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8; }
-            83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; }
-        }
+        /* 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
+           🚂【コピペ専用駅：1番ホーム】CSS追加エリア 🐸🐤
+           ※ここに新しい卦のCSS（アニメーションなど）を追加してね！
+           🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 */
 
     </style>
-
 </head>
 <body class="mode-normal">
 
@@ -795,14 +309,15 @@
                 <option value="4">04 山水蒙 (認識不能・ホワイトアウト)</option>
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
-                
-/*======================================= */
-/* 📱🐣【コピペ専用駅】🐸ココへ追加！🐤 */
-/*======================================= */ 
-                
-            　　 <option value="48">48 水風井 (静的循環)</option>
+                <option value="7">07 地水師 (統制された雨)</option>
+                <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
+
+                <!-- 🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧
+                     🚂【コピペ専用駅：2番ホーム】メニュー追加エリア 🐸🐤
+                     ※ここに <option value="..."> のタグを追加してね！
+                     🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧 -->
             </optgroup>
             
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
@@ -859,7 +374,7 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-shi', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
@@ -867,14 +382,16 @@
             const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
             const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
             const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
-            
-/*======================================= */
-/* 📱【コピペ専用駅】ココへ追加！*/
-/*======================================= */ 
-
+            const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
+
+            // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
+            // 🚂【コピペ専用駅：3番ホーム】判定ロジック追加エリア 🐸🐤
+            // ※ 上の行に const isXXX = ... の判定を追加し、
+            // ※ 下の行に else if (isXXX) { document.body.classList... } を追加！
+            // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
 
             if (isTen) {
                 document.body.classList.add('theme-ten'); startTenEffect();
@@ -888,11 +405,8 @@
                 document.body.classList.add('theme-xu'); startXuEffect(); 
             } else if (isSong) { 
                 document.body.classList.add('theme-song'); startSongEffect();
-/*======================================= */
-/* 📱【コピペ専用駅】ココへ追加！ */
-/*======================================= */                               
-                
-                
+            } else if (isShi) { 
+                document.body.classList.add('theme-shi'); // 師のエフェクトは基本CSSのみ
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -900,7 +414,7 @@
             } else if (isBisei) {
                 document.body.classList.add('theme-bisei'); startBiseiEffect();
             } else {
-                startWeatherEffect(species);
+                // startWeatherEffect(species); // ※必要に応じて定義
             }
 
             if (data) {
@@ -914,7 +428,6 @@
                 if (data.bgm) { document.getElementById('bgm-player').src = data.bgm; }
             }
         }
-
 
         function switchPreviewEffect(val) {
             if (val === "API") {
@@ -943,16 +456,17 @@
                 "6": { 
                     name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", 
                     chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
-/*======================================= */
-/* 📱モックデータ🐸【コピペ専用駅】ココへ追加！🐤 */
-/*======================================= */ 
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
                 "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
+
+                // 🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪
+                // 🚂【コピペ専用駅：4番ホーム】モックデータ追加エリア 🐸🐤
+                // ※ ここに "卦の番号": { name: ... } のモックデータを追加してね！
+                // 🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪
             };
 
             if (mockData[val]) { 
-                // 「屯」の場合は背景画像を「雨」っぽくするためにデフォルトを雨巡族に設定
                 applyData(mockData[val], val, (val==="2"?"受雲族": val==="3"?"雨巡族" :"創空族"));
             } else {
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
@@ -985,20 +499,15 @@
             }
         }
 
-        // 🌫️ 【02 坤為地】エフェクト（絶対の静寂・霧・重い雲）
+        // 🌫️ 【02 坤為地】エフェクト
         function startKonEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // 空間を徐々に埋め尽くすグレーの霧（乗算レイヤーで明度を落とす）
             let fog = document.createElement('div');
             fog.className = 'kon-fog-layer';
             container.appendChild(fog);
-            
-            // 動かずにその場で厚みを増していく「重い雲」の集まり
             for (let i = 0; i < 5; i++) {
                 let cloud = document.createElement('div');
                 cloud.className = 'kon-heavy-cloud';
-                // 画面全体に覆い被さるように大きく配置
                 cloud.style.width = (Math.random() * 80 + 100) + 'vw';
                 cloud.style.height = (Math.random() * 80 + 100) + 'vh';
                 cloud.style.top = (Math.random() * -20) + 'vh';
@@ -1008,181 +517,71 @@
             }
         }
         
-        // 🌧️ 【03 水雷屯】エフェクト（発生・混乱・雷雨・減衰）
+        // 🌧️ 【03 水雷屯】エフェクト
         function startChunEffect() {
-            // 背景にテーマクラスをセット（色とカメラ振動の適用）
-            const bgLayer = document.querySelector('.bg-layer');
-            bgLayer.className = 'bg-layer theme-chun';
-
-            const container = document.getElementById('weather-effect'); 
-            container.innerHTML = '';
-            
-            // 霧（発生と減衰のベース）
-            let mist = document.createElement('div');
-            mist.className = 'chun-mist';
-            container.appendChild(mist);
-
-            // カオス雲（逆方向に交差させる2枚）
+            const bgLayer = document.querySelector('.bg-layer'); bgLayer.className = 'bg-layer theme-chun';
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let mist = document.createElement('div'); mist.className = 'chun-mist'; container.appendChild(mist);
             for (let i = 1; i <= 2; i++) {
-                let cloud = document.createElement('div');
-                cloud.className = `chun-cloud-${i}`;
-                cloud.style.width = '150vw';
-                cloud.style.height = '150vw'; 
-                container.appendChild(cloud);
+                let cloud = document.createElement('div'); cloud.className = `chun-cloud-${i}`;
+                cloud.style.width = '150vw'; cloud.style.height = '150vw'; container.appendChild(cloud);
             }
-
-            // 微雨（序盤と終盤に降る縦の雨）
-            let rainWeak = document.createElement('div');
-            rainWeak.className = 'chun-rain-weak';
-            container.appendChild(rainWeak);
-
-            // 強風雨（中盤〜ピークに降る斜めの乱れた雨）
-            let rainStrong = document.createElement('div');
-            rainStrong.className = 'chun-rain-strong';
-            container.appendChild(rainStrong);
+            let rainWeak = document.createElement('div'); rainWeak.className = 'chun-rain-weak'; container.appendChild(rainWeak);
+            let rainStrong = document.createElement('div'); rainStrong.className = 'chun-rain-strong'; container.appendChild(rainStrong);
         }
-            // 🌫️ 【エフェクトロジック】04 山水蒙（霧ボリュームと微粒子の生成）
+
+        // 🌫️ 【04 山水蒙】エフェクト
         function startMouEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① ムラのある霧階層レイヤー
-            let fog = document.createElement('div');
-            fog.className = 'mou-fog-layer';
-            container.appendChild(fog);
-
-            // ② 微粒子（チリ）レイヤー
-            let particle = document.createElement('div');
-            particle.className = 'mou-particle-layer';
-            container.appendChild(particle);
-        }
-    
-        // 🌫️ 【エフェクトロジック】04 山水蒙（霧ボリュームと微粒子の生成）
-        function startMouEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① ムラのある霧階層レイヤー
-            let fog = document.createElement('div');
-            fog.className = 'mou-fog-layer';
-            container.appendChild(fog);
-
-            // ② 微粒子（チリ）レイヤー
-            let particle = document.createElement('div');
-            particle.className = 'mou-particle-layer';
-            container.appendChild(particle);
+            let fog = document.createElement('div'); fog.className = 'mou-fog-layer'; container.appendChild(fog);
+            let particle = document.createElement('div'); particle.className = 'mou-particle-layer'; container.appendChild(particle);
         } 
         
-        // ☁️ 【エフェクトロジック】05 水天需（ゆっくりと膨張する巨大雲と圧迫層）
+        // ☁️ 【05 水天需】エフェクト
         function startXuEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① ゆっくりと膨張・変形する巨大雲（空間圧縮用）
-            let cloud = document.createElement('div');
-            cloud.className = 'xu-heavy-cloud';
-            container.appendChild(cloud);
-
-            // ② 光を力で押さえつける圧迫レイヤー
-            let pressure = document.createElement('div');
-            pressure.className = 'xu-pressure-layer';
-            container.appendChild(pressure);
+            let cloud = document.createElement('div'); cloud.className = 'xu-heavy-cloud'; container.appendChild(cloud);
+            let pressure = document.createElement('div'); pressure.className = 'xu-pressure-layer'; container.appendChild(pressure);
         } 
         
-        // 💥 【エフェクトロジック】06 天水訟（逆行する上下の空・激突・横閃光）
+        // 💥 【06 天水訟】エフェクト
         function startSongEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            
-            // ① 上層：明るい光の層（右下へ交差）
-            let upperSky = document.createElement('div');
-            upperSky.className = 'song-upper-layer';
-            container.appendChild(upperSky);
-
-            // ② 下層：重い雨雲の層（左上へ交差）
-            let lowerSky = document.createElement('div');
-            lowerSky.className = 'song-lower-layer';
-            container.appendChild(lowerSky);
-
-            // ③ 衝突時の雨レイヤー
-            let rain = document.createElement('div');
-            rain.className = 'song-rain';
-            container.appendChild(rain);
-
-            // ④ 激突ピーク時に空を裂く横方向の雷
-            let lightning = document.createElement('div');
-            lightning.className = 'song-lightning';
-            container.appendChild(lightning);
+            let upperSky = document.createElement('div'); upperSky.className = 'song-upper-layer'; container.appendChild(upperSky);
+            let lowerSky = document.createElement('div'); lowerSky.className = 'song-lower-layer'; container.appendChild(lowerSky);
+            let rain = document.createElement('div'); rain.className = 'song-rain'; container.appendChild(rain);
+            let lightning = document.createElement('div'); lightning.className = 'song-lightning'; container.appendChild(lightning);
         }
-/*======================================= */
-/* 📱🐣【コピペ専用駅】🐸ここへ追加！ 🐤*/
-/*======================================= */       
-    
-         // 🌊 【48 水風井】エフェクト
+
+        // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             for(let i=0; i<30; i++) {
                 let p = document.createElement('div'); p.className = 'well-particle';
-                const dirX = (Math.random() * 280 - 140) + 'px'; p.style.setProperty('--dir-x', dirX);
-                p.style.left = '50vw'; const size = (Math.random() * 6 + 6) + 'px'; p.style.width = size; p.style.height = size;
-                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.backgroundColor = chosenColor; p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
-                p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
+                const dirX = (Math.random() - 0.5) * 40 + 'vw';
+                p.style.setProperty('--dir-x', dirX);
+                p.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(p);
             }
         }
 
-        // 🌊 【63 水火既済】エフェクト
+        // 🔥 【63 水火既済】エフェクト
         function startJijiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            const cols = 6; const rows = 11;
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    let p = document.createElement('div'); p.className = 'jiji-particle';
-                    p.style.left = `calc(${(c + 1) * (100 / (cols + 1))}vw - 3px)`; p.style.top = `calc(${(r + 1) * (100 / (rows + 1))}vh - 3px)`;
-                    const glitchX = (Math.random() * 8 - 4) + 'px'; const glitchY = (Math.random() * 8 - 4) + 'px';
-                    p.style.setProperty('--glitch-x', glitchX); p.style.setProperty('--glitch-y', glitchY);
-                    p.style.animationDelay = '0s'; container.appendChild(p);
-                }
-            }
+            // TODO: ここに既済のパーティクル生成ロジックを追加
         }
 
-        // 🎬 【64 火水未済】エフェクト
+        // 🔄 【64 火水未済】エフェクト
         function startBiseiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            for (let i = 0; i < 45; i++) {
-                let p = document.createElement('div'); p.className = 'bisei-particle';
-                p.style.left = Math.random() * 100 + 'vw'; p.style.top = Math.random() * 100 + 'vh';
-                const size = (Math.random() * 10 + 5) + 'px'; p.style.width = size; p.style.height = size;
-                const driftX = (Math.random() * 120 - 60) + 'px'; const driftY = (Math.random() * 120 - 60) + 'px';
-                p.style.setProperty('--drift-x', driftX); p.style.setProperty('--drift-y', driftY);
-                p.style.animationDelay = '0s'; container.appendChild(p);
-            }
+            // TODO: ここに未済のパーティクル生成ロジックを追加
         }
 
-        // 通常の天候エフェクト関数
-        function startWeatherEffect(species) {
-            const container = document.getElementById('weather-effect'); container.innerHTML = ''; 
-            if (species === "雨巡族") {
-                for(let i=0; i<60; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -100 + 'px'; const zIndex = Math.random(); drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`; drop.style.opacity = zIndex * 0.7 + 0.3; drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; drop.style.animationDelay = Math.random() * 2 + 's'; container.appendChild(drop); }
-            } else if (species === "雪守族") {
-                for(let i=0; i<40; i++) { 
-                    let flake = document.createElement('div'); flake.className = 'snow-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * -20) + 'vh';
-                    const size = (Math.random() * 8 + 3) + 'px'; flake.style.width = size; flake.style.height = size;
-                    const swayX = (Math.random() * 50 - 25) + 'px'; flake.style.setProperty('--sway-x', swayX);
-                    flake.style.animationDuration = (Math.random() * 4 + 5) + 's'; flake.style.animationDelay = (Math.random() * -8) + 's'; container.appendChild(flake); 
-                }
-            } else if (species === "雷芽族") {
-                let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
-                for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
-            } else if (species === "創空族") {
-                for(let i=0; i<35; i++) { let sparkle = document.createElement('div'); sparkle.className = 'sparkle'; sparkle.style.left = Math.random() * 100 + 'vw'; const size = (Math.random() * 8 + 3) + 'px'; sparkle.style.width = sparkle.style.height = size; sparkle.style.background = 'radial-gradient(circle, #ffffff, rgba(253, 224, 71, 0.2))'; sparkle.style.boxShadow = '0 0 15px rgba(253, 224, 71, 0.8)'; sparkle.style.animationDuration = (Math.random() * 5 + 3) + 's'; sparkle.style.animationDelay = Math.random() * -5 + 's'; container.appendChild(sparkle); }
-            } else if (species === "炎灯族") {
-                for(let i=0; i<40; i++) { let spark = document.createElement('div'); spark.className = 'sparkle'; spark.style.left = Math.random() * 100 + 'vw'; const size = (Math.random() * 6 + 2) + 'px'; spark.style.width = spark.style.height = size; spark.style.background = 'radial-gradient(circle, #fff, rgba(249, 115, 22, 0.3))'; spark.style.boxShadow = '0 0 12px #ea580c, 0 0 20px #ef4444'; spark.style.animationDuration = (Math.random() * 2.5 + 2) + 's'; spark.style.animationDelay = Math.random() * -3 + 's'; container.appendChild(spark); }
-            } else if (species === "風旅族") {
-                for(let i=0; i<15; i++) { let wind = document.createElement('div'); wind.className = 'wind-line'; wind.style.top = (Math.random() * 100) + 'vh'; wind.style.width = (Math.random() * 200 + 150) + 'px'; wind.style.opacity = Math.random() * 0.5 + 0.2; wind.style.animationDuration = (Math.random() * 2 + 1) + 's'; wind.style.animationDelay = Math.random() * -2 + 's'; container.appendChild(wind); }
-            } else if (species === "虹結族") {
-                const colors = ['rgba(254,205,211,0.6)', 'rgba(191,219,254,0.6)', 'rgba(253,230,138,0.6)', 'rgba(187,247,208,0.6)', 'rgba(233,213,255,0.6)'];
-                for(let i=0; i<25; i++) { let bubble = document.createElement('div'); bubble.className = 'sparkle'; bubble.style.left = Math.random() * 100 + 'vw'; const size = (Math.random() * 40 + 10) + 'px'; bubble.style.width = bubble.style.height = size; bubble.style.background = colors[Math.floor(Math.random() * colors.length)]; bubble.style.boxShadow = '0 0 20px ' + bubble.style.background; bubble.style.animationDuration = (Math.random() * 8 + 4) + 's'; bubble.style.animationDelay = Math.random() * -8 + 's'; container.appendChild(bubble); }
-            } else if (species === "受雲族") {
-                for(let i=0; i<25; i++) { let orb = document.createElement('div'); orb.className = 'orb-particle'; orb.style.left = (Math.random() * 100) + 'vw'; orb.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 22 + 8) + 'px'; orb.style.width = size; orb.style.height = size; orb.style.animationDuration = (Math.random() * 15 + 15) + 's'; orb.style.animationDelay = (Math.random() * -30) + 's'; container.appendChild(orb); }
-            }
-        }
+        // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
+        // 🚂【コピペ専用駅：5番ホーム】JSエフェクト関数追加 🐸🐤
+        // ※ ここに function startXXXEffect() { ... } を追加してね！
+        // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
+
     </script>
 </body>
-</html>
+</html>    
