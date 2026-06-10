@@ -531,29 +531,6 @@
             let rainWeak = document.createElement('div'); rainWeak.className = 'chun-rain-weak'; container.appendChild(rainWeak);
             let rainStrong = document.createElement('div'); rainStrong.className = 'chun-rain-strong'; container.appendChild(rainStrong);
         }
-                // 💧 【08 水地比】エフェクト
-        function startSuichibiEffect() {
-            const container = document.getElementById('weather-effect'); 
-            container.innerHTML = '';
-            // 雰囲気に合わせた背景色の適用
-            container.style.background = 'linear-gradient(to bottom, #7A8FA3, #C6D8EA)';
-
-            for(let i = 0; i < 15; i++) {
-                let mist = document.createElement('div');
-                mist.className = 'mist-particle'; // CSSで定義したスタイルを使用
-                
-                // ランダムな配置とサイズ
-                mist.style.left = Math.random() * 100 + 'vw';
-                mist.style.top = Math.random() * 100 + 'vh';
-                const size = (Math.random() * 200 + 100) + 'px';
-                mist.style.width = size;
-                mist.style.height = size;
-                mist.style.animationDelay = (Math.random() * -10) + 's';
-                
-                container.appendChild(mist);
-            }
-        }
-
 
         // 🌫️ 【04 山水蒙】エフェクト
         function startMouEffect() {
