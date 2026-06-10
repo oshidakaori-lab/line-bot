@@ -310,6 +310,8 @@
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
                 <option value="7">07 地水師 (統制された雨)</option>
+                <option value="8">08 水地比（なじむ）</option>
+
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -529,6 +531,29 @@
             let rainWeak = document.createElement('div'); rainWeak.className = 'chun-rain-weak'; container.appendChild(rainWeak);
             let rainStrong = document.createElement('div'); rainStrong.className = 'chun-rain-strong'; container.appendChild(rainStrong);
         }
+                // 💧 【08 水地比】エフェクト
+        function startSuichibiEffect() {
+            const container = document.getElementById('weather-effect'); 
+            container.innerHTML = '';
+            // 雰囲気に合わせた背景色の適用
+            container.style.background = 'linear-gradient(to bottom, #7A8FA3, #C6D8EA)';
+
+            for(let i = 0; i < 15; i++) {
+                let mist = document.createElement('div');
+                mist.className = 'mist-particle'; // CSSで定義したスタイルを使用
+                
+                // ランダムな配置とサイズ
+                mist.style.left = Math.random() * 100 + 'vw';
+                mist.style.top = Math.random() * 100 + 'vh';
+                const size = (Math.random() * 200 + 100) + 'px';
+                mist.style.width = size;
+                mist.style.height = size;
+                mist.style.animationDelay = (Math.random() * -10) + 's';
+                
+                container.appendChild(mist);
+            }
+        }
+
 
         // 🌫️ 【04 山水蒙】エフェクト
         function startMouEffect() {
@@ -552,6 +577,13 @@
             let rain = document.createElement('div'); rain.className = 'song-rain'; container.appendChild(rain);
             let lightning = document.createElement('div'); lightning.className = 'song-lightning'; container.appendChild(lightning);
         }
+                // 🛡️ 07 地水師
+        function startShiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let cloud = document.createElement('div'); cloud.className = 'shi-uniform-cloud'; container.appendChild(cloud);
+            let rain = document.createElement('div'); rain.className = 'shi-rain-grid'; container.appendChild(rain);
+        }
+        
 
         // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
@@ -565,17 +597,50 @@
             }
         }
 
-        // 🔥 【63 水火既済】エフェクト
-        function startJijiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            // TODO: ここに既済のパーティクル生成ロジックを追加
+        // ☯️ 【63 水火既済】エフェクト
+    function startJijiEffect() {
+        const container = document.getElementById('weather-effect'); container.innerHTML = '';
+        for(let i=0; i<40; i++) {
+            let p = document.createElement('div'); p.className = 'jiji-particle';
+            p.style.left = (Math.random() * 100) + 'vw';
+            p.style.top = (Math.random() * 100) + 'vh';
+            p.style.setProperty('--glitch-x', (Math.random() * 10 - 5) + 'px');
+            p.style.setProperty('--glitch-y', (Math.random() * 10 - 5) + 'px');
+            p.style.animationDelay = (Math.random() * -6.0) + 's';
+            container.appendChild(p);
         }
+    }
 
-        // 🔄 【64 火水未済】エフェクト
-        function startBiseiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            // TODO: ここに未済のパーティクル生成ロジックを追加
+        // 🌀 【64 火水未済】エフェクト
+    function startBiseiEffect() {
+        const container = document.getElementById('weather-effect'); container.innerHTML = '';
+        for(let i=0; i<40; i++) {
+            let p = document.createElement('div'); p.className = 'bisei-particle';
+            p.style.width = (Math.random() * 12 + 6) + 'px';
+            p.style.height = p.style.width;
+            p.style.left = (Math.random() * 100) + 'vw';
+            p.style.top = (Math.random() * 100) + 'vh';
+            p.style.setProperty('--drift-x', (Math.random() * 20 - 10) + 'vw');
+            p.style.setProperty('--drift-y', (Math.random() * 20 - 10) + 'vh');
+            p.style.animationDelay = (Math.random() * -6.0) + 's';
+            container.appendChild(p);
         }
+    }
+        // 🌈 基本天候エフェクト（フォールバック）
+    function startWeatherEffect(species) {
+        const container = document.getElementById('weather-effect'); container.innerHTML = '';
+        if(species === '雪守族') {
+            for(let i=0; i<50; i++) {
+                let p = document.createElement('div'); p.className = 'snow-particle';
+                p.style.width = (Math.random() * 5 + 2) + 'px';
+                p.style.height = p.style.width;
+                p.style.left = (Math.random() * 100) + 'vw';
+                p.style.setProperty('--sway-x', (Math.random() * 10 - 5) + 'vw');
+                p.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                container.appendChild(p);
+            }
+        }
+    }
 
         // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
         // 🚂【コピペ専用駅：5番ホーム】JSエフェクト関数追加 🐸🐤
