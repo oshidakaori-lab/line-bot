@@ -548,9 +548,14 @@
             const imageFile = speciesImages[species] || "cloud.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
-            // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-shi', 'theme-bi', 'theme-shouchiku', 'theme-well', 'theme-jiji', 'theme-bisei');
-
+            // 1. クラスを一旦キレイにリセット（新テーマもすべて網羅）
+            document.body.classList.remove(
+                'theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 
+                'theme-song', 'theme-shi', 'theme-well', 'theme-jiji', 'theme-bisei',
+                'theme-bi', 'theme-shouchiku', 'theme-ri'
+            );
+            
+            // 2. 各卦の判定変数を定義
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
             const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
@@ -558,18 +563,21 @@
             const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
             const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
             const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
-            const isBi = (currentHid === "8" || (data && data.name && data.name.includes("比")));
-            const isShouchiku = (currentHid === "9" || (data && data.name && data.name.includes("小畜")));
+            const isBi = (currentHid === "8" || (data && data.name && data.name.includes("比"))); // ⑧追加
+            const isShouchiku = (currentHid === "9" || (data && data.name && data.name.includes("小畜"))); // ⑨追加
+            const isRi = (currentHid === "10" || (data && data.name && data.name.includes("履"))); // ⑩追加
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
 
+            
             // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
             // 🚂【コピペ専用駅：3番ホーム】判定ロジック追加エリア 🐸🐤
             // ※ 上の行に const isXXX = ... の判定を追加し、
             // ※ 下の行に else if (isXXX) { document.body.classList... } を追加！
             // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
 
+// 3. エフェクトの発動ロジック（if-elseの連鎖）
             if (isTen) {
                 document.body.classList.add('theme-ten'); startTenEffect();
             } else if (isKon) {
@@ -583,13 +591,13 @@
             } else if (isSong) { 
                 document.body.classList.add('theme-song'); startSongEffect();
             } else if (isShi) { 
-                document.body.classList.add('theme-shi'); startShiEffect(); // 👈 映画仕様エフェクトを起動！
-            } else if (isBi) { 
-                document.body.classList.add('theme-bi'); startBiEffect();
-            } else if (isShouchiku) { 
-                document.body.classList.add('theme-shouchiku'); startShouchikuEffect(); 
-                
-                
+                document.body.classList.add('theme-shi'); startShiEffect(); // ⑦映画仕様
+            } else if (isBi) {
+                document.body.classList.add('theme-bi'); startBiEffect(); // ⑧映画仕様
+            } else if (isShouchiku) {
+                document.body.classList.add('theme-shouchiku'); startShouchikuEffect(); // ⑨映画仕様
+            } else if (isRi) {
+                document.body.classList.add('theme-ri'); startRiEffect(); // ⑩映画仕様
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -597,8 +605,11 @@
             } else if (isBisei) {
                 document.body.classList.add('theme-bisei'); startBiseiEffect();
             } else {
-                // startWeatherEffect(species); // ※必要に応じて定義
+                // 一致するものがない場合のデフォルト（空にする等）
+                const container = document.getElementById('weather-effect');
+                if(container) container.innerHTML = '';
             }
+                // startWeatherEffect(species); // ※必要に応じて定義
 
             if (data) {
                 document.getElementById('title').innerText = `${data.name} (${l_name})`;
@@ -774,7 +785,7 @@
             let rain = document.createElement('div'); rain.className = 'song-rain'; container.appendChild(rain);
             let lightning = document.createElement('div'); lightning.className = 'song-lightning'; container.appendChild(lightning);
         }
-                        // 🌧 【07 地水師】エフェクト（組織された流れ・Grid Rain）
+        // 🌧 【07 地水師】エフェクト（組織された流れ・Grid Rain）
         function startShiEffect() {
             const container = document.getElementById('weather-effect'); 
             container.innerHTML = '';
