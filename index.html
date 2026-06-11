@@ -240,7 +240,70 @@
             16.6% { opacity: 0; } /* Phase 2で完全に止む */
             100% { opacity: 0; }
         }
+            /* 🎬 【09 風天小畜】専用カメラ＆ベースタイムライン（圧縮感・抑制の風） */
+        .theme-shouchiku .bg-layer {
+            animation: shouchikuTimeline 6.0s ease-in-out infinite !important;
+            will-change: background-color, transform;
+        }
+        @keyframes shouchikuTimeline {
+            0% { background-color: #A9C0D6; transform: scale(1.0); } /* Phase 1: 動きの兆し（軽い空） */
+            16.6% { background-color: #9CB3CA; transform: scale(1.003); } /* Phase 2: 抑制の開始 */
+            33.3% { background-color: #8FA6BC; transform: scale(1.008); } /* Phase 3: 抑制（止められる流れ） */
+            50.0% { background-color: #7F96AD; transform: scale(1.014); } /* Phase 4: 緊張最大化 */
+            66.6% { background-color: #6F869D; transform: scale(1.02); }  /* Phase 5: 最圧（発散寸前の停止） */
+            83.3% { background-color: #8CA3B8; transform: scale(1.01); }  /* Phase 6: 残留（抑えたままの終わり） */
+            100% { background-color: #A9C0D6; transform: scale(1.0); }    /* ループ接続・再び風発生へ */
+        }
 
+        /* ① Wind Flow Layer（可視化された風の流れ：進みそうで押し戻される） */
+        .shouchiku-wind-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.35), transparent);
+            pointer-events: none;
+            animation: shouchikuWindFlow 6.0s ease-in-out infinite;
+        }
+        @keyframes shouchikuWindFlow {
+            0% { transform: translateX(-15vw) scaleX(0.6); opacity: 0; }
+            16.6% { transform: translateX(10vw) scaleX(1.2); opacity: 0.5; } /* 風が広がる */
+            33.3% { transform: translateX(20vw) scaleX(1.4); opacity: 0.7; } /* 前進しそうで進まない張力 */
+            50.0% { transform: translateX(18vw) scaleX(1.0); opacity: 0.8; } /* 一瞬動いてすぐ停止・引き戻される */
+            66.6% { transform: translateX(25vw) scaleX(0.7); opacity: 0.4; } /* ピーク：抑え込まれた強い風の筋 */
+            83.3% { transform: translateX(5vw) scaleX(0.5); opacity: 0.2; }
+            100% { transform: translateX(-15vw) scaleX(0.6); opacity: 0; }
+        }
+
+        /* ② Cloud Resistance Layer（雲が動きを拒む逆流・ホールド表現） */
+        .shouchiku-resisting-cloud {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 70%);
+            mix-blend-mode: overlay; pointer-events: none;
+            filter: blur(15px);
+            animation: shouchikuCloudResist 6.0s ease-in-out infinite;
+        }
+        @keyframes shouchikuCloudResist {
+            0%, 100% { transform: translateX(0) scale(1); opacity: 0.5; }
+            16.6% { transform: translateX(1.5vw) scale(1.02); opacity: 0.5; } /* わずかに流されかける */
+            33.3% { transform: translateX(-0.8vw) scale(1.05); opacity: 0.6; } /* ギュッと押し戻される抵抗 */
+            50.0% { transform: translateX(0.5vw) scale(1.08); opacity: 0.7; }  /* 停止の圧力 */
+            66.6% { transform: translateX(0vw) scale(1.1); opacity: 0.75; }   /* ガチッと固定されるピーク */
+            83.3% { transform: translateX(0vw) scale(1.04); opacity: 0.6; }
+        }
+
+        /* ③ Atmospheric Pressure Layer（空間の圧縮感・視覚的密度上昇） */
+        .shouchiku-pressure-fog {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(15, 23, 42, 0.18) 100%);
+            mix-blend-mode: multiply; pointer-events: none;
+            animation: shouchikuPressure 6.0s ease-in-out infinite;
+        }
+        @keyframes shouchikuPressure {
+            0%, 16.6% { opacity: 0; }
+            33.3% { opacity: 0.5; }
+            66.6% { opacity: 1.0; } /* 66.6%（Phase 5）で抑え込み圧力が最大化 */
+            83.3% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
         /* 🎬 【48 水風井】専用カメラワーク */
         .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
         @keyframes wellStaticWater {
@@ -419,6 +482,8 @@
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
                 <option value="7">07 地水師 (統制された雨)</option>
                 <option value="8">08 水地比（なじむ）</option>
+                <option value="9">09 風天小畜（静かなストレス）</option>
+
 
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
@@ -484,7 +549,7 @@
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
             // クラスを一旦キレイにリセット
-            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-shi', 'theme-bi', 'theme-well', 'theme-jiji', 'theme-bisei');
+            document.body.classList.remove('theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 'theme-song', 'theme-shi', 'theme-bi', 'theme-shouchiku', 'theme-well', 'theme-jiji', 'theme-bisei');
 
             const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
             const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
@@ -494,6 +559,7 @@
             const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
             const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
             const isBi = (currentHid === "8" || (data && data.name && data.name.includes("比")));
+            const isShouchiku = (currentHid === "9" || (data && data.name && data.name.includes("小畜")));
             const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
             const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
             const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
@@ -520,6 +586,10 @@
                 document.body.classList.add('theme-shi'); startShiEffect(); // 👈 映画仕様エフェクトを起動！
             } else if (isBi) { 
                 document.body.classList.add('theme-bi'); startBiEffect();
+            } else if (isShouchiku) { 
+                document.body.classList.add('theme-shouchiku'); startShouchikuEffect(); 
+                
+                
             } else if (isWell) {
                 document.body.classList.add('theme-well'); startWellEffect();
             } else if (isJiji) {
@@ -588,6 +658,25 @@
                     usagi: "…フゥ（しっとりとした空気に完全に包まれてる）", 
                     advice: "努力して結びつけるのではない。ただ『そこにいる』だけで、自然と調和は生まれる。抵抗を捨て、空気と一体になれ。" 
                 },
+                                "9": { 
+                    name: "風天小畜", 
+                    sky_name: "未発散の緊迫空", 
+                    chiikawa_scene: "風はいっぱい吹いてるのに…お空の雲が全然動かないよォ…！", 
+                    chiikawa: "わ…わァ…ッ（前に進まない空気の重さにオロオロしている）", 
+                    hachiware: "風はこんなに強いのに、お空がギュッと止められてるみたい…！なんだか不思議な緊張感だね…！", 
+                    usagi: "フゥーーーッ！！（風に立ち向かうポーズのまま、その場でピタッと静止している）", 
+                    advice: "エネルギーは満ちているが、今は意図的なブレーキがかかっている。焦って無理に発散しようとせず、抑え込まれたこの空間で静かに次の力を溜めよ。" 
+                },
+                "10": { 
+                    name: "天澤履", 
+                    sky_name: "薄氷の緊張歩行空", 
+                    chiikawa_scene: "お空がなんだかピキピキしてる…！一歩一歩、気をつけて歩かないと…！", 
+                    chiikawa: "…わァ…（泣きそうになりながら、そろ〜りそろ〜りつま先立ちで歩いている）", 
+                    hachiware: "上は綺麗なのに、足元が危うい雰囲気だね…！虎のしっぽを踏まないように、すっごく慎重にいこう…！", 
+                    usagi: "ウラララララッ！！（危機を察知して、いつになく真剣な顔で高速変則ステップを踏んでいる）", 
+                    advice: "危険を伴う状況を歩む時である。しかし、正しい礼節と細心の慎重さを持って臨めば、虎の尾を踏むような危うささえも無事に切り抜けられる。油断を捨てて一歩を踏み出せ。" 
+                },
+
 
                 "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
                 "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
@@ -761,6 +850,43 @@
                 container.appendChild(rain);
             }
         }
+            // 🌬 【09 風天小畜】エフェクト（エネルギーの封じ込め・抑制の風）
+        function startShouchikuEffect() {
+            const container = document.getElementById('weather-effect');
+            container.innerHTML = '';
+
+            // ③ 空間の圧縮感（気圧レイヤー）
+            let pressure = document.createElement('div');
+            pressure.className = 'shouchiku-pressure-fog';
+            container.appendChild(pressure);
+
+            // ① 可視化された風の流れ（Wind Flow Layer）
+            // 動きはあるのに進めない、強いが引き留められた風の筋
+            for (let i = 0; i < 14; i++) {
+                let wind = document.createElement('div');
+                wind.className = 'shouchiku-wind-line';
+                wind.style.width = (Math.random() * 35 + 35) + 'vw';
+                wind.style.left = (Math.random() * 40) + 'vw';
+                wind.style.top = (Math.random() * 80 + 10) + 'vh';
+                // 6秒のベースタイムラインに完全同調させるため、共通の秒数内でマイナスディレイ
+                wind.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(wind);
+            }
+
+            // ② 動きを拒み、その場に留まる雲（Cloud Resistance Layer）
+            for (let i = 0; i < 5; i++) {
+                let cloud = document.createElement('div');
+                cloud.className = 'shouchiku-resisting-cloud';
+                const size = (Math.random() * 40 + 45) + 'vw';
+                cloud.style.width = size;
+                cloud.style.height = size;
+                cloud.style.left = (Math.random() * 70 - 10) + 'vw';
+                cloud.style.top = (Math.random() * 60 - 15) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(cloud);
+            }
+        }
+
 
         // 🌊 【48 水風井】エフェクト
         function startWellEffect() {
