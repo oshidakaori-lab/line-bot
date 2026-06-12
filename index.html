@@ -407,7 +407,57 @@
         /* 48 水風井 */
         .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
         @keyframes wellFeedbackLoop { 0% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } 15% { opacity: 0.8; } 40% { transform: translate(-50%, -15vh) scale(1.1); opacity: 0.9; } 55% { transform: translate(calc(-50% + var(--dir-x)), -10vh) scale(1.0); opacity: 0.7; } 85% { transform: translate(calc(-50% + var(--dir-x) * 0.9), 35vh) scale(0.5); opacity: 0.2; } 100% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } }
- 
+ .well-core-light{
+    position:absolute;
+    left:50%;
+    top:50%;
+
+    width:180px;
+    height:180px;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+      radial-gradient(
+        circle,
+        rgba(180,255,240,.6),
+        rgba(180,255,240,0)
+      );
+
+    pointer-events:none;
+
+    animation:
+      wellHeartbeat 6s ease-in-out infinite;
+}
+
+@keyframes wellHeartbeat{
+
+  0%{
+    opacity:.3;
+    transform:
+      translate(-50%,-50%)
+      scale(.8);
+  }
+
+  50%{
+    opacity:.9;
+    transform:
+      translate(-50%,-50%)
+      scale(1.2);
+  }
+
+  100%{
+    opacity:.3;
+    transform:
+      translate(-50%,-50%)
+      scale(.8);
+  }
+
+}
+
+    
         /* 🔥 63 水火既済 専用 */
         .jiji-particle { position: absolute; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; animation: jijiLifecycle 6.0s linear infinite; }
         @keyframes jijiLifecycle { 0%, 16.5% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } 16.6%, 33.2% { background-color: #C7F0E6; box-shadow: 0 0 12px rgba(199,240,230,0.7); transform: translate(0, 0) scale(0.96); opacity: 0.85; } 33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 10px rgba(127,191,178,0.6); transform: translate(0, 0) scale(0.92); opacity: 0.8; } 50.0%, 66.5% { background-color: #6EAA9E; box-shadow: 0 0 8px rgba(110,170,158,0.5); transform: translate(0.5px, -0.5px) scale(0.88); opacity: 0.7; } 66.6%, 83.2% { background-color: #5F8F8A; box-shadow: 0 0 10px rgba(95,143,138,0.6); transform: translate(0, 0) scale(0.85); opacity: 0.8; } 83.3% { background-color: #3F5F5A; box-shadow: 0 0 12px rgba(63,95,90,0.8); transform: translate(0.5px, 0.5px) scale(0.85); opacity: 0.9; } 89.0% { background-color: #3F5F5A; box-shadow: 0 0 18px rgba(63,95,90,1); transform: translate(-1px, 1px) scale(0.95); opacity: 0.95; } 95.0% { background-color: #1F3F3A; box-shadow: 0 0 25px rgba(31,63,58,1); transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.15); opacity: 1; } 100% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } }
@@ -875,6 +925,13 @@
   　// 🌊 【48 水風井】エフェクト
         function startWellEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            const core =
+document.createElement("div");
+
+core.className =
+"well-core-light";
+
+container.appendChild(core);
             for(let i=0; i<30; i++) {
                 let p = document.createElement('div'); p.className = 'well-particle';
                 const dirX = (Math.random() * 280 - 140) + 'px'; p.style.setProperty('--dir-x', dirX);
@@ -885,7 +942,14 @@
             }
         }
 
+const core =
+document.createElement("div");
 
+core.className =
+"well-core-light";
+
+container.appendChild(core);
+        
         // ☯️ 【63 水火既済】エフェクト
     function startJijiEffect() {
         const container = document.getElementById('weather-effect'); container.innerHTML = '';
