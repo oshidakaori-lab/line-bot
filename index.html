@@ -456,6 +456,46 @@
   }
 
 }
+        .well-life-particle{
+
+  position:absolute;
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:
+    rgba(200,255,240,.9);
+
+  box-shadow:
+    0 0 12px rgba(200,255,240,.8);
+
+  animation:
+    wellRise linear forwards;
+        }
+        @keyframes wellRise{
+
+  0%{
+    opacity:0;
+    transform:
+      translateY(0)
+      scale(.3);
+  }
+
+  20%{
+    opacity:1;
+  }
+
+  100%{
+    opacity:0;
+    transform:
+      translateY(-320px)
+      scale(1.2);
+  }
+
+        }
+        
 
     
         /* 🔥 63 水火既済 専用 */
@@ -949,6 +989,32 @@ core.className =
 "well-core-light";
 
 container.appendChild(core);
+        setInterval(()=>{
+
+  const p =
+  document.createElement("div");
+
+  p.className =
+  "well-life-particle";
+
+  p.style.left =
+    (45 + Math.random()*10)
+    + "%";
+
+  p.style.bottom =
+    "10%";
+
+  p.style.animationDuration =
+    (4 + Math.random()*3)
+    + "s";
+
+  container.appendChild(p);
+
+  setTimeout(()=>{
+    p.remove();
+  },7000);
+
+},300);
         
         // ☯️ 【63 水火既済】エフェクト
     function startJijiEffect() {
