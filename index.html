@@ -905,14 +905,12 @@
             for(let i=0; i<30; i++) {
                 let p = document.createElement('div'); p.className = 'well-particle';
                 const dirX = (Math.random() - 0.5) * 40 + 'vw';
-            p.style.width = (Math.random() * 8 + 4) + 'px';
-            p.style.height = p.style.width;
-            p.style.left = (Math.random() * 100) + 'vw';
-            p.style.setProperty('--dir-x', (Math.random() * 20 - 10) + 'vw');
-            p.style.animationDelay = (Math.random() * -6.0) + 's';
-            container.appendChild(p);
+                p.style.setProperty('--dir-x', dirX);
+                p.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(p);
+            }
         }
-    }
+
 
         // ☯️ 【63 水火既済】エフェクト
     function startJijiEffect() {
