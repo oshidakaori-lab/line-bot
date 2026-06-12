@@ -169,77 +169,47 @@
         background: linear-gradient(to bottom, #7A8FA3, #C6D8EA) !important;
         }
     
-            /* 🎬 【08 水地比】専用カメラ＆ベースタイムライン（調和・微ズーム） */
+        /* 🎬 【08 水地比】スマホ視認性爆上げアップデート */
         .theme-bi .bg-layer {
             animation: biTimeline 6.0s ease-in-out infinite !important;
             will-change: background-color, transform;
         }
         @keyframes biTimeline {
-            0% { background-color: #7A8FA3; transform: scale(1.0); } /* Phase 1: 湿り（雨の余韻） */
-            16.6% { background-color: #8B9FB3; transform: scale(1.004); } /* Phase 2: 静まり */
-            33.3% { background-color: #9FB3C7; transform: scale(1.008); } /* Phase 3: 緩和・広がり */
-            50.0% { background-color: #B2C5D8; transform: scale(1.012); } /* Phase 4: 安定 */
-            66.6% { background-color: #C6D8EA; transform: scale(1.02); }  /* Phase 5: 調和のピーク（最大なじみ） */
-            83.3% { background-color: #B0C4D6; transform: scale(1.01); }  /* Phase 6: 余韻・少し乾く */
-            100% { background-color: #7A8FA3; transform: scale(1.0); }    /* 再び湿りへシームレス接続 */
+            0% { background-color: #6B8296; transform: scale(1.0); }     /* 視認性を上げるためベースを少し深く */
+            16.6% { background-color: #7E94A9; transform: scale(1.004); }
+            33.3% { background-color: #92A7BC; transform: scale(1.008); }
+            50.0% { background-color: #A6BACF; transform: scale(1.012); }
+            66.6% { background-color: #C0D3E5; transform: scale(1.02); }  /* ピーク時のなじみ */
+            83.3% { background-color: #A0B4C6; transform: scale(1.01); }
+            100% { background-color: #6B8296; transform: scale(1.0); }
         }
 
-        /* ① Soft Cloud Layer（徐々にほぐれる雲） */
+        /* 雲の不透明度をガッツリ上げて、ブレンドをnormalに */
         .bi-soft-cloud {
             position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
-            mix-blend-mode: overlay; pointer-events: none;
+            background: radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
+            mix-blend-mode: normal; pointer-events: none;
             animation: biCloudDispersion 6.0s ease-in-out infinite;
-            filter: blur(12px);
-        }
-        @keyframes biCloudDispersion {
-            0%, 16.6% { opacity: 0.6; transform: scale(0.95); }
-            50.0% { opacity: 0.4; transform: scale(1.1); }
-            66.6% { opacity: 0.8; transform: scale(1.3); filter: blur(20px); } /* ピークで完全にほぐれて溶ける */
-            100% { opacity: 0.6; transform: scale(0.95); }
+            filter: blur(20px);
         }
 
-        /* ② Residual Moisture Layer（微細な霞・湿気） */
-        .bi-moisture-layer {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: linear-gradient(to top, rgba(198,216,234,0.4), transparent);
-            mix-blend-mode: screen; pointer-events: none;
-            animation: biMoistureFade 6.0s ease-in-out infinite;
-        }
-        @keyframes biMoistureFade {
-            0% { opacity: 0.8; }
-            66.6% { opacity: 0.2; } /* なじんで澄んでいく */
-            100% { opacity: 0.8; }
-        }
-
-        /* ③ Light Diffusion Layer（全体に回る自然光） */
+        /* 光の拡散を overlay から screen にして輝度を確保 */
         .bi-light-diffusion {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.2) 0%, transparent 70%);
-            mix-blend-mode: overlay; pointer-events: none;
+            background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.35) 0%, transparent 70%);
+            mix-blend-mode: screen; pointer-events: none;
             animation: biLightSpread 6.0s ease-in-out infinite;
         }
-        @keyframes biLightSpread {
-            0%, 16.6% { opacity: 0.1; }
-            66.6% { opacity: 1.0; transform: scale(1.1); } /* 努力しなくても光が回る状態 */
-            100% { opacity: 0.1; }
+
+        /* 余韻の雨：1pxから2.5pxへ太くし、白さを強調 */
+        .bi-fading-rain {
+            position: absolute; 
+            width: 2.5px; 
+            height: 45px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.75));
+            animation: biRainDrop 0.7s linear infinite, biRainFade 6.0s ease-in-out infinite;
         }
 
-        /* ④ 序盤だけの余韻の弱い雨 */
-        .bi-fading-rain {
-            position: absolute; width: 1px; height: 35px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.25));
-            animation: biRainDrop 0.8s linear infinite, biRainFade 6.0s ease-in-out infinite;
-        }
-        @keyframes biRainDrop {
-            0% { transform: translateY(-5vh); }
-            100% { transform: translateY(105vh); }
-        }
-        @keyframes biRainFade {
-            0% { opacity: 0.6; }
-            16.6% { opacity: 0; } /* Phase 2で完全に止む */
-            100% { opacity: 0; }
-        }
             /* 🎬 【09 風天小畜】専用カメラ＆ベースタイムライン（圧縮感・抑制の風） */
         .theme-shouchiku .bg-layer {
             animation: shouchikuTimeline 6.0s ease-in-out infinite !important;
