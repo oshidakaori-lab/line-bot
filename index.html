@@ -436,8 +436,7 @@
 }
 
 @keyframes wellHeartbeat{
-
-  0%{
+      0%{
     opacity:.3;
     transform:
       translate(-50%,-50%)
@@ -457,8 +456,31 @@
       translate(-50%,-50%)
       scale(.8);
   }
+}
+
+    @keyframes wellSkyBreath{
+
+  0%{
+    transform:scale(1);
+  }
+
+  50%{
+    transform:scale(1.03);
+  }
+
+  100%{
+    transform:scale(1);
+  }
 
 }
+        .well-sky{
+
+  animation:
+    wellSkyBreath 8s ease-in-out infinite;
+
+        }
+
+
         .well-life-particle{
 
   position:absolute;
