@@ -999,7 +999,9 @@ mix-blend-mode:screen;
         // 💧 【48 水風井】エフェクト（湧き上がる井戸の水・クッキリ版）
   　// 🌊 【48 水風井】エフェクト
         function startWellEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            const container = document.getElementById('weather-effect'); container.classList.add(
+  "well-sky"
+);　container.innerHTML = '';
             const core =
 document.createElement("div");
 
