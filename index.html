@@ -946,7 +946,7 @@ mix-blend-mode:screen;
             }
         }
 
-                        // 💧 【08 水地比】エフェクト（自然な結びつき・調和）
+               // 💧 【08 水地比】エフェクト（自然な結びつき・調和）
         function startBiEffect() {
             const container = document.getElementById('weather-effect');
             container.innerHTML = '';
@@ -963,8 +963,11 @@ mix-blend-mode:screen;
                 const size = (Math.random() * 50 + 60) + 'vw';
                 cloud.style.width = size;
                 cloud.style.height = size;
-                cloud.style.left = (Math.random() * 80 - 10) + 'vw';
-                cloud.style.top = (Math.random() * 60 - 20) + 'vh';
+                
+                // 【修正】画面全体（-20vh 〜 100vh）に広がるように数値を変更！
+                cloud.style.left = (Math.random() * 120 - 20) + 'vw';
+                cloud.style.top = (Math.random() * 120 - 20) + 'vh';
+                
                 cloud.style.animationDelay = (Math.random() * -6.0) + 's';
                 container.appendChild(cloud);
             }
@@ -975,16 +978,17 @@ mix-blend-mode:screen;
             container.appendChild(light);
 
             // ④ 序盤（Phase 1）の余韻の雨
-            // 師の激しい雨から一転、まばらで弱い雨粒
             for (let i = 0; i < 15; i++) {
                 let rain = document.createElement('div');
                 rain.className = 'bi-fading-rain';
                 rain.style.left = Math.random() * 100 + 'vw';
-                // 落下アニメーションとフェードアニメーションのディレイを個別に設定
+                // 【修正】雨のスタート位置を画面より上に設定
+                rain.style.top = (Math.random() * -20) + 'vh';
                 rain.style.animationDelay = (Math.random() * -0.8) + 's, 0s';
                 container.appendChild(rain);
             }
         }
+
             // 🌬 【09 風天小畜】エフェクト（エネルギーの封じ込め・抑制の風）
         function startShouchikuEffect() {
             const container = document.getElementById('weather-effect');
