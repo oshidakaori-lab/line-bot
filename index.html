@@ -199,15 +199,34 @@
             background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.35) 0%, transparent 70%);
             mix-blend-mode: screen; pointer-events: none;
             animation: biLightSpread 6.0s ease-in-out infinite;
-        }
-
-        /* 余韻の雨：1pxから2.5pxへ太くし、白さを強調 */
-        .bi-fading-rain {
+        
+    }
+        
+              .bi-fading-rain {
             position: absolute; 
             width: 2.5px; 
             height: 45px;
             background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.75));
-            animation: biRainDrop 0.7s linear infinite, biRainFade 6.0s ease-in-out infinite;
+            /* 落下とフェードのアニメーションをシンプルに統合・最適化 */
+            animation: biRainDropAndFade 2.0s infinite;
+        }
+
+        @keyframes biRainDropAndFade {
+            0% { 
+                transform: translateY(-10vh); 
+                opacity: 0; 
+            }
+            10% { 
+                opacity: 0.8; /* 落ち始めでフワッと現れる */
+            }
+            30% {
+                transform: translateY(110vh); 
+                opacity: 0; /* 画面下部へ落ち切りながら消える */
+            }
+            100% {
+                transform: translateY(110vh);
+                opacity: 0; /* 残りの時間は透明なまま待機（まばらな雨を表現） */
+            }
         }
 
             /* 🎬 【09 風天小畜】専用カメラ＆ベースタイムライン（圧縮感・抑制の風） */
