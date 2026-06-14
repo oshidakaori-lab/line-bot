@@ -1026,21 +1026,52 @@ mix-blend-mode:screen;
             }
         }
         
-    　  // 💧 【48 水風井】エフェクト（湧き上がる井戸の水・クッキリ版）
+        // 💧 【48 水風井】エフェクト（元のCSSを活かした復活・安全版）
         function startWellEffect() {
             const container = document.getElementById('weather-effect');
+            container.className = ''; // 過去のクラスをリセット
+            container.classList.add("well-sky");
             container.innerHTML = '';
-            let beam = document.createElement('div'); beam.className = 'well-light-beam'; container.appendChild(beam);
-            const bubbleCount = 25;
-            for (let i = 0; i < bubbleCount; i++) {
-                let bubble = document.createElement('div'); bubble.className = 'well-bubble';
-                const size = (Math.random() * 10 + 6) + 'px'; bubble.style.width = size; bubble.style.height = size;
-                bubble.style.left = (Math.random() * 90 + 5) + 'vw';
-                bubble.style.animationDuration = (Math.random() * 2.0 + 3.0) + 's';
-                bubble.style.animationDelay = (Math.random() * -4.5) + 's';
-                container.appendChild(bubble);
+
+            // コアの光 (well-core-light)
+            const core = document.createElement("div");
+            core.className = "well-core-light";
+            container.appendChild(core);
+
+            // 背景の揺らめくパーティクル (well-particle)
+            for(let i = 0; i < 30; i++) {
+                let p = document.createElement('div'); 
+                p.className = 'well-particle';
+                const dirX = (Math.random() * 280 - 140) + 'px'; 
+                p.style.setProperty('--dir-x', dirX);
+                p.style.left = '50vw'; 
+                const size = (Math.random() * 6 + 6) + 'px'; 
+                p.style.width = size; 
+                p.style.height = size;
+                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; 
+                const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.backgroundColor = chosenColor; 
+                p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
+                p.style.animationDelay = (Math.random() * -6.0) + 's'; 
+                container.appendChild(p);
+            }
+
+            // 湧き上がる生命のパーティクル (well-life-particle)
+            // ※エラーの原因だったsetIntervalを使わず、CSSアニメーションのループで安全に表現します
+            for(let i = 0; i < 20; i++) {
+                let life = document.createElement("div");
+                life.className = "well-life-particle";
+                life.style.left = (45 + Math.random() * 10) + "%";
+                life.style.bottom = "10%";
+                life.style.animationDuration = (4 + Math.random() * 3) + "s";
+                // 湧き上がるタイミングをバラバラに設定
+                life.style.animationDelay = (Math.random() * -7.0) + "s";
+                // アニメーションを無限に繰り返すように上書き
+                life.style.animationIterationCount = "infinite";
+                container.appendChild(life);
             }
         }
+
 
         // ☯️ 【63 水火既済】エフェクト
         function startJijiEffect() {
