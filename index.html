@@ -731,11 +731,9 @@ mix-blend-mode:screen;
             } else if (isBisei) {
                 document.body.classList.add('theme-bisei'); startBiseiEffect();
             } else {
-                // 一致するものがない場合のデフォルト（空にする等）
-                const container = document.getElementById('weather-effect');
-                if(container) container.innerHTML = '';
+                // 8つの基本天候（族）の場合はこれを呼び出す！
+                startWeatherEffect(species);
             }
-                // startWeatherEffect(species); // ※必要に応じて定義
 
             if (data) {
                 document.getElementById('title').innerText = `${data.name} (${l_name})`;
@@ -1023,105 +1021,71 @@ mix-blend-mode:screen;
                 container.appendChild(cloud);
             }
         }
-
-
-        // 💧 【48 水風井】エフェクト（湧き上がる井戸の水・クッキリ版）
-  　// 🌊 【48 水風井】エフェクト
+        
+    　  // 💧 【48 水風井】エフェクト（湧き上がる井戸の水・クッキリ版）
         function startWellEffect() {
-            const container = document.getElementById('weather-effect'); container.classList.add(
-  "well-sky"
-);　container.innerHTML = '';
-            const core =
-document.createElement("div");
+            const container = document.getElementById('weather-effect');
+            container.innerHTML = '';
+            let beam = document.createElement('div'); beam.className = 'well-light-beam'; container.appendChild(beam);
+            const bubbleCount = 25;
+            for (let i = 0; i < bubbleCount; i++) {
+                let bubble = document.createElement('div'); bubble.className = 'well-bubble';
+                const size = (Math.random() * 10 + 6) + 'px'; bubble.style.width = size; bubble.style.height = size;
+                bubble.style.left = (Math.random() * 90 + 5) + 'vw';
+                bubble.style.animationDuration = (Math.random() * 2.0 + 3.0) + 's';
+                bubble.style.animationDelay = (Math.random() * -4.5) + 's';
+                container.appendChild(bubble);
+            }
+        }
 
-core.className =
-"well-core-light";
-
-container.appendChild(core);
-            for(let i=0; i<30; i++) {
-                let p = document.createElement('div'); p.className = 'well-particle';
-                const dirX = (Math.random() * 280 - 140) + 'px'; p.style.setProperty('--dir-x', dirX);
-                p.style.left = '50vw'; const size = (Math.random() * 6 + 6) + 'px'; p.style.width = size; p.style.height = size;
-                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.backgroundColor = chosenColor; p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
+        // ☯️ 【63 水火既済】エフェクト
+        function startJijiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            for(let i=0; i<40; i++) {
+                let p = document.createElement('div'); p.className = 'jiji-particle';
+                p.style.left = (Math.random() * 100) + 'vw'; p.style.top = (Math.random() * 100) + 'vh';
+                p.style.setProperty('--glitch-x', (Math.random() * 10 - 5) + 'px');
                 p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
             }
         }
 
-const core =
-document.createElement("div");
-
-core.className =
-"well-core-light";
-
-container.appendChild(core);
-        setInterval(()=>{
-
-  const p =
-  document.createElement("div");
-
-  p.className =
-  "well-life-particle";
-
-  p.style.left =
-    (45 + Math.random()*10)
-    + "%";
-
-  p.style.bottom =
-    "10%";
-
-  p.style.animationDuration =
-    (4 + Math.random()*3)
-    + "s";
-
-  container.appendChild(p);
-
-  setTimeout(()=>{
-    p.remove();
-  },7000);
-
-},300);
-        
-        // ☯️ 【63 水火既済】エフェクト
-    function startJijiEffect() {
-        const container = document.getElementById('weather-effect'); container.innerHTML = '';
-        for(let i=0; i<40; i++) {
-            let p = document.createElement('div'); p.className = 'jiji-particle';
-            p.style.left = (Math.random() * 100) + 'vw';
-            p.style.top = (Math.random() * 100) + 'vh';
-            p.style.setProperty('--glitch-x', (Math.random() * 10 - 5) + 'px');
-            p.style.animationDelay = (Math.random() * -6.0) + 's';
-            container.appendChild(p);
-        }
-    }
-
         // 🌀 【64 火水未済】エフェクト
-    function startBiseiEffect() {
-        const container = document.getElementById('weather-effect'); container.innerHTML = '';
-        for(let i=0; i<40; i++) {
-            let p = document.createElement('div'); p.className = 'bisei-particle';
-            p.style.width = (Math.random() * 12 + 6) + 'px';
-            p.style.height = p.style.width;
-            p.style.left = (Math.random() * 100) + 'vw';
-            p.style.top = (Math.random() * 100) + 'vh';
-            p.style.setProperty('--drift-x', (Math.random() * 20 - 10) + 'vw');
-            p.style.setProperty('--drift-y', (Math.random() * 20 - 10) + 'vh');
-            p.style.animationDelay = (Math.random() * -6.0) + 's';
-            container.appendChild(p);
+        function startBiseiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            for(let i=0; i<40; i++) {
+                let p = document.createElement('div'); p.className = 'bisei-particle';
+                const size = (Math.random() * 12 + 6) + 'px'; p.style.width = size; p.style.height = size;
+                p.style.left = (Math.random() * 100) + 'vw'; p.style.top = (Math.random() * 100) + 'vh';
+                p.style.setProperty('--drift-x', (Math.random() * 20 - 10) + 'vw'); p.style.setProperty('--drift-y', (Math.random() * 20 - 10) + 'vh');
+                p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
+            }
         }
-    }
-                // 通常の天候エフェクト関数
+
+        // 🐾 【10 天沢履】エフェクト（慎重な歩行）
+        function startRiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let tension = document.createElement('div'); tension.className = 'ri-tension-layer'; container.appendChild(tension);
+            for (let i = 0; i < 6; i++) {
+                let cloud = document.createElement('div'); cloud.className = 'ri-balance-cloud';
+                const size = (Math.random() * 40 + 50) + 'vw'; cloud.style.width = size; cloud.style.height = size;
+                cloud.style.left = (Math.random() * 80 - 10) + 'vw'; cloud.style.top = (Math.random() * 60 - 10) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
+            }
+            for (let i = 0; i < 8; i++) {
+                let wind = document.createElement('div'); wind.className = 'ri-micro-wind';
+                wind.style.width = (Math.random() * 20 + 10) + 'vw'; wind.style.left = (Math.random() * 60 + 10) + 'vw';
+                wind.style.top = (Math.random() * 80 + 10) + 'vh'; wind.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(wind);
+            }
+        }
+
+        // 🌤️ 8つの基本天候（族）エフェクト
         function startWeatherEffect(species) {
             const container = document.getElementById('weather-effect'); container.innerHTML = ''; 
             if (species === "雨巡族") {
                 for(let i=0; i<60; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.top = Math.random() * -100 + 'px'; const zIndex = Math.random(); drop.style.transform = `scale(${zIndex * 0.8 + 0.4})`; drop.style.opacity = zIndex * 0.7 + 0.3; drop.style.animationDuration = (Math.random() * 0.3 + 0.4) + 's'; drop.style.animationDelay = Math.random() * 2 + 's'; container.appendChild(drop); }
             } else if (species === "雪守族") {
-                for(let i=0; i<40; i++) { 
-                    let flake = document.createElement('div'); flake.className = 'snow-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * -20) + 'vh';
-                    const size = (Math.random() * 8 + 3) + 'px'; flake.style.width = size; flake.style.height = size;
-                    const swayX = (Math.random() * 50 - 25) + 'px'; flake.style.setProperty('--sway-x', swayX);
-                    flake.style.animationDuration = (Math.random() * 4 + 5) + 's'; flake.style.animationDelay = (Math.random() * -8) + 's'; container.appendChild(flake); 
-                }
+                for(let i=0; i<40; i++) { let flake = document.createElement('div'); flake.className = 'snow-particle'; flake.style.left = Math.random() * 100 + 'vw'; flake.style.top = (Math.random() * -20) + 'vh'; const size = (Math.random() * 8 + 3) + 'px'; flake.style.width = size; flake.style.height = size; const swayX = (Math.random() * 50 - 25) + 'px'; flake.style.setProperty('--sway-x', swayX); flake.style.animationDuration = (Math.random() * 4 + 5) + 's'; flake.style.animationDelay = (Math.random() * -8) + 's'; container.appendChild(flake); }
             } else if (species === "雷芽族") {
                 let flash = document.createElement('div'); flash.className = 'lightning-flash'; container.appendChild(flash);
                 for(let i=0; i<30; i++) { let drop = document.createElement('div'); drop.className = 'rain'; drop.style.left = Math.random() * 100 + 'vw'; drop.style.background = 'linear-gradient(to bottom, rgba(200,220,255,0), rgba(200,220,255,0.9))'; drop.style.animationDuration = (Math.random() * 0.3 + 0.3) + 's'; container.appendChild(drop); }
@@ -1137,22 +1101,9 @@ container.appendChild(core);
             } else if (species === "受雲族") {
                 for(let i=0; i<25; i++) { let orb = document.createElement('div'); orb.className = 'orb-particle'; orb.style.left = (Math.random() * 100) + 'vw'; orb.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 22 + 8) + 'px'; orb.style.width = size; orb.style.height = size; orb.style.animationDuration = (Math.random() * 15 + 15) + 's'; orb.style.animationDelay = (Math.random() * -30) + 's'; container.appendChild(orb); }
             }
-                    }
-        // 🌈 基本天候エフェクト（フォールバック）
-    function startWeatherEffect(species) {
-        const container = document.getElementById('weather-effect'); container.innerHTML = '';
-        if(species === '雪守族') {
-            for(let i=0; i<50; i++) {
-                let p = document.createElement('div'); p.className = 'snow-particle';
-                p.style.width = (Math.random() * 5 + 2) + 'px';
-                p.style.height = p.style.width;
-                p.style.left = (Math.random() * 100) + 'vw';
-                p.style.setProperty('--sway-x', (Math.random() * 10 - 5) + 'vw');
-                p.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                container.appendChild(p);
-            }
         }
-    }
+
+        
 
         // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
         // 🚂【コピペ専用駅：5番ホーム】JSエフェクト関数追加 🐸🐤
