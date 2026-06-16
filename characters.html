@@ -165,11 +165,16 @@
             </div>
             <div class="bg-pink-50 p-4 rounded-2xl border-2 border-pink-100">
               <p id="modalComment2" class="text-sm font-bold text-pink-900 leading-relaxed"></p>
-            </div>
+            </div>           
           </div>
         </div>
-
-      </div>
+        
+        <div class="mt-4 border-t-2 border-dashed border-slate-200 pt-4">
+          <a id="modalSkyLink" href="#" class="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-2xl font-black text-white shadow-lg transition-transform hover:-translate-y-1">
+            🌤️ 生息地の空模様（エフェクト）を見る
+          </a>
+        </div>
+        </div>
     </div>
   </div>
 
@@ -385,7 +390,22 @@
       } else {
         stampContainer.classList.add('hidden');
       }
-
+     // 👇👇👇 ココに追加！！！ 👇👇👇
+      // 🌤️ 空模様ボタンの設定
+      const skyBtn = document.getElementById('modalSkyLink');
+      const btnColors = {
+        "友好型": "bg-green-500 hover:bg-green-400",
+        "擬態型": "bg-red-500 hover:bg-red-400",
+        "怪異": "bg-purple-500 hover:bg-purple-400",
+        "虫": "bg-amber-500 hover:bg-amber-400",
+        "無害": "bg-blue-500 hover:bg-blue-400"
+      };
+      // タイプに合わせて色を変える
+      skyBtn.className = `flex items-center justify-center gap-2 w-full py-4 px-6 rounded-2xl font-black text-white shadow-md transition-transform hover:-translate-y-1 ${btnColors[c.type]}`;
+      
+      // index.htmlへ、卦の番号(id)と、UIを隠すギャラリーモードの命令を渡す
+      skyBtn.href = `index.html?hid=${c.id}&mode=gallery`;
+      // 👆👆👆 ここまで 👆👆👆
       m.classList.remove('pointer-events-none', 'opacity-0');
       setTimeout(() => m.firstElementChild.classList.remove('scale-95'), 50);
     }
