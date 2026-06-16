@@ -678,12 +678,28 @@ mix-blend-mode:screen;
     
         // 👇👇👇 ココに追加！！！ 👇👇👇
         // 💡 追加：図鑑から ?mode=gallery で飛んできた場合、最初からUIを隠す
+                // 💡 修正：ギャラリーモードなら「戻るボタン」を表示する
         if (params.get('mode') === 'gallery') {
             document.body.classList.remove('mode-normal');
             document.body.classList.add('mode-gallery');
+            
+            // 戻るボタンを表示する
+            const backBtn = document.getElementById('backToCatalogBtn');
+            if (backBtn) {
+                backBtn.classList.remove('hidden');
+            }
+            
             const hintEl = document.getElementById('gallery-hint');
             if(hintEl) hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
         }
+    
+    <!-- 🌤️ 追加：カタログに戻るための戻るボタン -->
+<a id="backToCatalogBtn" href="characters.html" 
+   class="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/60 backdrop-blur-md text-white text-sm font-bold rounded-full shadow-lg border border-white/20 transition-all hover:bg-slate-700/80 hidden">
+  ← 図鑑にもどる
+</a>
+
+
         // 👆👆👆 ここまで 👆👆👆
     
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
