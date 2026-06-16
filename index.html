@@ -679,19 +679,24 @@ mix-blend-mode:screen;
         // 👇👇👇 ココに追加！！！ 👇👇👇
         // 💡 追加：図鑑から ?mode=gallery で飛んできた場合、最初からUIを隠す
                 // 💡 修正：ギャラリーモードなら「戻るボタン」を表示する
+          // 💡 修正：ギャラリーモードの処理（ボタンがなくてもエラーで止まらないようにする）
         if (params.get('mode') === 'gallery') {
             document.body.classList.remove('mode-normal');
             document.body.classList.add('mode-gallery');
             
-            // 戻るボタンを表示する
+            // backToCatalogBtnがある時だけクラスを外す（安全なチェック）
             const backBtn = document.getElementById('backToCatalogBtn');
             if (backBtn) {
                 backBtn.classList.remove('hidden');
             }
             
+            // gallery-hintがある時だけ文字を変える（安全なチェック）
             const hintEl = document.getElementById('gallery-hint');
-            if(hintEl) hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
+            if (hintEl) {
+                hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
+            }
         }
+
     
     <!-- 🌤️ 追加：カタログに戻るための戻るボタン -->
 <a id="backToCatalogBtn" href="characters.html" 
