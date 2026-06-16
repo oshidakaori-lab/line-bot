@@ -1,0 +1,403 @@
+```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>なんか小さくて謎のやつら図鑑（遭遇記録）</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      /* ノート風の背景 */
+      background-color: #fffdf5;
+      background-image: linear-gradient(#e0e7ff 1px, transparent 1px), linear-gradient(90deg, #e0e7ff 1px, transparent 1px);
+      background-size: 20px 20px;
+      color: #475569;
+    }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #fefce8; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: #fca5a5; border-radius: 4px; border: 2px solid #fefce8; }
+    ::-webkit-scrollbar-thumb:hover { background: #f87171; }
+
+    /* ちょっと不穏なアニメーション */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px) rotate(-1deg); }
+      50% { transform: translateX(2px) rotate(1deg); }
+      75% { transform: translateX(-2px) rotate(1deg); }
+    }
+    .hover-shake:hover {
+      animation: shake 0.3s ease-in-out infinite;
+    }
+
+    /* スタンプ風デザイン */
+    .stamp {
+      display: inline-block;
+      padding: 0.25rem 1rem;
+      border: 3px solid;
+      border-radius: 8px;
+      font-weight: 900;
+      transform: rotate(-5deg);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .stamp.danger { color: #dc2626; border-color: #dc2626; background: #fef2f2; }
+    .stamp.safe { color: #16a34a; border-color: #16a34a; background: #f0fdf4; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-pink-200 selection:text-pink-900">
+
+  <!-- ヘッダー -->
+  <header class="bg-[#fef08a]/80 backdrop-blur-sm border-b-4 border-yellow-400 py-8 px-6 text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto relative z-10">
+      <div class="inline-block bg-white px-4 py-1.5 rounded-full border-2 border-yellow-400 shadow-sm mb-3">
+        <span class="text-xs font-bold text-yellow-600">草むしり検定・討伐対策資料</span>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-800 mb-3 drop-shadow-sm">
+        なんか小さくて<span class="text-pink-500">謎のやつら</span>図鑑
+      </h1>
+      <p class="text-sm font-medium text-slate-600 max-w-2xl mx-auto bg-white/60 p-3 rounded-xl border border-yellow-200">
+        森や洞窟で見かけた「謎の生き物」や「ヤバいやつら」の遭遇記録だよ。<br>
+        擬態型には絶対に気をつけてね……！
+      </p>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- 左サイドバー：フィルター -->
+    <aside class="lg:col-span-3 space-y-6">
+      <div class="bg-white p-5 rounded-3xl border-4 border-pink-100 shadow-sm space-y-5 relative">
+        <div class="absolute -top-4 -left-4 w-12 h-12 bg-pink-300 rounded-full flex items-center justify-center font-bold text-white shadow-md transform -rotate-12">🔍</div>
+        
+        <div class="pt-2">
+          <label class="block text-sm font-bold text-slate-500 mb-2">なまえでさがす</label>
+          <input type="text" id="searchInput" placeholder="のやつ、虫..." class="w-full px-4 py-3 text-sm font-medium rounded-2xl border-2 border-slate-200 focus:outline-none focus:ring-4 focus:ring-pink-200 focus:border-pink-400 transition-all bg-slate-50">
+        </div>
+
+        <div>
+          <label class="block text-sm font-bold text-slate-500 mb-2">しゅるいでしぼる</label>
+          <div class="flex flex-col gap-2" id="typeFilter">
+            <button class="filter-btn active w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-slate-800 bg-slate-800 text-white transition-all" data-val="all">すべて</button>
+            <button class="filter-btn w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-green-200 bg-white text-green-700 hover:bg-green-50 transition-all" data-val="友好型">🟢 友好型（なかよし）</button>
+            <button class="filter-btn w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-red-200 bg-white text-red-700 hover:bg-red-50 transition-all shadow-[0_0_10px_rgba(220,38,38,0.2)]" data-val="擬態型">⚠️ 擬態型（超キケン）</button>
+            <button class="filter-btn w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-purple-200 bg-white text-purple-700 hover:bg-purple-50 transition-all" data-val="怪異">👻 怪異（わけわかんない）</button>
+            <button class="filter-btn w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-amber-200 bg-white text-amber-700 hover:bg-amber-50 transition-all" data-val="虫">🐛 虫（ちいさい生き物）</button>
+            <button class="filter-btn w-full text-left px-4 py-2 text-sm font-bold rounded-xl border-2 border-blue-200 bg-white text-blue-700 hover:bg-blue-50 transition-all" data-val="無害">☁️ 無害（ただいるだけ）</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- メモ -->
+      <div class="bg-yellow-100 p-5 rounded-3xl border-4 border-yellow-200 shadow-sm transform rotate-1">
+        <h4 class="text-sm font-black text-yellow-800 mb-2 flex items-center gap-2">
+          📝 討伐の心得
+        </h4>
+        <p class="text-xs font-bold text-yellow-700 leading-relaxed space-y-2">
+          ・「擬態型」と書いてあるやつには絶対に近づかないこと！<br><br>
+          ・危険度★★★★★は上位ランカーでも苦戦するヤバいやつです。<br><br>
+          ・「わァ……」ってなったらすぐ逃げる！
+        </p>
+      </div>
+    </aside>
+
+    <!-- 右コンテンツ -->
+    <section class="lg:col-span-9 space-y-4">
+      
+      <div class="flex items-center justify-between bg-white p-4 rounded-2xl border-2 border-slate-100 shadow-sm">
+        <div class="text-sm font-bold text-slate-500">
+          はっけん： <span id="matchCount" class="text-2xl text-pink-500">64</span> 匹
+        </div>
+      </div>
+
+      <!-- グリッド -->
+      <div id="characterGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <!-- JSで生成 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- モーダル -->
+  <div id="charModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-white rounded-[2rem] max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-200 relative border-8 border-white" onclick="event.stopPropagation()">
+      
+      <button onclick="closeModal()" class="absolute top-4 right-4 z-20 text-slate-400 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl transition-all">✕</button>
+      
+      <!-- モーダルヘッダー -->
+      <div id="modalHeader" class="p-6 pb-8 text-center rounded-t-[1.5rem]">
+        <div class="flex justify-center items-center gap-2 mb-3">
+          <span id="modalId" class="text-xs font-black text-white bg-slate-800 px-3 py-1 rounded-full">No.00</span>
+          <span id="modalType" class="text-xs font-black text-white px-3 py-1 rounded-full">タイプ</span>
+        </div>
+        <h2 id="modalName" class="text-3xl font-black text-slate-800 mb-2"></h2>
+        <div class="flex justify-center mb-4">
+          <span id="modalThreat" class="text-lg tracking-widest font-bold"></span>
+        </div>
+        
+        <!-- スタンプ -->
+        <div id="modalStampContainer" class="absolute top-6 left-4 hidden">
+          <div id="modalStamp" class="stamp danger">討伐対象</div>
+        </div>
+      </div>
+
+      <!-- モーダルボディ -->
+      <div class="p-6 pt-0 space-y-6">
+        
+        <!-- 特徴 -->
+        <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100">
+          <span class="block text-xs font-black text-slate-400 mb-2">どんなやつ？</span>
+          <p id="modalCatch" class="text-slate-700 font-bold leading-relaxed text-sm"></p>
+        </div>
+
+        <!-- 対策とメモ -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-black text-slate-500 flex items-center gap-2">
+            ⚠️ 遭遇時のメモ
+          </h3>
+          <div class="flex flex-col gap-3">
+            <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-100">
+              <p id="modalComment1" class="text-sm font-bold text-blue-900 leading-relaxed"></p>
+            </div>
+            <div class="bg-pink-50 p-4 rounded-2xl border-2 border-pink-100">
+              <p id="modalComment2" class="text-sm font-bold text-pink-900 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 64キャラのちいかわ風怪異アレンジデータ
+    const characters = [
+      { id: 1, char: "空とぶやつ", type: "無害", threat: "★☆☆☆☆", catch: "ふわふわ浮いてる。たまに落ちてくる。", c1: "触るとちょっと温かい。", c2: "空を飛んでるだけなので害はない。" },
+      { id: 2, char: "ふかふかのやつ", type: "擬態型", threat: "★★★★☆", catch: "クッションのフリをして誘い込んでくる。", c1: "上で寝るとそのまま飲み込まれるからキケン。", c2: "完全に討伐対象。見つけたらすぐ逃げること。" },
+      { id: 3, char: "パチパチする虫", type: "虫", threat: "★★☆☆☆", catch: "怒るとパチパチ音を立てて静電気を飛ばす。", c1: "刺されるとちょっと痺れて泣いちゃう。", c2: "草むしり中に見かけたら刺激しないこと。" },
+      { id: 4, char: "クイズ出してくるやつ", type: "怪異", threat: "★★★☆☆", catch: "突然現れて理不尽なクイズを出してくる。", c1: "間違えると大事なものを少し奪われる。", c2: "「フゥン」と無視して走って逃げるのが一番。" },
+      { id: 5, char: "傘くれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "雨の日に現れて、葉っぱの傘をくれる。", c1: "傘のお礼にドングリをあげると喜ぶ。", c2: "たまに相合い傘に入れてくれるやさしいやつ。" },
+      { id: 6, char: "レスバしてくるやつ", type: "怪異", threat: "★★★☆☆", catch: "すれ違いざまにめちゃくちゃ早口で論破してくる。", c1: "言いくるめられると落ち込んで動けなくなる。", c2: "耳を塞いで「ワーッ」て言いながら逃げること。" },
+      { id: 7, char: "リーダーっぽいやつ", type: "擬態型", threat: "★★★★☆", catch: "自信満々についてこいと合図する。", c1: "ついていくと大きな落とし穴に落とされて食べられそうになる。", c2: "やたら仕切りたがるやつには注意。" },
+      { id: 8, char: "ぴったりくっつくやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "背中や頭にぴったりくっついてくる。", c1: "寒い日はマフラーみたいであったかい。", c2: "無理に剥がそうとすると「キュ」と鳴いてしがみつく。" },
+      { id: 9, char: "ためこむ虫", type: "虫", threat: "★☆☆☆☆", catch: "キラキラしたものやゴミを巣に集めている。", c1: "たまに大事なものを盗まれるので注意。", c2: "お菓子と交換してくれることもある。" },
+      { id: 10, char: "うしろ歩きするやつ", type: "擬態型", threat: "★★★★☆", catch: "ゆっくりうしろ歩きで近づいてくる。", c1: "目が合った瞬間にすごいスピードで突進して噛む。", c2: "背中を見せている怪しいやつには近づかないこと。" },
+      { id: 11, char: "お茶いれてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "疲れていると、どこからともなく熱いお茶を出してくれる。", c1: "飲むとHPが全回復する気がする。", c2: "飲み終わるまで優しく見守ってくれる。" },
+      { id: 12, char: "とおせんぼするやつ", type: "怪異", threat: "★★★☆☆", catch: "道をふさいで通してくれない。", c1: "無理に通ろうとするとどんどん分裂して増える。", c2: "諦めて別の道をとおるしかない。" },
+      { id: 13, char: "みんなで踊るやつ", type: "友好型", threat: "★☆☆☆☆", catch: "輪になって謎のダンスを踊っている。", c1: "一緒に踊ると、終わったあとにクッキーをくれる。", c2: "リズム感が悪いとちょっと怒られる。" },
+      { id: 14, char: "なんか光ってるやつ", type: "無害", threat: "★☆☆☆☆", catch: "ただただ眩しく光っているだけの謎の存在。", c1: "夜道では便利だけど、近づきすぎると目が眩む。", c2: "特に何もしてこない。" },
+      { id: 15, char: "隠れてるやつ", type: "怪異", threat: "★★★★☆", catch: "物陰にひっそり隠れている。", c1: "見つけて指をさすと、めちゃくちゃキレて追いかけてくる。", c2: "見つけても見ないフリをするのが鉄則。" },
+      { id: 16, char: "お祭り虫", type: "虫", threat: "★★☆☆☆", catch: "ドンドン、チャカチャカと陽気な音を出す虫。", c1: "たくさん集まるとうるさくて夜眠れない。", c2: "殺虫剤をかけると爆発するらしい。" },
+      { id: 17, char: "ついてくるやつ", type: "擬態型", threat: "★★★★★", catch: "家まで静かについてきて、扉が開いた瞬間に襲ってくる。", c1: "振り向くと「何でもないです」みたいな顔で止まる。", c2: "絶対に家にいれてはいけない討伐対象。" },
+      { id: 18, char: "なおしてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "壊れたものをガムテープやツルで直してくれる。", c1: "見た目はツギハギになるけど、ちゃんと使えるようになる。", c2: "お礼に褒めると照れる。" },
+      { id: 19, char: "待ちぶせするやつ", type: "怪異", threat: "★★★★☆", catch: "角を曲がった瞬間に「ワッ！」と脅かしてくる。", c1: "驚いて落とした食べ物を奪っていく。", c2: "曲がり角は武器を構えて慎重に進むこと。" },
+      { id: 20, char: "めっちゃ見てくるやつ", type: "無害", threat: "★☆☆☆☆", catch: "遠くからじーーーーーっとこっちを見てくる。", c1: "近づくと逃げる。何がしたいのかわからない。", c2: "見られてる間はなんかちょっと気まずい。" },
+      { id: 21, char: "噛みついてくるやつ", type: "怪異", threat: "★★★★☆", catch: "口だけが空中を飛んでいて、なんでもかみ砕く。", c1: "お気に入りのサスマタを噛み折られることもある。", c2: "硬いものを投げて、噛んでる隙に逃げる。" },
+      { id: 22, char: "飾りつける虫", type: "虫", threat: "★☆☆☆☆", catch: "寝ている間に顔や体にキラキラの石をくっつける。", c1: "起きたらデコレーションされていてびっくりする。", c2: "剥がすときちょっと痛い。" },
+      { id: 23, char: "むいてくるやつ", type: "擬態型", threat: "★★★★★", catch: "美味しそうなフルーツのフリをして近づいてくる。", c1: "逆にこっちの皮を剥ごうとしてくるから超キケン。", c2: "甘い匂いがする森には一人で入らないこと。" },
+      { id: 24, char: "また来たやつ", type: "友好型", threat: "★☆☆☆☆", catch: "追い返しても追い返しても、ニコニコしてやってくる。", c1: "諦めて一緒に遊んであげると満足して帰る。", c2: "ちょっとウザいけど悪いやつじゃない。" },
+      { id: 25, char: "急に走るやつ", type: "怪異", threat: "★★☆☆☆", catch: "普段はじっとしているのに、急に猛スピードで走り出す。", c1: "轢かれるとペラペラになる。", c2: "動く気配を感じたらすぐ道を譲ること。" },
+      { id: 26, char: "貯金箱みたいなやつ", type: "擬態型", threat: "★★★★☆", catch: "コインを入れるスリットがある丸い生き物。", c1: "お金を入れると巨大化して暴れ出す。", c2: "絶対にお金を入れてはいけない。" },
+      { id: 27, char: "ご飯くれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "大きなお鍋で美味しいチャーハンを作ってくれる。", c1: "お腹いっぱいになるまでおかわりをすすめてくる。", c2: "「フゥン…」と渋い顔で味見している。" },
+      { id: 28, char: "重たくなるやつ", type: "怪異", threat: "★★★☆☆", catch: "肩に乗ってきて、だんだん石みたいに重くなる。", c1: "我慢していると地面にめり込む。", c2: "「重い！」とハッキリ言うと泣いてどっか行く。" },
+      { id: 29, char: "水たまりのやつ", type: "擬態型", threat: "★★★★★", catch: "ただの水たまりに見えるが、実は口を開けて待っている。", c1: "踏むと底なし沼のように引きずり込まれる。", c2: "雨の日の後は足元に要注意。" },
+      { id: 30, char: "燃えてる虫", type: "虫", threat: "★★★☆☆", catch: "おしりが火みたいに燃えているアツアツの虫。", c1: "草むらが火事になる原因。見つけたら水で消す。", c2: "冬はカイロ代わりにされることもある。" },
+      { id: 31, char: "惚れ薬のやつ", type: "怪異", threat: "★★★☆☆", catch: "ピンク色の粉をまき散らす。", c1: "吸い込むと、一番近くにいるやつを好きになってしまう。", c2: "時間が経てば治るが、その間の記憶があって恥ずかしい。" },
+      { id: 32, char: "ずっと回ってるやつ", type: "無害", threat: "★☆☆☆☆", catch: "コマのようにひたすらクルクル回っている。", c1: "見てると目が回る。", c2: "たまに壁にぶつかって「コン」と音がする。" },
+      { id: 33, char: "逃がしてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "でっかい鳥みたいなやつ。ピンチの時に乗せてくれる。", c1: "討伐に失敗した時に現れるとマジで神。", c2: "お礼においしい草をあげると喜ぶ。" },
+      { id: 34, char: "ムキムキのやつ", type: "擬態型", threat: "★★★★★", catch: "小さくて可愛いフリをしてるが、キレると筋肉ムキムキになる。", c1: "油断してなでようとすると殴り飛ばされる。", c2: "上位ランカーでも苦戦する大型討伐対象。" },
+      { id: 35, char: "太陽みたいなやつ", type: "無害", threat: "★☆☆☆☆", catch: "ぽかぽかしてて気持ちいい謎の球体。", c1: "近づきすぎると日焼けする。", c2: "洗濯物がよく乾くので便利。" },
+      { id: 36, char: "暗いとこにいる虫", type: "虫", threat: "★★☆☆☆", catch: "洞窟の奥にいる。ジメジメしている。", c1: "ライトの光を当てると「ギヤァッ」と溶ける。", c2: "討伐の時は懐中電灯が必須。" },
+      { id: 37, char: "家を守るやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "出かけてる間、家の前に座って番犬みたいにしてくれる。", c1: "知らないやつが来ると「シャアッ」と威嚇する。", c2: "お土産を買って帰ると尻尾を振る。" },
+      { id: 38, char: "そっぽ向くやつ", type: "怪異", threat: "★★☆☆☆", catch: "話しかけると絶対に逆の方向を向く天邪鬼。", c1: "怒ってるとかじゃなく、そういう性質らしい。", c2: "背中越しに話すとちゃんと聞いてる。" },
+      { id: 39, char: "氷のやつ", type: "擬態型", threat: "★★★★☆", catch: "かき氷のフリをしてお皿に乗っている。", c1: "食べようとすると、逆にこっちの舌を凍らせてかじってくる。", c2: "シロップがかかってない氷には注意。" },
+      { id: 40, char: "縄といてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "ゴブリンみたいなやつに捕まった時、こっそり縄を切ってくれる。", c1: "無言で助けて、無言で去っていくイケメン。", c2: "たまに間違えて服まで切られる。" },
+      { id: 41, char: "減らしてくるやつ", type: "怪異", threat: "★★★☆☆", catch: "すれ違っただけで、カバンのなかのパンとかが減る。", c1: "手品みたいに盗むので気づかない。", c2: "大事なものは抱きしめて歩くこと。" },
+      { id: 42, char: "増える虫", type: "虫", threat: "★★★★☆", catch: "一匹いると、次の日には百匹に増殖するキモい虫。", c1: "家を占拠されて住めなくなる。", c2: "見つけたら一匹残らずバルサン的なやつで駆除。" },
+      { id: 43, char: "ハンコ押すやつ", type: "怪異", threat: "★★★★☆", catch: "よくわからない紙を出してきて「ここにハンコ押して」って迫る。", c1: "押すと魂を半分持っていかれるらしい。", c2: "「文字読めない」って泣き真似すると諦める。" },
+      { id: 44, char: "急に出るやつ", type: "擬態型", threat: "★★★★★", catch: "ロッカーや宝箱に擬態していて、開けると飛び出してくる。", c1: "ガバーッて開いた口に丸飲みされる。", c2: "怪しい箱は遠くからツンツンして確かめること。" },
+      { id: 45, char: "集まるやつら", type: "無害", threat: "★☆☆☆☆", catch: "気づくと足元にワラワラ集まってくる小さな丸いやつら。", c1: "踏まないように歩くのがちょっと大変。", c2: "「ワー」って散らすとクスクス笑う。" },
+      { id: 46, char: "のぼらせてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "ふくらんだ風船みたいなやつ。掴まると上に連れてってくれる。", c1: "高い崖の上にある果物を取る時に超便利。", c2: "途中で手を離すと落ちるから気をつけて。" },
+      { id: 47, char: "閉じ込めるやつ", type: "怪異", threat: "★★★★☆", catch: "見えない透明な箱を上から被せて閉じ込めてくる。", c1: "出られなくてパニックになってるとこを外から見て笑ってる。", c2: "内側から思いっきり叩くと割れる。" },
+      { id: 48, char: "水わくやつ", type: "無害", threat: "★☆☆☆☆", catch: "頭のてっぺんからポコポコと綺麗な水が湧いている。", c1: "喉が渇いた時に飲むとすごく美味しい。", c2: "夏場は大人気で行列ができる。" },
+      { id: 49, char: "形かわるやつ", type: "擬態型", threat: "★★★★★", catch: "スライム状で、ちいかわ達の姿に化けることができる。", c1: "偽物の友達のフリをして群れに入り込み、夜に本性を現す。", c2: "「なんか言葉遣いが変だな」と思ったら逃げろ。" },
+      { id: 50, char: "料理うまいやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "コック帽をかぶってて、その辺の草でも絶品料理にしてくれる。", c1: "巨大なオムライスを作って「どーぞ」してくれる。", c2: "ご飯を食べるとみんな笑顔になる。" },
+      { id: 51, char: "ビリビリ虫", type: "虫", threat: "★★★☆☆", catch: "黄色くてジグザグの形をした虫。", c1: "触ると「ビギャッ」と感電してアフロヘアーになる。", c2: "ゴム手袋をして捕獲し、討伐所に持っていくと報酬が出る。" },
+      { id: 52, char: "だるまさんがころんだするやつ", type: "怪異", threat: "★★★★★", catch: "「だるまさんがころんだ」と言いながら近づいてくる巨大な顔。", c1: "動いているのを見られると、即座に食べられる。", c2: "振り返る前に全力で隠れること。" },
+      { id: 53, char: "ゆっくりなやつ", type: "無害", threat: "★☆☆☆☆", catch: "ナマケモノみたいに動作がめちゃくちゃ遅い。", c1: "「あ……り……が……と……」と言うのに5分かかる。", c2: "見てるとなんか和む。" },
+      { id: 54, char: "嫉妬するやつ", type: "怪異", threat: "★★★☆☆", catch: "他の子と仲良く遊んでいると、物陰からギリギリと歯ぎしりして見ている。", c1: "急に「ドーン！」と体当たりしてきて逃げていく。", c2: "かまってちゃんなので、たまに遊んであげるとデレる。" },
+      { id: 55, char: "おっきなオデみたいなやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "「オデ、おまえら好き」と言ってごちそうをくれる大きなやつ。", c1: "見た目は怖いけどめちゃくちゃ優しい。", c2: "一緒に牢屋に入れられた時は頼りになる。" },
+      { id: 56, char: "歩き続けるやつ", type: "無害", threat: "★☆☆☆☆", catch: "荷物を背負って、ただひたすらにどこかへ歩き続けている。", c1: "話しかけても「……」と無視される。", c2: "たまに落とし物をしていく（いいものが入ってる）。" },
+      { id: 57, char: "すきまから来るやつ", type: "擬態型", threat: "★★★★☆", catch: "ドアの隙間や布団の端から、にゅーっと液状になって侵入してくる。", c1: "寝込みを襲って夢を吸い取る。", c2: "戸締まりはしっかり！ガムテープで隙間を塞ぐこと。" },
+      { id: 58, char: "笑わせてくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "突然現れて、謎のギャグや変顔で笑わせてくる。", c1: "元気がない時に会うとちょっと救われる。", c2: "滑ると「しゅん…」と小さくなって消える。" },
+      { id: 59, char: "溶かすやつ", type: "怪異", threat: "★★★★★", catch: "触れたものをドロドロに溶かすやばい液体。", c1: "お気に入りのポシェットも一瞬でスライム状にされる。", c2: "絶対触っちゃダメ。遠距離から討伐すること。" },
+      { id: 60, char: "時間まもる虫", type: "虫", threat: "★☆☆☆☆", catch: "毎朝同じ時間に「ジジジ！」と鳴いて起こしてくれる。", c1: "目覚まし時計代わりに便利。", c2: "たまに休みの日に鳴かれてキレそうになる。" },
+      { id: 61, char: "たまごあたためるやつ", type: "無害", threat: "★☆☆☆☆", catch: "謎の巨大な卵を、ひたすらお腹の下で温めている。", c1: "何が生まれるのかは誰も知らない。", c2: "卵に触ろうとすると「シャアッ」と威嚇される。" },
+      { id: 62, char: "すぐ泣くやつ", type: "擬態型", threat: "★★★★☆", catch: "「えぐ…えぐ…」と泣いているか弱そうな生き物。", c1: "同情して近づくと、泣き声で凶暴な仲間を大量に呼ぶ。", c2: "可哀想でも絶対に近づいてはいけない罠。" },
+      { id: 63, char: "最後やってくれるやつ", type: "友好型", threat: "☆☆☆☆☆", catch: "草むしりや討伐で疲れ果てた時、残りのノルマを終わらせてくれる。", c1: "「あとはやっとくよ」みたいな顔をしてくれる。", c2: "神。一生ついていきたい。" },
+      { id: 64, char: "やり直させるやつ", type: "怪異", threat: "★★★★★", catch: "「ぷりっ」と鳴きながら、今まで頑張った成果を全部ゼロにしてくる。", c1: "作った砂城も、集めたシールも全部リセットされる絶望。", c2: "会ったら最悪。泣きながらやり直すしかない。" }
+    ];
+
+    const typeColors = {
+      "友好型": "bg-green-100 text-green-700 border-green-300",
+      "擬態型": "bg-red-100 text-red-700 border-red-300",
+      "怪異": "bg-purple-100 text-purple-700 border-purple-300",
+      "虫": "bg-amber-100 text-amber-700 border-amber-300",
+      "無害": "bg-blue-100 text-blue-700 border-blue-300"
+    };
+
+    let activeType = "all";
+    
+    window.onload = () => {
+      renderCards();
+      setupFilters();
+    };
+
+    function setupFilters() {
+      document.getElementById('searchInput').addEventListener('input', renderCards);
+      const btns = document.querySelectorAll('.filter-btn');
+      btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          btns.forEach(b => {
+            b.classList.remove('active', 'bg-slate-800', 'text-white');
+            b.classList.add('bg-white');
+            if(b.dataset.val === '友好型') b.classList.add('text-green-700');
+            if(b.dataset.val === '擬態型')
+              
+              
+              
+              
+              
+              b.classList.add('text-red-700');
+            if(b.dataset.val === '怪異') b.classList.add('text-purple-700');
+            if(b.dataset.val === '虫') b.classList.add('text-amber-700');
+            if(b.dataset.val === '無害') b.classList.add('text-blue-700');
+          });
+          e.target.classList.add('active', 'bg-slate-800', 'text-white');
+          e.target.classList.remove('bg-white', 'text-green-700', 'text-red-700', 'text-purple-700', 'text-amber-700', 'text-blue-700');
+          activeType = e.target.dataset.val;
+          renderCards();
+        });
+      });
+    }
+
+    function renderCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('characterGrid');
+      grid.innerHTML = '';
+      
+      const filtered = characters.filter(c => {
+        if (activeType !== 'all' && c.type !== activeType) return false;
+        if (query) {
+          const str = Object.values(c).join(' ').toLowerCase();
+          if (!str.includes(query)) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('matchCount').textContent = filtered.length;
+
+      filtered.forEach(c => {
+        const tColor = typeColors[c.type];
+        
+        // 危険なやつは揺れる
+        const shakeClass = (c.type === '擬態型' || c.threat.includes('★★★★★')) ? 'hover-shake' : '';
+        const dangerBorder = (c.type === '擬態型') ? 'border-red-300 shadow-[0_4px_15px_rgba(220,38,38,0.15)]' : 'border-slate-200';
+
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-[1.5rem] p-5 border-[3px] ${dangerBorder} hover:-translate-y-1 transition-all cursor-pointer flex flex-col justify-between group ${shakeClass}`;
+        card.onclick = () => openModal(c);
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <span class="text-[11px] font-black tracking-widest text-slate-400 bg-slate-100 px-2 rounded-lg">No.${c.id.toString().padStart(2, '0')}</span>
+              <span class="text-[11px] font-black px-2.5 py-0.5 rounded-xl border-2 ${tColor}">${c.type}</span>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2 leading-tight">
+              ${c.char}
+            </h3>
+            <p class="text-[10px] font-bold text-yellow-500 mb-3 tracking-widest">きけん：${c.threat}</p>
+            <p class="text-xs text-slate-600 font-bold leading-relaxed line-clamp-2 bg-slate-50 p-2 rounded-lg border border-slate-100">${c.catch}</p>
+          </div>
+          <div class="mt-4 pt-3 border-t-2 border-dashed border-slate-100 text-right">
+            <span class="text-[11px] text-pink-500 font-black group-hover:underline">メモをよむ ＋</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openModal(c) {
+      const m = document.getElementById('charModal');
+      const header = document.getElementById('modalHeader');
+      
+      // タイプによってモーダルの色を変える
+      const bgColors = {
+        "友好型": "bg-green-300",
+        "擬態型": "bg-red-400",
+        "怪異": "bg-purple-300",
+        "虫": "bg-amber-300",
+        "無害": "bg-blue-300"
+      };
+      
+      header.className = `p-6 pb-8 text-center rounded-t-[1.5rem] ${bgColors[c.type]}`;
+      
+      document.getElementById('modalId').textContent = `No.${c.id.toString().padStart(2, '0')}`;
+      document.getElementById('modalType').textContent = c.type;
+      
+      // バッジ色
+      const badgeColors = {
+        "友好型": "bg-green-600",
+        "擬態型": "bg-red-600",
+        "怪異": "bg-purple-600",
+        "虫": "bg-amber-600",
+        "無害": "bg-blue-600"
+      };
+      document.getElementById('modalType').className = `text-xs font-black text-white px-3 py-1 rounded-full ${badgeColors[c.type]}`;
+
+      document.getElementById('modalName').textContent = c.char;
+      
+      const threatEl = document.getElementById('modalThreat');
+      threatEl.textContent = `きけん：${c.threat}`;
+      threatEl.className = c.threat.includes('★★★★') ? 'text-lg tracking-widest font-black text-white drop-shadow-md' : 'text-lg tracking-widest font-black text-slate-800 opacity-60';
+      
+      document.getElementById('modalCatch').textContent = c.catch;
+      document.getElementById('modalComment1').textContent = c.c1;
+      document.getElementById('modalComment2').textContent = c.c2;
+      
+      // スタンプの表示制御
+      const stampContainer = document.getElementById('modalStampContainer');
+      const stamp = document.getElementById('modalStamp');
+      
+      if (c.type === '擬態型' || c.threat.includes('★★★★★')) {
+        stampContainer.classList.remove('hidden');
+        stamp.className = 'stamp danger';
+        stamp.textContent = '討伐対象';
+      } else if (c.type === '友好型') {
+        stampContainer.classList.remove('hidden');
+        stamp.className = 'stamp safe';
+        stamp.textContent = 'なかよし';
+      } else {
+        stampContainer.classList.add('hidden');
+      }
+
+      m.classList.remove('pointer-events-none', 'opacity-0');
+      setTimeout(() => m.firstElementChild.classList.remove('scale-95'), 50);
+    }
+
+    function closeModal() {
+      const m = document.getElementById('charModal');
+      m.firstElementChild.classList.add('scale-95');
+      setTimeout(() => m.classList.add('pointer-events-none', 'opacity-0'), 200);
+    }
+  </script>
+</body>
+</html>
+
+```
