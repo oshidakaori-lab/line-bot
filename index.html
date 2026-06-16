@@ -663,6 +663,11 @@ mix-blend-mode:screen;
         <div class="floater-2"><div class="card-block delay-2"><div class="dialogue-container"><div class="dialogue-line chiikawa-text firefly-text-1 char-reveal delay-chiikawa"><span class="char-name">ちいかわ</span><span id="chiikawa">...</span></div><div class="dialogue-line hachiware-text firefly-text-2 char-reveal delay-hachiware"><span class="char-name">ハチワレ</span><span id="hachiware">...</span></div><div class="dialogue-line usagi-text firefly-text-3 char-reveal delay-usagi"><span class="char-name">うさぎ</span><span id="usagi">...</span></div></div></div></div>
         <div class="floater-3"><div class="card-block delay-3"><div class="advice-box"><span class="yoroi-name">鎧さんの言葉</span><p id="advice-text" class="yoroi-text firefly-text-4">...</p></div><p id="tap-notice" class="notice firefly-text-5">タップで文字をくっきり＆BGM再生</p><audio id="bgm-player" loop></audio></div></div>
     </div>
+    
+    <a id="backToCatalogBtn" href="characters.html" 
+       class="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/60 backdrop-blur-md text-white text-sm font-bold rounded-full shadow-lg border border-white/20 transition-all hover:bg-slate-700/80 hidden">
+      ← 図鑑にもどる
+    </a>
 
     <script>
         const speciesImages = {
@@ -675,38 +680,23 @@ mix-blend-mode:screen;
         const params = new URLSearchParams(window.location.search);
         const hid = params.get('hid') || "2"; // Default to 2 for preview 
         const l_name = params.get('l_name') || "1"; 
-    
-        // 👇👇👇 ココに追加！！！ 👇👇👇
-        // 💡 追加：図鑑から ?mode=gallery で飛んできた場合、最初からUIを隠す
-                // 💡 修正：ギャラリーモードなら「戻るボタン」を表示する
-          // 💡 修正：ギャラリーモードの処理（ボタンがなくてもエラーで止まらないようにする）
+
+        // 💡 ギャラリーモードの判定（ボタンを安全に表示する）
         if (params.get('mode') === 'gallery') {
             document.body.classList.remove('mode-normal');
             document.body.classList.add('mode-gallery');
             
-            // backToCatalogBtnがある時だけクラスを外す（安全なチェック）
             const backBtn = document.getElementById('backToCatalogBtn');
             if (backBtn) {
                 backBtn.classList.remove('hidden');
             }
             
-            // gallery-hintがある時だけ文字を変える（安全なチェック）
             const hintEl = document.getElementById('gallery-hint');
             if (hintEl) {
                 hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
             }
         }
 
-    
-    <!-- 🌤️ 追加：カタログに戻るための戻るボタン -->
-<a id="backToCatalogBtn" href="characters.html" 
-   class="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/60 backdrop-blur-md text-white text-sm font-bold rounded-full shadow-lg border border-white/20 transition-all hover:bg-slate-700/80 hidden">
-  ← 図鑑にもどる
-</a>
-
-
-        // 👆👆👆 ここまで 👆👆👆
-    
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
