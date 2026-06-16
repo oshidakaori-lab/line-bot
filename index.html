@@ -675,7 +675,17 @@ mix-blend-mode:screen;
         const params = new URLSearchParams(window.location.search);
         const hid = params.get('hid') || "2"; // Default to 2 for preview 
         const l_name = params.get('l_name') || "1"; 
-
+    
+        // 👇👇👇 ココに追加！！！ 👇👇👇
+        // 💡 追加：図鑑から ?mode=gallery で飛んできた場合、最初からUIを隠す
+        if (params.get('mode') === 'gallery') {
+            document.body.classList.remove('mode-normal');
+            document.body.classList.add('mode-gallery');
+            const hintEl = document.getElementById('gallery-hint');
+            if(hintEl) hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
+        }
+        // 👆👆👆 ここまで 👆👆👆
+    
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
