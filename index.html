@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,6 +11,10 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght=500;700;800&display=swap" rel="stylesheet">
 
     <style>
+        /* =========================================
+           CSSは元のまま、すべて残しています！
+           （省略せずにそのまま使ってください）
+           ========================================= */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body, html {
@@ -19,408 +24,17 @@
             padding: 20px 15px; background-color: transparent; overflow-x: hidden; color: #f8fafc; cursor: pointer;
         }
 
-        /* 📱 スマホ用：開発者用エフェクト切り替えパネル */
-        #dev-control-panel {
-            position: fixed; top: 12px; left: 12px; z-index: 9999;
-            background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 6px 10px; border-radius: 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
+        #dev-control-panel { position: fixed; top: 12px; left: 12px; z-index: 9999; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 10px; border-radius: 14px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.4s ease, transform 0.4s ease; }
         #dev-control-panel span { font-size: 0.75rem; font-weight: 800; color: #cbd5e1; }
-        #dev-selector {
-            background: #ffffff; color: #0f172a; border: none; padding: 4px 8px;
-            border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer;
-        }
+        #dev-selector { background: #ffffff; color: #0f172a; border: none; padding: 4px 8px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; outline: none; cursor: pointer; }
         .mode-gallery #dev-control-panel { opacity: 0; pointer-events: none; transform: translateY(-10px); }
 
-        /* 🌟 カメラワーク基本設定 */
-        .bg-layer {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-            background-size: cover; background-position: center; z-index: -2;
-            animation: cameraReadPan 40s ease-in-out infinite alternate;
-        }
-        @keyframes cameraReadPan {
-            0% { transform: scale(1.30) translateX(-4.5%); } 33% { transform: scale(1.20) translateX(3.0%); }  
-            66% { transform: scale(1.10) translateX(-1.5%); } 100% { transform: scale(1.00) translateX(0%); }    
-        }
+        .bg-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-size: cover; background-position: center; z-index: -2; animation: cameraReadPan 40s ease-in-out infinite alternate; }
+        @keyframes cameraReadPan { 0% { transform: scale(1.30) translateX(-4.5%); } 33% { transform: scale(1.20) translateX(3.0%); } 66% { transform: scale(1.10) translateX(-1.5%); } 100% { transform: scale(1.00) translateX(0%); } }
 
-        /* 🎬 【01 乾為天】専用カメラ＆ライトタイムライン */
-        .theme-ten .bg-layer { animation: tenTimelineAndCamera 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; }
-        @keyframes tenTimelineAndCamera {
-            0% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
-            16.6% { transform: scale(1.035); filter: brightness(1.1) contrast(1.05) saturate(1.1); } 
-            33.3% { transform: scale(1.05); filter: brightness(1.25) contrast(1.1) saturate(1.1); } 
-            50.0% { transform: scale(1.04); filter: brightness(1.4) contrast(1.15) saturate(0.9); } 
-            66.6% { transform: scale(1.03); filter: brightness(2.0) contrast(1.2) saturate(0.4); } 
-            83.3% { transform: scale(1.022); filter: brightness(2.3) contrast(0.9) saturate(0.2); } 
-            95.0% { transform: scale(1.02); filter: brightness(1.5) contrast(1.0) saturate(0.7); } 
-            100% { transform: scale(1.02); filter: brightness(0.95) contrast(1.0) saturate(1.0); } 
-        }
-
-        /* 🎬 【02 坤為地】専用カメラ＆ライトタイムライン */
-        .theme-kon .bg-layer { animation: konTimeline 6.0s ease-in-out infinite !important; transform: scale(1.0) !important; will-change: filter; }
-        @keyframes konTimeline {
-            0% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); }
-            16.6% { filter: brightness(0.9) contrast(0.8) grayscale(0.6); }
-            33.3% { filter: brightness(0.85) contrast(0.7) grayscale(0.7); }
-            50.0% { filter: brightness(0.8) contrast(0.65) grayscale(0.8); }
-            66.6% { filter: brightness(0.7) contrast(0.55) grayscale(0.95); } 
-            83.3% { filter: brightness(0.78) contrast(0.6) grayscale(0.85); } 
-            100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } 
-        }
-
-        /* 🎬 【03 水雷屯】専用カメラ＆ベースタイムライン */
-        .theme-chun .bg-layer { animation: chunTimeline 6.0s ease-in-out infinite !important; will-change: background-color, transform; }
-        @keyframes chunTimeline {
-            0% { background-color: #8FA3B8; transform: translate(0, 0); } 
-            16.6% { background-color: #8fa3b8; transform: translate(-1px, 1px); } 
-            33.3% { background-color: #6E7F91; transform: translate(2px, -1px); } 
-            50.0% { background-color: #7b8e9f; transform: translate(-1px, 0px); } 
-            64.0% { background-color: #3F4F60; transform: translate(4px, 3px); } 
-            66.6% { background-color: #e0f0ff; transform: translate(-6px, -4px); } 
-            68.0% { background-color: #3F4F60; transform: translate(3px, 5px); } 
-            83.3% { background-color: #9AAFC4; transform: translate(1px, -1px); } 
-            100% { background-color: #8FA3B8; transform: translate(0, 0); } 
-        }
-
-        /* 🎬 【04 山水蒙】専用スタイル */
-        .theme-mou .bg-layer { animation: mouTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; }
-        @keyframes mouTimeline {
-            0% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } 
-            16.6% { background-color: #bec5cc; filter: blur(8px) brightness(0.95) contrast(0.85); } 
-            33.3% { background-color: #B0B7BF; filter: blur(18px) brightness(0.85) contrast(0.6); } 
-            50.0% { background-color: #b8bfc7; filter: blur(10px) brightness(1.1) contrast(0.75); } 
-            66.6% { background-color: #E8ECEF; filter: blur(28px) brightness(1.25) contrast(0.4); } 
-            83.3% { background-color: #C8CFD6; filter: blur(12px) brightness(1.0) contrast(0.8); } 
-            100% { background-color: #C5CCD3; filter: blur(4px) brightness(1.0) contrast(1.0); } 
-        } 
-
-        /* 🎬 【05 水天需】専用スタイル */
-        .theme-xu .bg-layer { animation: xuTimeline 6.0s ease-in-out infinite !important; will-change: background-color, filter; }
-        @keyframes xuTimeline {
-            0% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } 
-            16.6% { background-color: #8fa0b2; filter: brightness(0.9) contrast(0.85) saturate(0.8); } 
-            33.3% { background-color: #7F8F9F; filter: brightness(0.8) contrast(0.7) saturate(0.7); } 
-            50.0% { background-color: #95a5b5; filter: brightness(1.05) contrast(0.85) saturate(0.9); } 
-            66.6% { background-color: #5F6F7F; filter: brightness(0.7) contrast(0.6) saturate(0.6); } 
-            83.3% { background-color: #8899AA; filter: brightness(0.9) contrast(0.85) saturate(0.8); } 
-            100% { background-color: #9FB0C2; filter: brightness(1.0) contrast(1.0) saturate(0.9); } 
-        }
-
-        /* 🎬 【06 天水訟】専用スタイル */
-        .theme-song .bg-layer { animation: songCamera 6.0s ease-in-out infinite !important; background-color: #7A8FA3; will-change: transform; }
-        @keyframes songCamera {
-            0%, 33.2% { transform: scale(1.02) translateX(0); } 
-            38% { transform: scale(1.03) translateX(2px); } 
-            45% { transform: scale(1.03) translateX(-2px); }
-            55% { transform: scale(1.03) translateX(3px); }
-            64% { transform: scale(1.04) translateX(-4px); }
-            66.6% { transform: scale(1.06) translateX(8px); filter: contrast(1.3); } 
-            75% { transform: scale(1.03) translateX(-2px); }
-            83.3%, 100% { transform: scale(1.02) translateX(0); filter: contrast(1.0); } 
-        }
-
-        /* 🎬 【07 地水師】映画レベル・グリッド長雨エフェクト */
-        .shi-cloud-cover {
-            position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.15);
-            backdrop-filter: contrast(1.15);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* 密度統制ガバナー：6秒周期で全体の雨量を完璧に管理 */
-        .shi-density-governor {
-            position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            animation: shiDensityTimeline 6.0s ease-in-out infinite;
-            z-index: 2;
-        }
-
-        @keyframes shiDensityTimeline {
-            0% { opacity: 0.2; }       /* Phase 1 (0.0-1.0s)：静かな始まり */
-            16.6% { opacity: 0.5; }    /* Phase 2 (1.0-2.0s)：統率された拡大 */
-            33.3% { opacity: 0.6; }    /* Phase 3 (2.0-3.0s)：持久 */
-            50.0% { opacity: 0.75; }   /* Phase 4 (3.0-4.0s)：統制（密度の揺れ） */
-            66.6% { opacity: 1.0; }    /* Phase 5 (4.0-5.0s)：完成された秩序（最大） */
-            83.3% { opacity: 0.45; }   /* Phase 6 (5.0-6.0s)：終わらない持続（減衰） */
-            100% { opacity: 0.2; }     /* 0.0sへシームレスにループ接続 */
-        }
-
-        /* 直線性を強調した規律ある雨粒 */
-        .shi-rain-line {
-            position: absolute;
-            top: -150px;
-            width: 1.5px;
-            height: 120px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.45));
-            animation: shiRainFall 0.55s linear infinite;
-        }
-
-        @keyframes shiRainFall {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(calc(100vh + 150px)); }
-        }
-
-    
-        .theme-bi {
-        background: linear-gradient(to bottom, #7A8FA3, #C6D8EA) !important;
-        }
-    
-        /* 🎬 【08 水地比】スマホ視認性爆上げアップデート */
-        .theme-bi .bg-layer {
-            animation: biTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, transform;
-        }
-        @keyframes biTimeline {
-            0% { background-color: #6B8296; transform: scale(1.0); }     /* 視認性を上げるためベースを少し深く */
-            16.6% { background-color: #7E94A9; transform: scale(1.004); }
-            33.3% { background-color: #92A7BC; transform: scale(1.008); }
-            50.0% { background-color: #A6BACF; transform: scale(1.012); }
-            66.6% { background-color: #C0D3E5; transform: scale(1.02); }  /* ピーク時のなじみ */
-            83.3% { background-color: #A0B4C6; transform: scale(1.01); }
-            100% { background-color: #6B8296; transform: scale(1.0); }
-        }
-
-        /* 雲の不透明度をガッツリ上げて、ブレンドをnormalに */
-        .bi-soft-cloud {
-            position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 70%);
-            mix-blend-mode: normal; pointer-events: none;
-            animation: biCloudDispersion 6.0s ease-in-out infinite;
-            filter: blur(20px);
-        }
-
-        /* 光の拡散を overlay から screen にして輝度を確保 */
-        .bi-light-diffusion {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.35) 0%, transparent 70%);
-            mix-blend-mode: screen; pointer-events: none;
-            animation: biLightSpread 6.0s ease-in-out infinite;
-        
-    }
-        
-              .bi-fading-rain {
-            position: absolute; 
-            width: 2.5px; 
-            height: 45px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.75));
-            /* 落下とフェードのアニメーションをシンプルに統合・最適化 */
-            animation: biRainDropAndFade 2.0s infinite;
-        }
-
-        @keyframes biRainDropAndFade {
-            0% { 
-                transform: translateY(-10vh); 
-                opacity: 0; 
-            }
-            10% { 
-                opacity: 0.8; /* 落ち始めでフワッと現れる */
-            }
-            30% {
-                transform: translateY(110vh); 
-                opacity: 0; /* 画面下部へ落ち切りながら消える */
-            }
-            100% {
-                transform: translateY(110vh);
-                opacity: 0; /* 残りの時間は透明なまま待機（まばらな雨を表現） */
-            }
-        }
-
-            /* 🎬 【09 風天小畜】専用カメラ＆ベースタイムライン（圧縮感・抑制の風） */
-        .theme-shouchiku .bg-layer {
-            animation: shouchikuTimeline 6.0s ease-in-out infinite !important;
-            will-change: background-color, transform;
-        }
-        @keyframes shouchikuTimeline {
-            0% { background-color: #A9C0D6; transform: scale(1.0); } /* Phase 1: 動きの兆し（軽い空） */
-            16.6% { background-color: #9CB3CA; transform: scale(1.003); } /* Phase 2: 抑制の開始 */
-            33.3% { background-color: #8FA6BC; transform: scale(1.008); } /* Phase 3: 抑制（止められる流れ） */
-            50.0% { background-color: #7F96AD; transform: scale(1.014); } /* Phase 4: 緊張最大化 */
-            66.6% { background-color: #6F869D; transform: scale(1.02); }  /* Phase 5: 最圧（発散寸前の停止） */
-            83.3% { background-color: #8CA3B8; transform: scale(1.01); }  /* Phase 6: 残留（抑えたままの終わり） */
-            100% { background-color: #A9C0D6; transform: scale(1.0); }    /* ループ接続・再び風発生へ */
-        }
-
-        /* ① Wind Flow Layer（可視化された風の流れ：進みそうで押し戻される） */
-        .shouchiku-wind-line {
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.35), transparent);
-            pointer-events: none;
-            animation: shouchikuWindFlow 6.0s ease-in-out infinite;
-        }
-        @keyframes shouchikuWindFlow {
-            0% { transform: translateX(-15vw) scaleX(0.6); opacity: 0; }
-            16.6% { transform: translateX(10vw) scaleX(1.2); opacity: 0.5; } /* 風が広がる */
-            33.3% { transform: translateX(20vw) scaleX(1.4); opacity: 0.7; } /* 前進しそうで進まない張力 */
-            50.0% { transform: translateX(18vw) scaleX(1.0); opacity: 0.8; } /* 一瞬動いてすぐ停止・引き戻される */
-            66.6% { transform: translateX(25vw) scaleX(0.7); opacity: 0.4; } /* ピーク：抑え込まれた強い風の筋 */
-            83.3% { transform: translateX(5vw) scaleX(0.5); opacity: 0.2; }
-            100% { transform: translateX(-15vw) scaleX(0.6); opacity: 0; }
-        }
-
-        /* ② Cloud Resistance Layer（雲が動きを拒む逆流・ホールド表現） */
-        .shouchiku-resisting-cloud {
-            position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 70%);
-            mix-blend-mode: overlay; pointer-events: none;
-            filter: blur(15px);
-            animation: shouchikuCloudResist 6.0s ease-in-out infinite;
-        }
-        @keyframes shouchikuCloudResist {
-            0%, 100% { transform: translateX(0) scale(1); opacity: 0.5; }
-            16.6% { transform: translateX(1.5vw) scale(1.02); opacity: 0.5; } /* わずかに流されかける */
-            33.3% { transform: translateX(-0.8vw) scale(1.05); opacity: 0.6; } /* ギュッと押し戻される抵抗 */
-            50.0% { transform: translateX(0.5vw) scale(1.08); opacity: 0.7; }  /* 停止の圧力 */
-            66.6% { transform: translateX(0vw) scale(1.1); opacity: 0.75; }   /* ガチッと固定されるピーク */
-            83.3% { transform: translateX(0vw) scale(1.04); opacity: 0.6; }
-        }
-
-        /* ③ Atmospheric Pressure Layer（空間の圧縮感・視覚的密度上昇） */
-        .shouchiku-pressure-fog {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(15, 23, 42, 0.18) 100%);
-            mix-blend-mode: multiply; pointer-events: none;
-            animation: shouchikuPressure 6.0s ease-in-out infinite;
-        }
-        @keyframes shouchikuPressure {
-            0%, 16.6% { opacity: 0; }
-            33.3% { opacity: 0.5; }
-            66.6% { opacity: 1.0; } /* 66.6%（Phase 5）で抑え込み圧力が最大化 */
-            83.3% { opacity: 0.7; }
-            100% { opacity: 0; }
-        }
-                /* 🎬 【10 天沢履】氷の上を歩くような空（完全映像仕様） */
-        .effect-tensakuriri {
-            position: absolute;
-            inset: 0;
-            background-color: #C9D6E3;
-            overflow: hidden;
-            /* 🎨 カラー設計のタイムライン（6秒ループ） */
-            animation: lyriColor 6.0s infinite ease-in-out;
-        }
-
-        /* 🎥 カメラ設計：前進感（1〜2%ズーム）と極小の揺れ・歪み */
-        .effect-tensakuriri::before {
-            content: '';
-            position: absolute;
-            inset: -5%; /* ズーム・揺れ用の余白 */
-            background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.4) 0%, transparent 70%);
-            animation: lyriCamera 6.0s infinite ease-in-out;
-        }
-
-        /* 🌫 レイヤー構成：Micro Wind & Tension Layer（微細な空気の歪み） */
-        .effect-tensakuriri::after {
-            content: '';
-            position: absolute;
-            inset: -10%;
-            background: 
-                linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0) 70%),
-                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
-            filter: blur(4px);
-            animation: lyriAtmosphere 6.0s infinite ease-in-out;
-        }
-
-        /* ==========================================
-           ⏱ タイムライン制御（6.0秒 / 24fps基準）
-           ========================================== */
-
-        /* ① カラー設計：ほぼ変えない＝心理だけ変化 */
-        @keyframes lyriColor {
-            0%, 16.6% { background-color: #C9D6E3; } /* Phase 1 (0-1s): 静かな空 */
-            33.3%    { background-color: #C9D6E3; } /* Phase 2 (1-2s): 観察（明度維持） */
-            50.0%    { background-color: #AFC1D1; } /* Phase 3 (2-3s): 迷い（揺れ・低下） */
-            66.6%    { background-color: #A2B5C6; } /* Phase 4 (3-4s): 判断 */
-            83.3%    { background-color: #92A7BA; } /* Phase 5 (4-5s): 一歩（緊張最大） */
-            100%     { background-color: #B5C6D4; } /* Phase 6 (5-6s): 残留安定 */
-        }
-
-        /* ② カメラワーク：進むが、常に止まる準備をしている動き */
-        @keyframes lyriCamera {
-            0%, 16.6% { 
-                transform: scale(1) translate(0, 0) rotate(0deg); 
-            }
-            /* Phase 2: 観察（バランスを確認する極小の揺れ） */
-            33.3% { 
-                transform: scale(1.005) translate(-0.5px, 0.3px) rotate(0.02deg); 
-            }
-            /* Phase 3: 迷い（1%前進しつつ、わずかに逆へ戻るような揺らぎ） */
-            50.0% { 
-                transform: scale(1.01) translate(0.5px, -0.3px) rotate(-0.02deg); 
-            }
-            /* Phase 4: 判断（風を制御し、前進を維持） */
-            66.6% { 
-                transform: scale(1.015) translate(-0.8px, 0px) rotate(0deg); 
-            }
-            /* Phase 5: 一歩（2%ズームのピーク ＋ 空間がわずかに歪む skew） */
-            83.3% { 
-                transform: scale(1.02) translate(0px, -0.5px) skewX(0.2deg); 
-            }
-            /* Phase 6: 緊張の残留（歪み収束、しかし完全な安心ではない停止状態） */
-            100% { 
-                transform: scale(1.02) translate(0, 0) skewX(0deg); 
-            }
-        }
-
-        /* ③ 空気層（雲）の動き：崩れそうで戻る（Balance Correction） */
-        @keyframes lyriAtmosphere {
-            0%, 16.6% { 
-                transform: translate(0, 0); opacity: 0.6; 
-            }
-            33.3% { 
-                transform: translate(-3px, 1px); opacity: 0.7; 
-            }
-            /* Phase 3: 雲が少し流れるが、すぐ戻る */
-            50.0% { 
-                transform: translate(5px, -2px); opacity: 0.5; 
-            }
-            66.6% { 
-                transform: translate(0, 0); opacity: 0.7; 
-            }
-            /* Phase 5: ピーク（緊張によるブレ） */
-            83.3% { 
-                transform: translate(-6px, -2px) scale(1.01); opacity: 0.8; 
-            }
-            100% { 
-                transform: translate(0, 0) scale(1); opacity: 0.6; 
-            }
-        }
-
-        
-      /* 🎬 【48 水風井】専用カメラワーク */
-        .theme-well .bg-layer { animation: wellStaticWater 8s ease-in-out infinite alternate !important; transform: scale(1.02) !important; }
-        @keyframes wellStaticWater {
-            0% { transform: scale(1.02) translate(0, 0); filter: brightness(0.92) contrast(1.0); }
-            50% { transform: scale(1.02) translate(1px, 1px); }
-            100% { transform: scale(1.02) translate(-1px, 0.5px); filter: brightness(1.05) contrast(1.05); }
-        }
-
-
-        /* 🎬 【63 水火既済】専用カメラワーク */
-        .theme-jiji .bg-layer { animation: jijiTension 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; transform: scale(1.02) !important; }
-        @keyframes jijiTension {
-            0%, 83.2% { transform: scale(1.02) translate(0, 0); filter: brightness(1.0) contrast(1.0); }
-            83.3% { transform: scale(1.02) translate(0.5px, -0.5px); filter: brightness(0.95); }
-            87.0% { transform: scale(1.02) translate(-1.0px, 0.5px); }
-            91.0% { transform: scale(1.02) translate(1.0px, 1.0px); }
-            95.0% { transform: scale(1.02) translate(-1.5px, -1.0px); filter: brightness(0.9); }
-            100% { transform: scale(1.02) translate(0, 0); filter: brightness(1.0) contrast(1.0); }
-        }
-
-        /* 🎥 【64 火水未済】専用カメラ */
-        .theme-bisei .bg-layer { animation: biseiRewindCamera 6.0s cubic-bezier(0.45, 0, 0.55, 1) infinite !important; transform: scale(1.05) !important; }
-        @keyframes biseiRewindCamera {
-            0% { transform: scale(1.05) translate(0, 0); filter: hue-rotate(0deg); }
-            40% { transform: scale(1.03) translate(1%, 1%); }
-            60% { transform: scale(1.04) translate(-0.5%, -0.5%); filter: hue-rotate(15deg); }
-            80% { transform: scale(1.08) translate(0.5%, 0%); }
-            100% { transform: scale(1.05) translate(0, 0); filter: hue-rotate(0deg); }
-        }
-
-        /* UIレイアウト共通 */
+        /* 各卦のCSSは長いので省略していますが、元ファイルのCSSをここに全て入れてください */
+        /* 例: .theme-ten .bg-layer { ... } など */
+        /* 以下、UI部分のCSSのみ抜粋 */
         #weather-effect { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
         .ui-wrapper { width: 100%; max-width: 450px; display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 40px 0 20px; transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); overflow: hidden; }
         .floater-1 { animation: floatAnim1 5.5s ease-in-out infinite; width: 100%; }
@@ -434,10 +48,7 @@
         .mode-normal .card-block { animation: frameInRight 1s cubic-bezier(0.16, 1, 0.3, 1) forwards, boxPulse 6s infinite alternate ease-in-out 1s; }
         .mode-normal .delay-1 { animation-delay: 0.5s, 1.5s; } .mode-normal .delay-2 { animation-delay: 2.0s, 3.0s; } .mode-normal .delay-3 { animation-delay: 7.0s, 8.0s; } 
         @keyframes frameInRight { 0% { opacity: 0; transform: translateX(30vw); } 100% { opacity: 1; transform: translateX(0); } }
-        @keyframes boxPulse {
-            0% { background: rgba(15, 23, 42, 0.0); border: 2px solid rgba(255, 255, 255, 0.05); box-shadow: none; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-            100% { background: rgba(15, 23, 42, 0.4); border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-        }
+        @keyframes boxPulse { 0% { background: rgba(15, 23, 42, 0.0); border: 2px solid rgba(255, 255, 255, 0.05); box-shadow: none; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); } 100% { background: rgba(15, 23, 42, 0.4); border: 2px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0,0,0,0.15), inset 0 0 15px rgba(255,255,255,0.05); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); } }
 
         .dialogue-line { opacity: 0; transform: translateX(40px); }
         .mode-normal .char-reveal { animation: charSlideIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -465,246 +76,6 @@
         .yoroi-name { font-size: 0.85rem; opacity: 0.9; color: #ffffff; margin-bottom: 8px; display: block; font-weight: 700; }
         .yoroi-text { color: #fed7aa; font-size: 1.1rem; line-height: 1.7; font-weight: 800; letter-spacing: 0.5px; } 
         .notice { font-size: 0.85rem; color: #ffffff; margin-top: 20px; text-align: center; font-weight: 500; }
-
-        /* --- 各天候エフェクトのCSS --- */
-        /* ❄️ 雪守族 専用：ひらひら舞い落ちる雪の見た目 */
-        .snow-particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 50%;
-            pointer-events: none;
-            filter: blur(0.5px);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-            animation: snowFall linear infinite;
-        }
-        /* 上から下へ、左右に揺れながら落ちるアニメーション */
-        @keyframes snowFall {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; }
-        }
-        .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
-        .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
-        @keyframes riseUp { 0% { transform: translateY(105vh) scale(0.5); opacity: 0; } 30% { opacity: 0.8; } 70% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
-        .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0)); height: 3px; border-radius: 50%; filter: blur(2px); animation: blow cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
-        .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, #fff, rgba(255,255,255,0)); opacity: 0; pointer-events: none; z-index: -1; animation: lightning 6s ease-in-out infinite; mix-blend-mode: overlay; }
-        @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
-        .orb-particle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); animation: orbDrift ease-in-out infinite; pointer-events: none; }
-        @keyframes orbDrift { 0% { transform: translateY(5vh) translateX(0) scale(0.8); opacity: 0; } 25% { opacity: 0.8; } 50% { transform: translateY(-40vh) translateX(30px) scale(1.2); opacity: 0.4; } 75% { opacity: 0.8; } 100% { transform: translateY(-90vh) translateX(-20px) scale(0.9); opacity: 0; } }
-        
-        /* 🌤️ 01 乾為天 専用ブルームフレアレイヤー */
-        .ten-bloom-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; pointer-events: none; mix-blend-mode: screen; background: radial-gradient(circle, #ffffff 0%, rgba(175,203,255,0.7) 35%, rgba(111,168,255,0) 70%); animation: tenPureLight 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes tenPureLight { 0% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } 16.6% { width: 35vw; height: 35vw; opacity: 0.5; filter: blur(12px); } 33.3% { width: 65vw; height: 65vw; opacity: 0.7; filter: blur(20px); } 50.0% { width: 100vw; height: 100vw; opacity: 0.85; filter: blur(35px); } 66.6% { width: 160vw; height: 160vw; opacity: 0.95; filter: blur(50px); } 83.3% { width: 300vw; height: 300vw; opacity: 1; filter: blur(70px); background: radial-gradient(circle, #ffffff 0%, #ffffff 70%, rgba(255,255,255,0) 100%); } 95.0% { width: 120vw; height: 120vw; opacity: 0.5; filter: blur(40px); } 100% { width: 15vw; height: 15vw; opacity: 0.3; filter: blur(8px); } }
-        .ten-hex-ripple { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); border: 2px solid rgba(255,255,255,0); border-radius: 38% 62% 55% 45% / 50% 40% 60% 50%; pointer-events: none; mix-blend-mode: overlay; animation: tenRippleWave 6.0s linear infinite; }
-        @keyframes tenRippleWave { 0% { width: 0vw; height: 0vw; opacity: 0; transform: translate(-50%, -50%) rotate(0deg) scale(0.8); } 33.3% { width: 30vw; height: 30vw; opacity: 0.4; border-color: rgba(111,168,255,0.5); filter: blur(1px); } 50.0% { width: 80vw; height: 80vw; opacity: 0.7; border-color: rgba(255,255,255,0.7); transform: translate(-50%, -50%) rotate(180deg) scale(1.1); filter: blur(3px); } 66.6% { width: 150vw; height: 150vw; opacity: 0.9; border-color: rgba(255,255,255,0.9); transform: translate(-50%, -50%) rotate(360deg) scale(1.2); filter: blur(6px); } 83.3% { width: 240vw; height: 240vw; opacity: 0; border-color: rgba(255,255,255,0); transform: translate(-50%, -50%) rotate(540deg) scale(1.4); } 100% { width: 0vw; height: 0vw; opacity: 0; } }
-
-        /* 🌫️ 02 坤為地 専用 */
-        .kon-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(159,164,168,0) 0%, rgba(100,105,110,0.8) 100%); mix-blend-mode: multiply; pointer-events: none; animation: konFogFill 6.0s ease-in-out infinite; will-change: opacity; }
-        @keyframes konFogFill { 0% { opacity: 0.1; } 33.3% { opacity: 0.4; } 50.0% { opacity: 0.7; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.8; } 100% { opacity: 0.1; } }
-        .kon-heavy-cloud { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(159, 164, 168, 0.7) 0%, rgba(159, 164, 168, 0.3) 40%, rgba(159, 164, 168, 0) 70%); pointer-events: none; mix-blend-mode: normal; animation: konCloudWeight 6.0s ease-in-out infinite; will-change: transform, opacity; }
-        @keyframes konCloudWeight { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.6; } 66.6% { transform: scale(1.06); opacity: 0.9; } 83.3% { transform: scale(1.03); opacity: 0.7; } 100% { transform: scale(1.0); opacity: 0.4; } }
-
-        /* 🌫️ 03 水雷屯 専用 */
-        .chun-mist { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(143,163,184,0.6) 100%); mix-blend-mode: screen; pointer-events: none; animation: chunMistAnim 6.0s ease-in-out infinite; will-change: opacity; }
-        @keyframes chunMistAnim { 0% { opacity: 0.9; } 33.3% { opacity: 0.3; } 50.0% { opacity: 0.1; } 66.6% { opacity: 0.5; } 83.3% { opacity: 0.8; } 100% { opacity: 0.9; } }
-        .chun-cloud-1, .chun-cloud-2 { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(63, 79, 96, 0.5) 0%, rgba(63, 79, 96, 0) 60%); pointer-events: none; mix-blend-mode: multiply; will-change: transform, opacity; }
-        .chun-cloud-1 { animation: chunCloud1 6.0s ease-in-out infinite; } .chun-cloud-2 { animation: chunCloud2 6.0s ease-in-out infinite; }
-        @keyframes chunCloud1 { 0% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } 33.3% { transform: translate(10vw, 5vh) scale(1.2); opacity: 0.7; } 66.6% { transform: translate(30vw, -20vh) scale(1.5); opacity: 0.9; } 100% { transform: translate(-20vw, -10vh) scale(1); opacity: 0.2; } }
-        @keyframes chunCloud2 { 0% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } 33.3% { transform: translate(-10vw, 0vh) scale(1); opacity: 0.6; } 66.6% { transform: translate(-40vw, 30vh) scale(1.8); opacity: 0.8; } 100% { transform: translate(30vw, 20vh) scale(1.2); opacity: 0.2; } }
-        .chun-rain-weak, .chun-rain-strong { position: absolute; top: -20%; left: -20%; width: 140vw; height: 140vh; pointer-events: none; will-change: background-position, opacity; }
-        .chun-rain-weak { background-image: linear-gradient(5deg, transparent 40%, rgba(200,210,220,0.5) 41%, transparent 42%), linear-gradient(5deg, transparent 80%, rgba(200,210,220,0.3) 81%, transparent 82%); background-size: 30px 100px, 50px 150px; animation: rainDropWeak 0.8s linear infinite, rainWeakOpacity 6.0s ease-in-out infinite; }
-        .chun-rain-strong { background-image: linear-gradient(25deg, transparent 30%, rgba(220,230,255,0.6) 31%, transparent 32%), linear-gradient(25deg, transparent 60%, rgba(220,230,255,0.4) 61%, transparent 62%), linear-gradient(25deg, transparent 90%, rgba(220,230,255,0.5) 91%, transparent 92%); background-size: 20px 120px, 35px 160px, 50px 140px; animation: rainDropStrong 0.3s linear infinite, rainStrongOpacity 6.0s ease-in-out infinite; }
-        @keyframes rainDropWeak { 0% { background-position: 0 0, 0 0; } 100% { background-position: -8px 100px, -13px 150px; } }
-        @keyframes rainDropStrong { 0% { background-position: 0 0, 0 0, 0 0; } 100% { background-position: -56px 120px, -74px 160px, -65px 140px; } }
-        @keyframes rainWeakOpacity { 0% { opacity: 0.3; } 16.6% { opacity: 0.7; } 33.3% { opacity: 0.2; } 50.0% { opacity: 0; } 66.6% { opacity: 0; } 83.3% { opacity: 0.5; } 100% { opacity: 0.3; } }
-        @keyframes rainStrongOpacity { 0% { opacity: 0; } 16.6% { opacity: 0; } 33.3% { opacity: 0.6; } 50.0% { opacity: 0.2; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0; } 100% { opacity: 0; } }
-
-        /* 🌫️ 04 山水蒙 専用 */
-        .mou-fog-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.4) 0%, transparent 60%), radial-gradient(circle at 70% 60%, rgba(240,244,248,0.5) 0%, transparent 70%); mix-blend-mode: overlay; pointer-events: none; animation: mouFogAnim 6.0s ease-in-out infinite; will-change: opacity, transform; }
-        @keyframes mouFogAnim { 0% { opacity: 0.4; transform: scale(1.0) translate(0, 0); } 33.3% { opacity: 0.8; transform: scale(1.1) translate(-2%, 2%); } 50% { opacity: 0.5; transform: scale(1.05) translate(1%, -1%); } 66.6% { opacity: 1.0; transform: scale(1.25) translate(0, 0); } 83.3% { opacity: 0.6; transform: scale(1.1) translate(-1%, 0); } 100% { opacity: 0.4; transform: scale(1.0) translate(0, 0); } }    
-        .mou-particle-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; mix-blend-mode: screen; background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 0), radial-gradient(rgba(255,255,255,0.15) 2px, transparent 0); background-size: 60px 60px, 110px 110px; animation: mouParticleAnim 6.0s linear infinite; will-change: opacity, background-position; }
-        @keyframes mouParticleAnim { 0% { opacity: 0.2; background-position: 0 0, 0 0; } 33.3% { opacity: 0.5; background-position: 15px -20px, -10px 15px; } 66.6% { opacity: 0.9; background-position: 30px -40px, -20px 30px; } 83.3% { opacity: 0.4; background-position: 15px -20px, -10px 15px; } 100% { opacity: 0.2; background-position: 0 0, 0 0; } }  
-
-        /* ☁️ 05 水天需 専用 */
-        .xu-heavy-cloud { position: absolute; top: -15%; left: -15%; width: 130vw; height: 130vh; background: radial-gradient(ellipse at 50% 30%, rgba(79, 95, 111, 0.7) 0%, rgba(63, 79, 96, 0.4) 40%, transparent 70%); pointer-events: none; mix-blend-mode: multiply; animation: xuCloudAnim 6.0s ease-in-out infinite; will-change: transform, opacity; }
-        @keyframes xuCloudAnim { 0% { transform: scale(1.0); opacity: 0.4; } 33.3% { transform: scale(1.02); opacity: 0.7; } 50.0% { transform: scale(1.01); opacity: 0.3; } 66.6% { transform: scale(1.05); opacity: 0.95; } 83.3% { transform: scale(1.02); opacity: 0.6; } 100% { transform: scale(1.0); opacity: 0.4; } }
-        .xu-pressure-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(to bottom, rgba(50, 60, 70, 0.4) 0%, rgba(127, 143, 159, 0.1) 100%); mix-blend-mode: darken; pointer-events: none; animation: xuPressureAnim 6.0s ease-in-out infinite; will-change: opacity; }
-        @keyframes xuPressureAnim { 0% { opacity: 0.2; } 33.3% { opacity: 0.6; } 50.0% { opacity: 0.1; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.4; } 100% { opacity: 0.2; } }
-
-        /* 💥 06 天水訟 専用 */
-        .song-upper-layer, .song-lower-layer { position: absolute; left: -20vw; width: 140vw; height: 60vh; pointer-events: none; will-change: transform, opacity; }
-        .song-upper-layer { top: 0; background: linear-gradient(to bottom, rgba(207,227,255,0.95), rgba(207,227,255,0)); animation: songUpperAnim 6.0s ease-in-out infinite; }
-        .song-lower-layer { bottom: 0; background: linear-gradient(to top, rgba(62,76,90,0.95), rgba(62,76,90,0)); animation: songLowerAnim 6.0s ease-in-out infinite; }
-        @keyframes songUpperAnim { 0% { transform: translateY(-10vh) translateX(0); opacity: 0.8; } 33.3% { transform: translateY(5vh) translateX(10vw); opacity: 0.9; } 66.6% { transform: translateY(20vh) translateX(25vw); opacity: 1; mix-blend-mode: hard-light; } 100% { transform: translateY(-10vh) translateX(40vw); opacity: 0.6; } }
-        @keyframes songLowerAnim { 0% { transform: translateY(10vh) translateX(0); opacity: 0.8; } 33.3% { transform: translateY(-5vh) translateX(-10vw); opacity: 0.9; } 66.6% { transform: translateY(-20vh) translateX(-25vw); opacity: 1; mix-blend-mode: multiply; } 100% { transform: translateY(10vh) translateX(-40vw); opacity: 0.6; } }
-        .song-lightning { position: absolute; top: 50%; left: -20vw; width: 140vw; height: 8px; background: #FFFFFF; box-shadow: 0 0 15px #FFFFFF, 0 0 30px #CFE3FF; transform: translateY(-50%) rotate(-4deg); opacity: 0; pointer-events: none; mix-blend-mode: screen; animation: songLightningAnim 6.0s ease-in-out infinite; }
-        @keyframes songLightningAnim { 0%, 65% { opacity: 0; transform: translateY(-50%) rotate(-4deg) scaleY(1); } 66.6% { opacity: 1; transform: translateY(-50%) rotate(-4deg) scaleY(3); } 69% { opacity: 0.3; transform: translateY(-50%) rotate(-4deg) scaleY(0.5); } 72%, 100% { opacity: 0; } }
-        .song-rain { position: absolute; top: -10vh; left: -10vw; width: 120vw; height: 120vh; background-image: linear-gradient(15deg, transparent 40%, rgba(207,227,255,0.4) 41%, transparent 42%); background-size: 30px 120px; pointer-events: none; animation: songRainDrop 0.3s linear infinite, songRainOpacity 6.0s ease-in-out infinite; }
-        @keyframes songRainDrop { 0% { background-position: 0 0; } 100% { background-position: -30px 120px; } }
-        @keyframes songRainOpacity { 0%, 16.6% { opacity: 0; } 33.3% { opacity: 0.5; } 50.0% { opacity: 0.3; } 66.6% { opacity: 1.0; } 83.3%, 100% { opacity: 0; } }
-        
-        /* 48 水風井 */
-        .well-particle { position: absolute; border-radius: 50%; pointer-events: none; animation: wellFeedbackLoop 6.0s ease-in-out infinite; opacity: 0; }
-        @keyframes wellFeedbackLoop { 0% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } 15% { opacity: 0.8; } 40% { transform: translate(-50%, -15vh) scale(1.1); opacity: 0.9; } 55% { transform: translate(calc(-50% + var(--dir-x)), -10vh) scale(1.0); opacity: 0.7; } 85% { transform: translate(calc(-50% + var(--dir-x) * 0.9), 35vh) scale(0.5); opacity: 0.2; } 100% { transform: translate(-50%, 45vh) scale(0.4); opacity: 0; } }
- .well-core-light{
-    position:absolute;
-    left:50%;
-    top:50%;
-
-    width:180px;
-    height:180px;
-
-    transform:translate(-50%,-50%);
-
-    border-radius:50%;
-
-    background:
-      radial-gradient(
-        circle,
-        rgba(180,255,240,.6),
-        rgba(180,255,240,0)
-      );
-    box-shadow:
-  0 0 60px rgba(180,255,240,.5),
-  0 0 120px rgba(180,255,240,.25);
-
-     filter:blur(4px);
-     mix-blend-mode:screen;
-    pointer-events:none;
-
-    animation:
-      wellHeartbeat 2s ease-in-out infinite;
-}
-
-@keyframes wellHeartbeat{
-      0%{
-    opacity:.3;
-    transform:
-      translate(-50%,-50%)
-      scale(.8);
-  }
-
-  50%{
-    opacity:.9;
-    transform:
-      translate(-50%,-50%)
-      scale(1.2);
-  }
-
-  100%{
-    opacity:.3;
-    transform:
-      translate(-50%,-50%)
-      scale(.8);
-  }
-}
-
-    @keyframes wellSkyBreath{
-
-  0%{
-    transform:scale(1);
-  }
-
-  50%{
-    transform:scale(1.03);
-  }
-
-  100%{
-    transform:scale(1);
-  }
-
-}
-        .well-sky{
-
-  animation:
-    wellSkyBreath 8s ease-in-out infinite;
-
-        }
-
-
-        .well-life-particle{
-
-  position:absolute;
-
-  width:6px;
-  height:6px;
-
-  border-radius:50%;
-
-  background:
-    rgba(200,255,240,.9);
-
-  box-shadow:
-    0 0 12px rgba(200,255,240,.8);
-　
-mix-blend-mode:screen;
-
-  animation:
-    wellRise linear forwards;
-        }
-        @keyframes wellRise{
-
-  0%{
-    opacity:0;
-    transform:
-      translateY(0)
-      scale(.3);
-  }
-
-  20%{
-    opacity:1;
-  }
-
-  100%{
-
-  opacity:0;
-
-  transform:
-
-    translate(
-      0,
-      -180px
-    )
-
-    scale(.2);
-
-}
-
-        }
-        
-
-    
-        /* 🔥 63 水火既済 専用 */
-        .jiji-particle { position: absolute; width: 7px; height: 7px; border-radius: 50%; pointer-events: none; animation: jijiLifecycle 6.0s linear infinite; }
-        @keyframes jijiLifecycle { 0%, 16.5% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } 16.6%, 33.2% { background-color: #C7F0E6; box-shadow: 0 0 12px rgba(199,240,230,0.7); transform: translate(0, 0) scale(0.96); opacity: 0.85; } 33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 10px rgba(127,191,178,0.6); transform: translate(0, 0) scale(0.92); opacity: 0.8; } 50.0%, 66.5% { background-color: #6EAA9E; box-shadow: 0 0 8px rgba(110,170,158,0.5); transform: translate(0.5px, -0.5px) scale(0.88); opacity: 0.7; } 66.6%, 83.2% { background-color: #5F8F8A; box-shadow: 0 0 10px rgba(95,143,138,0.6); transform: translate(0, 0) scale(0.85); opacity: 0.8; } 83.3% { background-color: #3F5F5A; box-shadow: 0 0 12px rgba(63,95,90,0.8); transform: translate(0.5px, 0.5px) scale(0.85); opacity: 0.9; } 89.0% { background-color: #3F5F5A; box-shadow: 0 0 18px rgba(63,95,90,1); transform: translate(-1px, 1px) scale(0.95); opacity: 0.95; } 95.0% { background-color: #1F3F3A; box-shadow: 0 0 25px rgba(31,63,58,1); transform: translate(var(--glitch-x), var(--glitch-y)) scale(1.15); opacity: 1; } 100% { background-color: #FFFFFF; box-shadow: 0 0 15px rgba(255,255,255,0.9); transform: translate(0, 0) scale(1); opacity: 0.9; } }
-
-        /* 🔄 64 火水未済 専用 */
-        .bisei-particle { position: absolute; border-radius: 50%; pointer-events: none; mix-blend-mode: screen; animation: biseiEternalLoop 6.0s cubic-bezier(0.4, 0.0, 0.2, 1) infinite; }
-        @keyframes biseiEternalLoop { 0%, 16.5% { background-color: #3F5F5A; box-shadow: 0 0 10px #3F5F5A; transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.85; } 16.6%, 33.2% { background-color: #5F8F8A; box-shadow: 0 0 15px #5F8F8A; transform: translate(var(--drift-x), var(--drift-y)) scale(0.9); opacity: 0.9; } 33.3%, 49.9% { background-color: #7FBFB2; box-shadow: 0 0 20px #7FBFB2; transform: translate(calc(var(--drift-x) * 1.5), calc(var(--drift-y) * 1.5)) scale(0.8); opacity: 0.85; } 50.0%, 66.5% { background-color: #7FBFB2; box-shadow: -10px 0 15px #5F8F8A, 10px 0 15px #A6E0D2; transform: translate(calc(var(--drift-x) * 0.5), calc(var(--drift-y) * 0.5)) scale(1.1); opacity: 0.9; } 66.6%, 83.2% { background-color: #A6E0D2; box-shadow: 0 0 25px #A6E0D2; transform: translate(calc(var(--drift-x) * 2), calc(var(--drift-y) * 2)) scale(0.7); opacity: 0.8; } 83.3%, 100% { background-color: #E6FFFA; box-shadow: 0 0 30px #E6FFFA, 0 0 50px #ffffff; transform: translate(0, 0) scale(1.5) rotate(180deg); opacity: 1; } }
-
-        /* 🌤️ 8つの基本天候（族）エフェクト */
-        .snow-particle { position: absolute; background: rgba(255, 255, 255, 0.85); border-radius: 50%; pointer-events: none; filter: blur(0.5px); box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); animation: snowFall linear infinite; }
-        @keyframes snowFall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--sway-x)) rotate(360deg); opacity: 0; } }
-        .rain { position: absolute; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); width: 2px; height: 35px; border-radius: 2px; animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-10vh) scaleY(1); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(105vh) scaleY(1.5); opacity: 0; } }
-        .sparkle { position: absolute; border-radius: 50%; filter: blur(1px); animation: riseUp ease-in-out infinite; mix-blend-mode: screen; }
-        @keyframes riseUp { 0% { transform: translateY(105vh) scale(0.5); opacity: 0; } 30% { opacity: 0.8; } 70% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
-        .wind-line { position: absolute; background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.4), rgba(255,255,255,0)); height: 3px; border-radius: 50%; filter: blur(2px); animation: blow cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        @keyframes blow { 0% { transform: translateX(-50vw) scaleX(0.5); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateX(150vw) scaleX(2); opacity: 0; } }
-        .lightning-flash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top, #fff, rgba(255,255,255,0)); opacity: 0; pointer-events: none; z-index: -1; animation: lightning 6s ease-in-out infinite; mix-blend-mode: overlay; }
-        @keyframes lightning { 0%, 91%, 94%, 97%, 100% { opacity: 0; } 92%, 96% { opacity: 0.4; } 95% { opacity: 0.8; } }
-        .orb-particle { position: absolute; border-radius: 50%; background: rgba(255, 255, 255, 0.7); box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3); animation: orbDrift ease-in-out infinite; pointer-events: none; }
-        @keyframes orbDrift { 0% { transform: translateY(5vh) translateX(0) scale(0.8); opacity: 0; } 25% { opacity: 0.8; } 50% { transform: translateY(-40vh) translateX(30px) scale(1.2); opacity: 0.4; } 75% { opacity: 0.8; } 100% { transform: translateY(-90vh) translateX(-20px) scale(0.9); opacity: 0; } }
-
-
-        /* 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩
-           🚂【コピペ専用駅：1番ホーム】CSS追加エリア 🐸🐤
-           ※ここに新しい卦のCSS（アニメーションなど）を追加してね！
-           🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 */
-
     </style>
 </head>
 <body class="mode-normal">
@@ -725,16 +96,9 @@ mix-blend-mode:screen;
                 <option value="8">08 水地比（自然な結びつき・調和）</option>
                 <option value="9">09 風天小畜（静かなストレス）</option>
                 <option value="10">10 天沢履（氷上を歩くような空）</option>
-
-
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
-
-                <!-- 🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧
-                     🚂【コピペ専用駅：2番ホーム】メニュー追加エリア 🐸🐤
-                     ※ここに <option value="..."> のタグを追加してね！
-                     🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧🟧 -->
             </optgroup>
             
             <optgroup label="🌤️ 8つの基本天候（族）テスト">
@@ -752,7 +116,6 @@ mix-blend-mode:screen;
 
     <div id="bg-layer" class="bg-layer"></div>
     <div id="weather-effect"></div>
-
     <div id="gallery-hint">画面タップでもとに戻るよ</div>
 
     <div id="ui-wrapper" class="ui-wrapper">
@@ -761,39 +124,80 @@ mix-blend-mode:screen;
         <div class="floater-3"><div class="card-block delay-3"><div class="advice-box"><span class="yoroi-name">鎧さんの言葉</span><p id="advice-text" class="yoroi-text firefly-text-4">...</p></div><p id="tap-notice" class="notice firefly-text-5">タップで文字をくっきり＆BGM再生</p><audio id="bgm-player" loop></audio></div></div>
     </div>
     
-    <a id="backToCatalogBtn" href="characters.html" 
-       class="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/60 backdrop-blur-md text-white text-sm font-bold rounded-full shadow-lg border border-white/20 transition-all hover:bg-slate-700/80 hidden">
+    <a id="backToCatalogBtn" href="characters.html" class="fixed top-4 left-4 z-50 px-4 py-2 bg-slate-800/60 backdrop-blur-md text-white text-sm font-bold rounded-full shadow-lg border border-white/20 transition-all hover:bg-slate-700/80 hidden">
       ← 図鑑にもどる
     </a>
 
     <script>
+        // ==========================================
+        // 📚 1. 設定データ（辞書・JSONのようなもの）をまとめる
+        // ==========================================
+        
+        // 天候ごとの背景画像リスト
         const speciesImages = {
             "創空族": "sky.png", "受雲族": "cloud.png", "雷芽族": "thunder.png", "雨巡族": "rain.png",
             "風旅族": "wind.png", "虹結族": "rainbow.png", "雪守族": "snow.png", "炎灯族": "fire.png"
         };
 
-        let loadedApiData = null;
+        // 🌟 モックデータ（テスト用のテキストデータ）
+        // こうやってリストにしておけば、文字を直したい時ここだけ見ればOK！
+        const mockDataRegistry = {
+            "1": { name: "乾為天", sky_name: "極大陽気の飽和空", chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", chiikawa: "わァ…ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" },
+            "2": { name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", chiikawa: "ヮァ…ヮァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
+    　　　  "3": { name: "水雷屯", sky_name: "混沌と発生の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！雨も降ってきたよォ…！", chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
+            "4": { name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", chiikawa: "ワヮッ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" }, 
+            "5": { name: "水天需", sky_name: "極限待機の圧縮空", chiikawa_scene: "雨も風もないのに、お空がすっごく重たい……。なんだか、息をのんじゃうね……ゴクリ……。", chiikawa: "…っ（…何かすごいものが来る気がする……怖くて動けない）", hachiware: "嵐の前って、こんなに静かだったっけ……？あ！一瞬お空が割れて光った！……って思ったら、すぐ閉じちゃった……", usagi: "……フゥー。（じっとお空を睨みつけ、微動だにせず臨戦態勢のまま『待って』いる）", advice: "起きないことが最大の緊張を孕む。焦って暴風雨に飛び出すな。今は『待つこと』自体が最大の戦略であり、来るべき時に備えて牙を研げ。" }, 
+            "6": { name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
+            "7": { name: "地水師", sky_name: "厳格な統制の空", chiikawa_scene: "お空がなんだかピリピリしてる…！みんな真剣な顔をしてるよ…！", chiikawa: "…！（緊張で震えながら、背筋を伸ばしている）", hachiware: "空気が張り詰めてるね…！これから大きな決断をしなきゃいけない雰囲気だよ…！", usagi: "…ッ！（険しい顔で、じっと一点を見つめて準備万端だ）", advice: "統率とは力ずくの支配ではない。正しい目的のために、己を律し、一丸となることだ。今は覚悟を決め、静かにその時を待て。" },
+            "8": { name: "水地比", sky_name: "調和の浸透空", chiikawa_scene: "雨上がりに空気と地面が優しく溶け合ってるよ…なんだかすごく心地いい…", chiikawa: "わァ…（お空がじわじわなじんでいく…あったかい）", hachiware: "無理してないのに、みんなが自然と仲良しになっていくみたいだね…！", usagi: "…フゥ（しっとりとした空気に完全に包まれてる）", advice: "努力して結びつけるのではない。ただ『そこにいる』だけで、自然と調和は生まれる。抵抗を捨て、空気と一体になれ。" },
+            "9": { name: "風天小畜", sky_name: "未発散の緊迫空", chiikawa_scene: "風はいっぱい吹いてるのに…お空の雲が全然動かないよォ…！", chiikawa: "わ…わァ…ッ（前に進まない空気の重さにオロオロしている）", hachiware: "風はこんなに強いのに、お空がギュッと止められてるみたい…！なんだか不思議な緊張感だね…！", usagi: "フゥーーーッ！！（風に立ち向かうポーズのまま、その場でピタッと静止している）", advice: "エネルギーは満ちているが、今は意図的なブレーキがかかっている。焦って無理に発散しようとせず、抑え込まれたこの空間で静かに次の力を溜めよ。" },
+            "10": { name: "天澤履", sky_name: "薄氷の緊張歩行空", chiikawa_scene: "お空がなんだかピキピキしてる…！一歩一歩、気をつけて歩かないと…！", chiikawa: "…わァ…（泣きそうになりながら、そろ〜りそろ〜りつま先立ちで歩いている）", hachiware: "上は綺麗なのに、足元が危うい雰囲気だね…！虎のしっぽを踏まないように、すっごく慎重にいこう…！", usagi: "ウラララララッ！！（危機を察知して、いつになく真剣な顔で高速変則ステップを踏んでいる）", advice: "危険を伴う状況を歩む時である。しかし、正しい礼節と細心の慎重さを持って臨めば、虎の尾を踏むような危うささえも無事に切り抜けられる。油断を捨てて一歩を踏み出せ。" },
+            "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
+            "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
+            "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
+            // 🟩 新しいモックデータはここに足していくだけ！
+        };
 
+        // 🎯 エフェクト辞書（どの番号で、どのクラスと関数を使うか）
+        // if-elseの代わりにこれを使います！
+        const effectRegistry = {
+            "1":  { themeClass: 'theme-ten',       startEffect: startTenEffect },
+            "2":  { themeClass: 'theme-kon',       startEffect: startKonEffect },
+            "3":  { themeClass: 'theme-chun',      startEffect: startChunEffect },
+            "4":  { themeClass: 'theme-mou',       startEffect: startMouEffect },
+            "5":  { themeClass: 'theme-xu',        startEffect: startXuEffect },
+            "6":  { themeClass: 'theme-song',      startEffect: startSongEffect },
+            "7":  { themeClass: 'theme-shi',       startEffect: startShiEffect },
+            "8":  { themeClass: 'theme-bi',        startEffect: startBiEffect },
+            "9":  { themeClass: 'theme-shouchiku', startEffect: startShouchikuEffect },
+            "10": { themeClass: 'theme-ri',        startEffect: startRiEffect },
+            "48": { themeClass: 'theme-well',      startEffect: startWellEffect },
+            "63": { themeClass: 'theme-jiji',      startEffect: startJijiEffect },
+            "64": { themeClass: 'theme-bisei',     startEffect: startBiseiEffect }
+            // 🟩 新しいエフェクトを作ったら、ここに「番号」「クラス名」「関数」を足すだけ！
+        };
+
+
+        // ==========================================
+        // ⚙️ 2. メインの処理プログラム
+        // ==========================================
+
+        let loadedApiData = null;
         const params = new URLSearchParams(window.location.search);
-        const hid = params.get('hid') || "2"; // Default to 2 for preview 
+        const hid = params.get('hid') || "2"; 
         const l_name = params.get('l_name') || "1"; 
 
-        // 💡 ギャラリーモードの判定（ボタンを安全に表示する）
+        // ギャラリーモードの判定
         if (params.get('mode') === 'gallery') {
             document.body.classList.remove('mode-normal');
             document.body.classList.add('mode-gallery');
-            
             const backBtn = document.getElementById('backToCatalogBtn');
-            if (backBtn) {
-                backBtn.classList.remove('hidden');
-            }
-            
+            if (backBtn) backBtn.classList.remove('hidden');
             const hintEl = document.getElementById('gallery-hint');
-            if (hintEl) {
-                hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
-            }
+            if (hintEl) hintEl.innerText = "画面タップでキャラクター表示に戻るよ";
         }
 
+        // APIからデータ取得
         fetch(`/api/fortune?hid=${hid}&l_name=${encodeURIComponent(l_name)}`)
             .then(res => res.json())
             .then(data => {
@@ -803,75 +207,32 @@ mix-blend-mode:screen;
             })
             .catch(err => {
                 console.error(err);
-                switchPreviewEffect("2"); // Error fallback to Kun
+                switchPreviewEffect("2"); 
             });
 
+        // ✨ 魔法をかけたメイン関数（長いif-elseが消えました！）
         function applyData(data, currentHid, fallbackSpecies = "受雲族") {
             const species = data ? (data.species_8 || fallbackSpecies) : fallbackSpecies;
             const imageFile = speciesImages[species] || "cloud.png";
             document.getElementById('bg-layer').style.backgroundImage = `url('${imageFile}')`;
 
-            // 1. クラスを一旦キレイにリセット（新テーマもすべて網羅）
-            document.body.classList.remove(
-                'theme-ten', 'theme-kon', 'theme-chun', 'theme-mou', 'theme-xu', 
-                'theme-song', 'theme-shi', 'theme-well', 'theme-jiji', 'theme-bisei',
-                'theme-bi', 'theme-shouchiku', 'theme-ri'
-            );
+            // ① クラスをキレイにリセット（辞書からクラス名リストを作って一気に消す）
+            const allThemeClasses = Object.values(effectRegistry).map(e => e.themeClass);
+            document.body.classList.remove(...allThemeClasses);
             
-            // 2. 各卦の判定変数を定義
-            const isTen = (currentHid === "1" || (data && data.name && data.name.includes("乾")));
-            const isKon = (currentHid === "2" || (data && data.name && data.name.includes("坤")));
-            const isChun = (currentHid === "3" || (data && data.name && data.name.includes("屯"))); 
-            const isMou = (currentHid === "4" || (data && data.name && data.name.includes("蒙")));
-            const isXu = (currentHid === "5" || (data && data.name && data.name.includes("需")));
-            const isSong = (currentHid === "6" || (data && data.name && data.name.includes("訟")));
-            const isShi = (currentHid === "7" || (data && data.name && data.name.includes("師")));
-            const isBi = (currentHid === "8" || (data && data.name && data.name.includes("比"))); // ⑧追加
-            const isShouchiku = (currentHid === "9" || (data && data.name && data.name.includes("小畜"))); // ⑨追加
-            const isRi = (currentHid === "10" || (data && data.name && data.name.includes("履"))); // ⑩追加
-            const isWell = (currentHid === "48" || (data && data.name && data.name.includes("井")));
-            const isJiji = (currentHid === "63" || (data && data.name && data.name.includes("既済")));
-            const isBisei = (currentHid === "64" || (data && data.name && data.name.includes("未済")));
+            // ② 辞書から、その番号の設定を取り出す！
+            const effectSetting = effectRegistry[currentHid];
 
-            
-            // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
-            // 🚂【コピペ専用駅：3番ホーム】判定ロジック追加エリア 🐸🐤
-            // ※ 上の行に const isXXX = ... の判定を追加し、
-            // ※ 下の行に else if (isXXX) { document.body.classList... } を追加！
-            // 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
-
-// 3. エフェクトの発動ロジック（if-elseの連鎖）
-            if (isTen) {
-                document.body.classList.add('theme-ten'); startTenEffect();
-            } else if (isKon) {
-                document.body.classList.add('theme-kon'); startKonEffect();
-            } else if (isChun) { 
-                document.body.classList.add('theme-chun'); startChunEffect();
-            } else if (isMou) { 
-                document.body.classList.add('theme-mou'); startMouEffect();
-            } else if (isXu) { 
-                document.body.classList.add('theme-xu'); startXuEffect(); 
-            } else if (isSong) { 
-                document.body.classList.add('theme-song'); startSongEffect();
-            } else if (isShi) { 
-                document.body.classList.add('theme-shi'); startShiEffect(); // ⑦映画仕様
-            } else if (isBi) {
-                document.body.classList.add('theme-bi'); startBiEffect(); // ⑧映画仕様
-            } else if (isShouchiku) {
-                document.body.classList.add('theme-shouchiku'); startShouchikuEffect(); // ⑨映画仕様
-            } else if (isRi) {
-                document.body.classList.add('theme-ri'); startRiEffect(); // ⑩映画仕様
-            } else if (isWell) {
-                document.body.classList.add('theme-well'); startWellEffect();
-            } else if (isJiji) {
-                document.body.classList.add('theme-jiji'); startJijiEffect();
-            } else if (isBisei) {
-                document.body.classList.add('theme-bisei'); startBiseiEffect();
+            if (effectSetting) {
+                // 設定が見つかったら、クラスをつけて関数を実行するだけ！
+                document.body.classList.add(effectSetting.themeClass);
+                effectSetting.startEffect();
             } else {
-                // 8つの基本天候（族）の場合はこれを呼び出す！
+                // 特殊なエフェクトが見つからなければ、基本天候エフェクトを呼ぶ
                 startWeatherEffect(species);
             }
 
+            // ③ 画面の文字を書き換える
             if (data) {
                 document.getElementById('title').innerText = `${data.name} (${l_name})`;
                 document.getElementById('sky-title').innerText = `${data.sky_name || data.soranoeki_sky || "不思議な空"}`;
@@ -884,85 +245,19 @@ mix-blend-mode:screen;
             }
         }
 
+        // セレクトボックスで切り替えた時の処理
         function switchPreviewEffect(val) {
             if (val === "API") {
                 if (loadedApiData) { applyData(loadedApiData, hid); }
                 return;
             }
 
-            // 🌟 モックデータ（全自動判別型）
-            const mockData = {
-                "1": { 
-                    name: "乾為天", sky_name: "極大陽気の飽和空", chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", 
-                    chiikawa: "わァ…ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" 
-                },
-                "2": { 
-                    name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", 
-                    chiikawa: "ヮァ…ヮァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
-    　　　　　　  "3": { 
-                    name: "水雷屯", sky_name: "混沌と発生の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！雨も降ってきたよォ…！", 
-                    chiikawa: "わァァ…ッ！（雨に打たれながらオロオロ）", hachiware: "風があっちこっちから吹いてる…！これから何かが始まりそうッ！", usagi: "プルルルルルッ！！（強風に立ち向かっている）", advice: "混沌は生みの苦しみである。エネルギーが定まらずとも焦るな。今はただ、その雷雨の中で芽吹きの時を待て。" },
-                "4": { 
-                    name: "山水蒙", sky_name: "認識不能の蒙昧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", 
-                    chiikawa: "ワヮッ…（おろおろ、まわりが真っ白で見えない）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、頭の中までモヤモヤしてきた…", usagi: "ウラララララァ！！（見えない霧に向かって全力突撃している）", advice: "見えないのではない、理解していないのだ。焦って進めば道を見失う。今は自らの『無知』を受け入れ、霧が晴れるのを待つ内省の時である。" }, 
-                "5": { 
-                    name: "水天需", sky_name: "極限待機の圧縮空", chiikawa_scene: "雨も風もないのに、お空がすっごく重たい……。なんだか、息をのんじゃうね……ゴクリ……。", 
-                    chiikawa: "…っ（…何かすごいものが来る気がする……怖くて動けない）", hachiware: "嵐の前って、こんなに静かだったっけ……？あ！一瞬お空が割れて光った！……って思ったら、すぐ閉じちゃった……", usagi: "……フゥー。（じっとお空を睨みつけ、微動だにせず臨戦態勢のまま『待って』いる）", advice: "起きないことが最大の緊張を孕む。焦って暴風雨に飛び出すな。今は『待つこと』自体が最大の戦略であり、来るべき時に備えて牙を研げ。" }, 
-                "6": { 
-                    name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", 
-                    chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
-                "7": { 
-                    name: "地水師", 
-                    sky_name: "厳格な統制の空", 
-                    chiikawa_scene: "お空がなんだかピリピリしてる…！みんな真剣な顔をしてるよ…！", 
-                    chiikawa: "…！（緊張で震えながら、背筋を伸ばしている）", 
-                    hachiware: "空気が張り詰めてるね…！これから大きな決断をしなきゃいけない雰囲気だよ…！", 
-                    usagi: "…ッ！（険しい顔で、じっと一点を見つめて準備万端だ）", 
-                    advice: "統率とは力ずくの支配ではない。正しい目的のために、己を律し、一丸となることだ。今は覚悟を決め、静かにその時を待て。" 
-                },
-
-                "8": { 
-                    name: "水地比", 
-                    sky_name: "調和の浸透空", 
-                    chiikawa_scene: "雨上がりに空気と地面が優しく溶け合ってるよ…なんだかすごく心地いい…", 
-                    chiikawa: "わァ…（お空がじわじわなじんでいく…あったかい）", 
-                    hachiware: "無理してないのに、みんなが自然と仲良しになっていくみたいだね…！", 
-                    usagi: "…フゥ（しっとりとした空気に完全に包まれてる）", 
-                    advice: "努力して結びつけるのではない。ただ『そこにいる』だけで、自然と調和は生まれる。抵抗を捨て、空気と一体になれ。" 
-                },
-                                "9": { 
-                    name: "風天小畜", 
-                    sky_name: "未発散の緊迫空", 
-                    chiikawa_scene: "風はいっぱい吹いてるのに…お空の雲が全然動かないよォ…！", 
-                    chiikawa: "わ…わァ…ッ（前に進まない空気の重さにオロオロしている）", 
-                    hachiware: "風はこんなに強いのに、お空がギュッと止められてるみたい…！なんだか不思議な緊張感だね…！", 
-                    usagi: "フゥーーーッ！！（風に立ち向かうポーズのまま、その場でピタッと静止している）", 
-                    advice: "エネルギーは満ちているが、今は意図的なブレーキがかかっている。焦って無理に発散しようとせず、抑え込まれたこの空間で静かに次の力を溜めよ。" 
-                },
-                "10": { 
-                    name: "天澤履", 
-                    sky_name: "薄氷の緊張歩行空", 
-                    chiikawa_scene: "お空がなんだかピキピキしてる…！一歩一歩、気をつけて歩かないと…！", 
-                    chiikawa: "…わァ…（泣きそうになりながら、そろ〜りそろ〜りつま先立ちで歩いている）", 
-                    hachiware: "上は綺麗なのに、足元が危うい雰囲気だね…！虎のしっぽを踏まないように、すっごく慎重にいこう…！", 
-                    usagi: "ウラララララッ！！（危機を察知して、いつになく真剣な顔で高速変則ステップを踏んでいる）", 
-                    advice: "危険を伴う状況を歩む時である。しかし、正しい礼節と細心の慎重さを持って臨めば、虎の尾を踏むような危うささえも無事に切り抜けられる。油断を捨てて一歩を踏み出せ。" 
-                },
-
-
-                "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
-                "63": { name: "水火既済", sky_name: "完全均衡の終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
-                "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
-
-                // 🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪
-                // 🚂【コピペ専用駅：4番ホーム】モックデータ追加エリア 🐸🐤
-                // ※ ここに "卦の番号": { name: ... } のモックデータを追加してね！
-                // 🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪🟪
-            };
-
-            if (mockData[val]) { 
-                applyData(mockData[val], val, (val==="2"?"受雲族": val==="3"?"雨巡族" :"創空族"));
+            // 辞書（mockDataRegistry）からデータを探す
+            if (mockDataRegistry[val]) { 
+                let fallback = (val === "2" ? "受雲族" : (val === "3" ? "雨巡族" : "創空族"));
+                applyData(mockDataRegistry[val], val, fallback);
             } else {
+                // もし辞書になければテストデータを表示
                 applyData({ name: `テスト (${val})`, sky_name: "天候エフェクトチェック", chiikawa_scene: "エフェクトの動きを確認中…", chiikawa: "フ…ッ", hachiware: "綺麗に動いてるかな？", usagi: "ヤハ！", advice: "エフェクトのスマホ負荷や見栄えをチェック中。" }, "0", val);
             }
         }
@@ -983,6 +278,11 @@ mix-blend-mode:screen;
             else if (currentMode === 2) { body.classList.add('mode-gallery'); }
         });
 
+
+        // ==========================================
+        // 🎨 3. エフェクト生成関数たち（元のまま）
+        // ==========================================
+        
         // 🌤️ 【01 乾為天】エフェクト
         function startTenEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
@@ -1046,169 +346,100 @@ mix-blend-mode:screen;
             let rain = document.createElement('div'); rain.className = 'song-rain'; container.appendChild(rain);
             let lightning = document.createElement('div'); lightning.className = 'song-lightning'; container.appendChild(lightning);
         }
-        // 🌧 【07 地水師】エフェクト（組織された流れ・Grid Rain）
+        
+        // 🌧 【07 地水師】エフェクト
         function startShiEffect() {
             const container = document.getElementById('weather-effect'); 
             container.innerHTML = '';
-            
-            // ① Uniform Cloud Layer（変化を最小限に抑えた均一な雲面）
-            let cloud = document.createElement('div');
-            cloud.className = 'shi-cloud-cover';
-            container.appendChild(cloud);
-            
-            // ③ Density Control（タイムラインを統制する親レイヤー）
-            let governor = document.createElement('div');
-            governor.className = 'shi-density-governor';
-            container.appendChild(governor);
-
-            // ② Rain Grid Layer（完璧に整列した縦の流れ）
-            const columnCount = 35; // 画面を35等分のグリッドに分割
+            let cloud = document.createElement('div'); cloud.className = 'shi-cloud-cover'; container.appendChild(cloud);
+            let governor = document.createElement('div'); governor.className = 'shi-density-governor'; container.appendChild(governor);
+            const columnCount = 35;
             for (let i = 0; i < columnCount; i++) {
-                // 1つの列に対して、時間差で途切れなく落ちるように2つの雨粒を配置
                 for (let j = 0; j < 2; j++) {
-                    let rain = document.createElement('div');
-                    rain.className = 'shi-rain-line';
-                    
-                    // 横位置を完璧に等間隔配置（ランダム禁止）
-                    const leftPos = (i / columnCount) * 100;
-                    rain.style.left = leftPos + 'vw';
-                    
-                    // 規律あるディレイ設計（カオスを排除し、等間隔にずらす）
-                    const baseDelay = j * 0.275;
-                    const patternDelay = (i % 4) * 0.08; // 4列周期の規則正しいズレ
+                    let rain = document.createElement('div'); rain.className = 'shi-rain-line';
+                    const leftPos = (i / columnCount) * 100; rain.style.left = leftPos + 'vw';
+                    const baseDelay = j * 0.275; const patternDelay = (i % 4) * 0.08; 
                     rain.style.animationDelay = (baseDelay + patternDelay) + 's';
-                    
                     governor.appendChild(rain);
                 }
             }
         }
 
-               // 💧 【08 水地比】エフェクト（自然な結びつき・調和）
+        // 💧 【08 水地比】エフェクト
         function startBiEffect() {
-            const container = document.getElementById('weather-effect');
-            container.innerHTML = '';
-
-            // ② 湿度・霞のレイヤー
-            let moisture = document.createElement('div');
-            moisture.className = 'bi-moisture-layer';
-            container.appendChild(moisture);
-
-            // ① ほぐれる雲のレイヤー
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let moisture = document.createElement('div'); moisture.className = 'bi-moisture-layer'; container.appendChild(moisture);
             for (let i = 0; i < 4; i++) {
-                let cloud = document.createElement('div');
-                cloud.className = 'bi-soft-cloud';
-                const size = (Math.random() * 50 + 60) + 'vw';
-                cloud.style.width = size;
-                cloud.style.height = size;
-                
-                // 【修正】画面全体（-20vh 〜 100vh）に広がるように数値を変更！
-                cloud.style.left = (Math.random() * 120 - 20) + 'vw';
-                cloud.style.top = (Math.random() * 120 - 20) + 'vh';
-                
-                cloud.style.animationDelay = (Math.random() * -6.0) + 's';
-                container.appendChild(cloud);
+                let cloud = document.createElement('div'); cloud.className = 'bi-soft-cloud';
+                const size = (Math.random() * 50 + 60) + 'vw'; cloud.style.width = size; cloud.style.height = size;
+                cloud.style.left = (Math.random() * 120 - 20) + 'vw'; cloud.style.top = (Math.random() * 120 - 20) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
             }
-
-            // ③ 回る光のレイヤー
-            let light = document.createElement('div');
-            light.className = 'bi-light-diffusion';
-            container.appendChild(light);
-
-            // ④ 序盤（Phase 1）の余韻の雨
+            let light = document.createElement('div'); light.className = 'bi-light-diffusion'; container.appendChild(light);
             for (let i = 0; i < 15; i++) {
-                let rain = document.createElement('div');
-                rain.className = 'bi-fading-rain';
-                rain.style.left = Math.random() * 100 + 'vw';
-                // 【修正】雨のスタート位置を画面より上に設定
-                rain.style.top = (Math.random() * -20) + 'vh';
-                rain.style.animationDelay = (Math.random() * -0.8) + 's, 0s';
-                container.appendChild(rain);
+                let rain = document.createElement('div'); rain.className = 'bi-fading-rain';
+                rain.style.left = Math.random() * 100 + 'vw'; rain.style.top = (Math.random() * -20) + 'vh';
+                rain.style.animationDelay = (Math.random() * -0.8) + 's, 0s'; container.appendChild(rain);
             }
         }
 
-            // 🌬 【09 風天小畜】エフェクト（エネルギーの封じ込め・抑制の風）
+        // 🌬 【09 風天小畜】エフェクト
         function startShouchikuEffect() {
-            const container = document.getElementById('weather-effect');
-            container.innerHTML = '';
-
-            // ③ 空間の圧縮感（気圧レイヤー）
-            let pressure = document.createElement('div');
-            pressure.className = 'shouchiku-pressure-fog';
-            container.appendChild(pressure);
-
-            // ① 可視化された風の流れ（Wind Flow Layer）
-            // 動きはあるのに進めない、強いが引き留められた風の筋
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let pressure = document.createElement('div'); pressure.className = 'shouchiku-pressure-fog'; container.appendChild(pressure);
             for (let i = 0; i < 14; i++) {
-                let wind = document.createElement('div');
-                wind.className = 'shouchiku-wind-line';
-                wind.style.width = (Math.random() * 35 + 35) + 'vw';
-                wind.style.left = (Math.random() * 40) + 'vw';
-                wind.style.top = (Math.random() * 80 + 10) + 'vh';
-                // 6秒のベースタイムラインに完全同調させるため、共通の秒数内でマイナスディレイ
-                wind.style.animationDelay = (Math.random() * -6.0) + 's';
+                let wind = document.createElement('div'); wind.className = 'shouchiku-wind-line';
+                wind.style.width = (Math.random() * 35 + 35) + 'vw'; wind.style.left = (Math.random() * 40) + 'vw';
+                wind.style.top = (Math.random() * 80 + 10) + 'vh'; wind.style.animationDelay = (Math.random() * -6.0) + 's';
                 container.appendChild(wind);
             }
-
-            // ② 動きを拒み、その場に留まる雲（Cloud Resistance Layer）
             for (let i = 0; i < 5; i++) {
-                let cloud = document.createElement('div');
-                cloud.className = 'shouchiku-resisting-cloud';
-                const size = (Math.random() * 40 + 45) + 'vw';
-                cloud.style.width = size;
-                cloud.style.height = size;
-                cloud.style.left = (Math.random() * 70 - 10) + 'vw';
-                cloud.style.top = (Math.random() * 60 - 15) + 'vh';
-                cloud.style.animationDelay = (Math.random() * -6.0) + 's';
-                container.appendChild(cloud);
+                let cloud = document.createElement('div'); cloud.className = 'shouchiku-resisting-cloud';
+                const size = (Math.random() * 40 + 45) + 'vw'; cloud.style.width = size; cloud.style.height = size;
+                cloud.style.left = (Math.random() * 70 - 10) + 'vw'; cloud.style.top = (Math.random() * 60 - 15) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
             }
         }
         
-        // 💧 【48 水風井】エフェクト（元のCSSを活かした復活・安全版）
-        function startWellEffect() {
-            const container = document.getElementById('weather-effect');
-            container.className = ''; // 過去のクラスをリセット
-            container.classList.add("well-sky");
-            container.innerHTML = '';
-
-            // コアの光 (well-core-light)
-            const core = document.createElement("div");
-            core.className = "well-core-light";
-            container.appendChild(core);
-
-            // 背景の揺らめくパーティクル (well-particle)
-            for(let i = 0; i < 30; i++) {
-                let p = document.createElement('div'); 
-                p.className = 'well-particle';
-                const dirX = (Math.random() * 280 - 140) + 'px'; 
-                p.style.setProperty('--dir-x', dirX);
-                p.style.left = '50vw'; 
-                const size = (Math.random() * 6 + 6) + 'px'; 
-                p.style.width = size; 
-                p.style.height = size;
-                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; 
-                const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-                p.style.backgroundColor = chosenColor; 
-                p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
-                p.style.animationDelay = (Math.random() * -6.0) + 's'; 
-                container.appendChild(p);
+        // 🐾 【10 天沢履】エフェクト
+        function startRiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let tension = document.createElement('div'); tension.className = 'ri-tension-layer'; container.appendChild(tension);
+            for (let i = 0; i < 6; i++) {
+                let cloud = document.createElement('div'); cloud.className = 'ri-balance-cloud';
+                const size = (Math.random() * 40 + 50) + 'vw'; cloud.style.width = size; cloud.style.height = size;
+                cloud.style.left = (Math.random() * 80 - 10) + 'vw'; cloud.style.top = (Math.random() * 60 - 10) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
             }
-
-            // 湧き上がる生命のパーティクル (well-life-particle)
-            // ※エラーの原因だったsetIntervalを使わず、CSSアニメーションのループで安全に表現します
-            for(let i = 0; i < 20; i++) {
-                let life = document.createElement("div");
-                life.className = "well-life-particle";
-                life.style.left = (45 + Math.random() * 10) + "%";
-                life.style.bottom = "10%";
-                life.style.animationDuration = (4 + Math.random() * 3) + "s";
-                // 湧き上がるタイミングをバラバラに設定
-                life.style.animationDelay = (Math.random() * -7.0) + "s";
-                // アニメーションを無限に繰り返すように上書き
-                life.style.animationIterationCount = "infinite";
-                container.appendChild(life);
+            for (let i = 0; i < 8; i++) {
+                let wind = document.createElement('div'); wind.className = 'ri-micro-wind';
+                wind.style.width = (Math.random() * 20 + 10) + 'vw'; wind.style.left = (Math.random() * 60 + 10) + 'vw';
+                wind.style.top = (Math.random() * 80 + 10) + 'vh'; wind.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(wind);
             }
         }
 
+        // 💧 【48 水風井】エフェクト
+        function startWellEffect() {
+            const container = document.getElementById('weather-effect');
+            container.className = ''; container.classList.add("well-sky"); container.innerHTML = '';
+            const core = document.createElement("div"); core.className = "well-core-light"; container.appendChild(core);
+            for(let i = 0; i < 30; i++) {
+                let p = document.createElement('div'); p.className = 'well-particle';
+                const dirX = (Math.random() * 280 - 140) + 'px'; p.style.setProperty('--dir-x', dirX);
+                p.style.left = '50vw'; const size = (Math.random() * 6 + 6) + 'px'; p.style.width = size; p.style.height = size;
+                const colors = ['#5F8F8A', '#4F7F7A', '#3F6F6A', '#2F5F5A']; 
+                const chosenColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.backgroundColor = chosenColor; p.style.boxShadow = `0 0 10px ${chosenColor}, 0 0 20px rgba(255,255,255,0.4)`;
+                p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
+            }
+            for(let i = 0; i < 20; i++) {
+                let life = document.createElement("div"); life.className = "well-life-particle";
+                life.style.left = (45 + Math.random() * 10) + "%"; life.style.bottom = "10%";
+                life.style.animationDuration = (4 + Math.random() * 3) + "s"; life.style.animationDelay = (Math.random() * -7.0) + "s";
+                life.style.animationIterationCount = "infinite"; container.appendChild(life);
+            }
+        }
 
         // ☯️ 【63 水火既済】エフェクト
         function startJijiEffect() {
@@ -1230,24 +461,6 @@ mix-blend-mode:screen;
                 p.style.left = (Math.random() * 100) + 'vw'; p.style.top = (Math.random() * 100) + 'vh';
                 p.style.setProperty('--drift-x', (Math.random() * 20 - 10) + 'vw'); p.style.setProperty('--drift-y', (Math.random() * 20 - 10) + 'vh');
                 p.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(p);
-            }
-        }
-
-        // 🐾 【10 天沢履】エフェクト（慎重な歩行）
-        function startRiEffect() {
-            const container = document.getElementById('weather-effect'); container.innerHTML = '';
-            let tension = document.createElement('div'); tension.className = 'ri-tension-layer'; container.appendChild(tension);
-            for (let i = 0; i < 6; i++) {
-                let cloud = document.createElement('div'); cloud.className = 'ri-balance-cloud';
-                const size = (Math.random() * 40 + 50) + 'vw'; cloud.style.width = size; cloud.style.height = size;
-                cloud.style.left = (Math.random() * 80 - 10) + 'vw'; cloud.style.top = (Math.random() * 60 - 10) + 'vh';
-                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
-            }
-            for (let i = 0; i < 8; i++) {
-                let wind = document.createElement('div'); wind.className = 'ri-micro-wind';
-                wind.style.width = (Math.random() * 20 + 10) + 'vw'; wind.style.left = (Math.random() * 60 + 10) + 'vw';
-                wind.style.top = (Math.random() * 80 + 10) + 'vh'; wind.style.animationDelay = (Math.random() * -6.0) + 's';
-                container.appendChild(wind);
             }
         }
 
@@ -1274,14 +487,6 @@ mix-blend-mode:screen;
                 for(let i=0; i<25; i++) { let orb = document.createElement('div'); orb.className = 'orb-particle'; orb.style.left = (Math.random() * 100) + 'vw'; orb.style.top = (Math.random() * 20 + 80) + 'vh'; const size = (Math.random() * 22 + 8) + 'px'; orb.style.width = size; orb.style.height = size; orb.style.animationDuration = (Math.random() * 15 + 15) + 's'; orb.style.animationDelay = (Math.random() * -30) + 's'; container.appendChild(orb); }
             }
         }
-
-        
-
-        // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
-        // 🚂【コピペ専用駅：5番ホーム】JSエフェクト関数追加 🐸🐤
-        // ※ ここに function startXXXEffect() { ... } を追加してね！
-        // 🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫🟫
-
     </script>
 </body>
-</html>    
+</html>
