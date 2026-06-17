@@ -293,6 +293,102 @@
             100% { transform: scale(1.02) translate(-1px, 0.5px); filter: brightness(1.05) contrast(1.05); }
         }
 
+                /* 🎬 【10 天沢履】氷の上を歩くような空（完全映像仕様） */
+        .effect-tensakuriri {
+            position: absolute;
+            inset: 0;
+            background-color: #C9D6E3;
+            overflow: hidden;
+            /* 🎨 カラー設計のタイムライン（6秒ループ） */
+            animation: lyriColor 6.0s infinite ease-in-out;
+        }
+
+        /* 🎥 カメラ設計：前進感（1〜2%ズーム）と極小の揺れ・歪み */
+        .effect-tensakuriri::before {
+            content: '';
+            position: absolute;
+            inset: -5%; /* ズーム・揺れ用の余白 */
+            background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.4) 0%, transparent 70%);
+            animation: lyriCamera 6.0s infinite ease-in-out;
+        }
+
+        /* 🌫 レイヤー構成：Micro Wind & Tension Layer（微細な空気の歪み） */
+        .effect-tensakuriri::after {
+            content: '';
+            position: absolute;
+            inset: -10%;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0) 70%),
+                radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
+            filter: blur(4px);
+            animation: lyriAtmosphere 6.0s infinite ease-in-out;
+        }
+
+        /* ==========================================
+           ⏱ タイムライン制御（6.0秒 / 24fps基準）
+           ========================================== */
+
+        /* ① カラー設計：ほぼ変えない＝心理だけ変化 */
+        @keyframes lyriColor {
+            0%, 16.6% { background-color: #C9D6E3; } /* Phase 1 (0-1s): 静かな空 */
+            33.3%    { background-color: #C9D6E3; } /* Phase 2 (1-2s): 観察（明度維持） */
+            50.0%    { background-color: #AFC1D1; } /* Phase 3 (2-3s): 迷い（揺れ・低下） */
+            66.6%    { background-color: #A2B5C6; } /* Phase 4 (3-4s): 判断 */
+            83.3%    { background-color: #92A7BA; } /* Phase 5 (4-5s): 一歩（緊張最大） */
+            100%     { background-color: #B5C6D4; } /* Phase 6 (5-6s): 残留安定 */
+        }
+
+        /* ② カメラワーク：進むが、常に止まる準備をしている動き */
+        @keyframes lyriCamera {
+            0%, 16.6% { 
+                transform: scale(1) translate(0, 0) rotate(0deg); 
+            }
+            /* Phase 2: 観察（バランスを確認する極小の揺れ） */
+            33.3% { 
+                transform: scale(1.005) translate(-0.5px, 0.3px) rotate(0.02deg); 
+            }
+            /* Phase 3: 迷い（1%前進しつつ、わずかに逆へ戻るような揺らぎ） */
+            50.0% { 
+                transform: scale(1.01) translate(0.5px, -0.3px) rotate(-0.02deg); 
+            }
+            /* Phase 4: 判断（風を制御し、前進を維持） */
+            66.6% { 
+                transform: scale(1.015) translate(-0.8px, 0px) rotate(0deg); 
+            }
+            /* Phase 5: 一歩（2%ズームのピーク ＋ 空間がわずかに歪む skew） */
+            83.3% { 
+                transform: scale(1.02) translate(0px, -0.5px) skewX(0.2deg); 
+            }
+            /* Phase 6: 緊張の残留（歪み収束、しかし完全な安心ではない停止状態） */
+            100% { 
+                transform: scale(1.02) translate(0, 0) skewX(0deg); 
+            }
+        }
+
+        /* ③ 空気層（雲）の動き：崩れそうで戻る（Balance Correction） */
+        @keyframes lyriAtmosphere {
+            0%, 16.6% { 
+                transform: translate(0, 0); opacity: 0.6; 
+            }
+            33.3% { 
+                transform: translate(-3px, 1px); opacity: 0.7; 
+            }
+            /* Phase 3: 雲が少し流れるが、すぐ戻る */
+            50.0% { 
+                transform: translate(5px, -2px); opacity: 0.5; 
+            }
+            66.6% { 
+                transform: translate(0, 0); opacity: 0.7; 
+            }
+            /* Phase 5: ピーク（緊張によるブレ） */
+            83.3% { 
+                transform: translate(-6px, -2px) scale(1.01); opacity: 0.8; 
+            }
+            100% { 
+                transform: translate(0, 0) scale(1); opacity: 0.6; 
+            }
+        }
+
 
         /* 🎬 【63 水火既済】専用カメラワーク */
         .theme-jiji .bg-layer { animation: jijiTension 6.0s cubic-bezier(0.4, 0, 0.2, 1) infinite !important; transform: scale(1.02) !important; }
