@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>空の易 - 64卦エフェクトマスタープレビュー</title>
+    <title>空 of 易 - 64卦エフェクトマスタープレビュー</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,7 +65,7 @@
             100% { filter: brightness(0.95) contrast(0.85) grayscale(0.5); } 
         }
 
-        /* 🎬 【03 水雷屯】混沌とうごめく胎動の雷雲（映画レベル仕様） */
+        /* 🎬 【03 水雷屯】混沌とうごめく胎動の雷雲 */
         .theme-chun .bg-layer { 
             background-color: #2F3E4D !important;
             background-image: none !important;
@@ -78,13 +78,13 @@
             33.3% { background-color: #1A242E; transform: scale(1.03) translate(2px, -1px); } 
             50.0% { background-color: #263340; transform: scale(1.02) translate(-1px, 0px); } 
             64.0% { background-color: #0F161D; transform: scale(1.04) translate(4px, 3px); } 
-            66.6% { background-color: #728DA6; transform: scale(1.06) translate(-6px, -4px); filter: brightness(1.8); } /* 雲の奥での落雷フラッシュ */
+            66.6% { background-color: #728DA6; transform: scale(1.06) translate(-6px, -4px); filter: brightness(1.8); } 
             68.0% { background-color: #0F161D; transform: scale(1.03) translate(3px, 5px); } 
             83.3% { background-color: #263340; transform: scale(1.01) translate(1px, -1px); } 
             100% { background-color: #2F3E4D; transform: scale(1.0) translate(0, 0); } 
         }
 
-        /* 🎬 【04 山水蒙】先が見えないうねる濃霧（映画レベル仕様） */
+        /* 🎬 【04 山水蒙】先が見えないうねる濃霧 */
         .theme-mou .bg-layer { 
             background-color: #B2BBC6 !important;
             background-image: none !important;
@@ -96,12 +96,12 @@
             16.6% { background-color: #A3ADB9; filter: blur(8px) brightness(0.9) contrast(0.8); } 
             33.3% { background-color: #909AA6; filter: blur(18px) brightness(0.75) contrast(0.65); } 
             50.0% { background-color: #9EA8B5; filter: blur(10px) brightness(1.05) contrast(0.8); } 
-            66.6% { background-color: #D3DCE5; filter: blur(28px) brightness(1.2) contrast(0.5); } /* 霧に包まれる最大ピーク */
+            66.6% { background-color: #D3DCE5; filter: blur(28px) brightness(1.2) contrast(0.5); } 
             83.3% { background-color: #A3ADB9; filter: blur(12px) brightness(0.95) contrast(0.85); } 
             100% { background-color: #B2BBC6; filter: blur(4px) brightness(1.0) contrast(1.0); } 
         } 
 
-        /* 🎬 【05 水天需】極限の待機・今にも降り出しそうな圧縮空（映画レベル仕様） */
+        /* 🎬 【05 水天需】極限の待機・圧縮空 */
         .theme-xu .bg-layer { 
             background-color: #7E90A3 !important;
             background-image: none !important;
@@ -113,7 +113,7 @@
             16.6% { background-color: #6E7F91; filter: brightness(0.88) contrast(0.95) saturate(0.7); } 
             33.3% { background-color: #5D6D7D; filter: brightness(0.75) contrast(0.85) saturate(0.6); } 
             50.0% { background-color: #748596; filter: brightness(1.02) contrast(0.9) saturate(0.75); } 
-            66.6% { background-color: #425161; filter: brightness(0.65) contrast(0.7) saturate(0.5); } /* 空間の重苦しい圧縮ピーク */
+            66.6% { background-color: #425161; filter: brightness(0.65) contrast(0.7) saturate(0.5); } 
             83.3% { background-color: #6C7D8F; filter: brightness(0.85) contrast(0.9) saturate(0.7); } 
             100% { background-color: #7E90A3; filter: brightness(1.0) contrast(1.0) saturate(0.8); } 
         }
@@ -262,20 +262,18 @@
             0%, 16.6% { opacity: 0; } 33.3% { opacity: 0.5; } 66.6% { opacity: 1.0; } 83.3% { opacity: 0.7; } 100% { opacity: 0; }
         }
 
-        /* 🎬 【10 天沢履】氷の上を歩くような緊張空（完全映像仕様・復活アップデート） */
+        /* 🎬 【10 天沢履】氷の上を歩くような緊張空 */
         .theme-ri #bg-layer {
             background-color: #C9D6E3 !important;
-            background-image: none !important; /* 基本アセット画像を無効化 */
+            background-image: none !important; 
             animation: lyriColor 6.0s infinite ease-in-out !important;
             will-change: background-color;
         }
-        /* 🎥 カメラ設計：1〜2%の微細な前進と極小の揺らぎ */
         .theme-ri #bg-layer::before {
             content: ''; position: absolute; inset: -5%;
             background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.4) 0%, transparent 70%);
             animation: lyriCamera 6.0s infinite ease-in-out;
         }
-        /* 🌫 雲の抵抗・空間のわずかな歪み */
         .theme-ri #bg-layer::after {
             content: ''; position: absolute; inset: -10%;
             background: 
@@ -283,12 +281,11 @@
                 radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
             filter: blur(4px); animation: lyriAtmosphere 6.0s infinite ease-in-out;
         }
-
         @keyframes lyriColor {
-            0%, 16.6% { background-color: #C9D6E3; } /* Phase 1: 踏み出す前 */
-            33.3%    { background-color: #AFC1D1; } /* Phase 3: 迷い */
-            66.6%    { background-color: #92A7BA; } /* Phase 5: 一歩 */
-            83.3%    { background-color: #B5C6D4; } /* Phase 6: 残留安定 */
+            0%, 16.6% { background-color: #C9D6E3; } 
+            33.3%    { background-color: #AFC1D1; } 
+            66.6%    { background-color: #92A7BA; } 
+            83.3%    { background-color: #B5C6D4; } 
             100%     { background-color: #C9D6E3; }
         }
         @keyframes lyriCamera {
@@ -296,7 +293,7 @@
             33.3% { transform: scale(1.005) translate(-0.5px, 0.3px) rotate(0.02deg); }
             50.0% { transform: scale(1.01) translate(0.5px, -0.3px) rotate(-0.02deg); }
             66.6% { transform: scale(1.015) translate(-0.8px, 0px) rotate(0deg); }
-            83.3% { transform: scale(1.02) translate(0px, -0.5px) skewX(0.2deg); } /* 一歩を踏み出す瞬間の歪み */
+            83.3% { transform: scale(1.02) translate(0px, -0.5px) skewX(0.2deg); } 
             100% { transform: scale(1.02) translate(0, 0) skewX(0deg); }
         }
         @keyframes lyriAtmosphere {
@@ -306,8 +303,6 @@
             83.3% { transform: translate(-6px, -2px) scale(1.01); opacity: 0.8; }
             100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
         }
-
-        /* 天沢履のJS配置用CSS */
         .ri-tension-layer {
             position: absolute; inset: 0;
             background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(146, 167, 186, 0.4) 100%);
@@ -339,6 +334,125 @@
             33.3% { transform: translateX(2vw) scaleX(0.8); opacity: 0.4; }
             66.6% { transform: translateX(5vw) scaleX(1.2); opacity: 0.7; }
             100% { transform: translateX(0) scaleX(0.5); opacity: 0; }
+        }
+
+        /* 🎬 【11 地天泰】天地が通じ呼吸する空（完全映像仕様） */
+        .theme-tai #bg-layer {
+            background-color: #A9BDD1 !important;
+            background-image: none !important;
+            animation: taiTimeline 6.0s infinite ease-in-out !important;
+            will-change: background-color;
+        }
+        /* 🎥 カメラ設計：心地よい開放感を表す呼吸のような微ズーム（2〜3%） */
+        .theme-tai #bg-layer::before {
+            content: ''; position: absolute; inset: -10%;
+            background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.45) 0%, transparent 70%);
+            animation: taiCamera 6.0s infinite ease-in-out;
+        }
+        .theme-tai #bg-layer::after {
+            content: ''; position: absolute; inset: -10%;
+            background: radial-gradient(circle at 50% 60%, rgba(255,255,255,0.15) 0%, transparent 80%);
+            mix-blend-mode: screen;
+            animation: taiAtmosphere 6.0s infinite ease-in-out;
+        }
+        @keyframes taiTimeline {
+            0% { background-color: #A9BDD1; } /* Phase 1: 解放前 */
+            33.3% { background-color: #C3D7E8; } /* Phase 3: 流通 */
+            66.6% { background-color: #E3F1FF; } /* Phase 5: 最大開放（最も穏やか） */
+            83.3% { background-color: #D0E2F2; } /* Phase 6: 安定の余韻 */
+            100% { background-color: #A9BDD1; }
+        }
+        @keyframes taiCamera {
+            0% { transform: scale(1.0); }
+            66.6% { transform: scale(1.03); } /* ピークに向けて2〜3%の開放ズーム */
+            100% { transform: scale(1.0); }
+        }
+        @keyframes taiAtmosphere {
+            0% { opacity: 0.3; transform: scale(0.98); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+            100% { opacity: 0.3; transform: scale(0.98); }
+        }
+        /* 🌤 レイヤー：Atmospheric Exchange & Wind Circulation */
+        .tai-circulation-cloud {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 75%);
+            pointer-events: none; filter: blur(15px);
+            animation: taiCloudCirculate 6.0s infinite ease-in-out;
+        }
+        @keyframes taiCloudCirculate {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            33.3% { transform: translate(5vw, -3vh) scale(1.05); opacity: 0.6; } /* 上下の緩やかな対流 */
+            66.6% { transform: translate(-2vw, 4vh) scale(1.1); opacity: 0.8; }
+        }
+        .tai-soft-flow {
+            position: absolute; height: 2px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            pointer-events: none; filter: blur(1px);
+            animation: taiFlow 6.0s infinite ease-in-out;
+        }
+        @keyframes taiFlow {
+            0% { transform: translateX(-30vw) scaleX(0.5); opacity: 0; }
+            50% { transform: translateX(50vw) scaleX(1.2); opacity: 0.6; }
+            100% { transform: translateX(130vw) scaleX(0.5); opacity: 0; }
+        }
+
+        /* 🎬 【12 天地否】通さぬ世界の断絶空（完全映像仕様） */
+        .theme-hi #bg-layer {
+            background-color: #C7D7E6 !important;
+            background-image: none !important;
+            animation: hiTimeline 6.0s infinite ease-in-out !important;
+            will-change: background-color;
+        }
+        /* 🎥 カメラ設計：完全固定＆空間の奥行き消失を強調（フラット化） */
+        .theme-hi #bg-layer::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, rgba(111,127,143,0.3) 0%, transparent 50%, rgba(15,23,42,0.4) 100%);
+            animation: hiCameraFatten 6.0s infinite ease-in-out;
+        }
+        @keyframes hiTimeline {
+            0% { background-color: #C7D7E6; } /* Phase 1: 違和感の芽（まだ開放） */
+            33.3% { background-color: #9FB0C0; } /* Phase 3: 停滞（奥行きの薄れ） */
+            66.6% { background-color: #6F7F8F; } /* Phase 5: 閉塞（完全な関係遮断） */
+            83.3% { background-color: #7A8A9A; } /* Phase 6: 固定（断絶） */
+            100% { background-color: #C7D7E6; }
+        }
+        @keyframes hiCameraFatten {
+            0% { filter: contrast(1.0) brightness(1.0); }
+            66.6% { filter: contrast(0.8) brightness(0.78); } /* 陰影を潰して奥行きを消失させる */
+            100% { filter: contrast(1.0) brightness(1.0); }
+        }
+        /* 🌫 レイヤー：Separation & Light Block Layer */
+        .hi-separated-upper, .hi-separated-lower {
+            position: absolute; left: 0; width: 100vw; height: 42vh; pointer-events: none;
+            filter: blur(8px); transition: all 1s ease;
+        }
+        .hi-separated-upper {
+            top: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%);
+            animation: hiUpperMove 6.0s infinite ease-in-out;
+        }
+        .hi-separated-lower {
+            bottom: 0; background: linear-gradient(to top, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0) 100%);
+            animation: hiLowerMove 6.0s infinite ease-in-out;
+        }
+        @keyframes hiUpperMove {
+            0%, 100% { transform: translateY(0); opacity: 0.7; }
+            66.6% { transform: translateY(-5vh); opacity: 0.3; } /* 上層と下層が引っ張り合わず、完全に離れる */
+        }
+        @keyframes hiLowerMove {
+            0%, 100% { transform: translateY(0); opacity: 0.7; }
+            66.6% { transform: translateY(5vh); opacity: 0.3; } 
+        }
+        /* 大気の詰まり（動かない不透明な停滞） */
+        .hi-stagnant-barrier {
+            position: absolute; top: 46%; left: 0; width: 100vw; height: 8vh;
+            background: rgba(15, 23, 42, 0.08);
+            border-top: 1px dashed rgba(255, 255, 255, 0.04);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
+            pointer-events: none; animation: hiBarrier 6.0s infinite ease-in-out;
+        }
+        @keyframes hiBarrier {
+            0%, 100% { opacity: 0; }
+            66.6% { opacity: 0.85; background: rgba(15, 23, 42, 0.25); } /* 境界線（通さなさ）が明確化 */
         }
 
         /* 🎬 【48 水風井】深く静かに湧き上がる井戸の底の生命泡 */
@@ -537,6 +651,8 @@
                 <option value="8">08 水地比（自然な結びつき・調和）</option>
                 <option value="9">09 風天小畜（静かなストレス）</option>
                 <option value="10">10 天沢履（氷上を歩くような空）</option>
+                <option value="11">11 地天泰（すべて通じる完全安定の空）</option>
+                <option value="12">12 天地否（上下に断絶された閉塞空）</option>
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -618,9 +734,11 @@
             "8": { name: "水地比", sky_name: "調和の浸透空", chiikawa_scene: "雨上がりに空気と地面が優しく溶け合ってるよ…なんだかすごく心地いい…", chiikawa: "わァ…（お空がじわじわなじんでいく…あったかい）", hachiware: "無理してないのに、みんなが自然と仲良しになっていくみたいだね…！", usagi: "…フゥ（しっとりとした空気に完全に包まれてる）", advice: "努力して結びつけるのではない。ただ『そこにいる』だけで、自然と調和は生まれる。抵抗を捨て、空気と一体になれ。" },
             "9": { name: "風天小畜", sky_name: "未発散の緊迫空", chiikawa_scene: "風はいっぱい吹いてるのに…お空の雲が全然動かないよォ…！", chiikawa: "わ…わァ…ッ（前に進まない空気の重さにオロオロしている）", hachiware: "風はこんなに強いのに、お空がギュッと止められてるみたい…！なんだか不思議な緊張感だね…！", usagi: "フゥーーーッ！！（風に立ち向かうポーズのまま、その場でピタッと静止している）", advice: "エネルギーは満ちているが、今は意図的なブレーキがかかっている。焦って無理に発散しようとせず、抑え込まれたこの空間で静かに次の力を溜めよ。" },
             "10": { name: "天澤履", sky_name: "薄氷の緊張歩行空", chiikawa_scene: "お空がなんだかピキピキしてる…！一歩一歩、気をつけて歩かないと…！", chiikawa: "…わァ…（泣きそうになりながら、そろ〜りそろ〜りつま先立ちで歩いている）", hachiware: "上は綺麗なのに、足元が危うい雰囲気だね…！虎のしっぽを踏まないように、すっごく慎重にいこう…！", usagi: "ウラララララッ！！（危機を察知して、いつになく真剣な顔で高速変則ステップを踏んでいる）", advice: "危険を伴う状況を歩む時である。しかし、正しい礼節と細心の慎重さを持って臨めば、虎の尾を踏むような危うささえも無さに切り抜けられる。油断を捨てて一歩を踏み出せ。" },
+            "11": { name: "地天泰", sky_name: "天地通ずる完全安定空", chiikawa_scene: "お空がフワァッて開いたよ…！なんて気持ちいい風なんだろう…！", chiikawa: "エヘヘ…ッ（緊張がほどけて、ポカポカのお日様を浴びて嬉しそうに笑っている）", hachiware: "お空が深く呼吸してるみたい…！風も雲も、みんな仲良くお散歩してるね…！", usagi: "ヤハーーーッ！！！（両手を大きく広げて、心地よい大気の循環を体いっぱいに浴びている）", advice: "泰は完全な調和と安寧の地。すべての葛藤がほどけ、天地のエネルギーが美しく循環する大吉の時である。この豊かな安心を、全身で満喫せよ。" },
+            "12": { name: "天地否", sky_name: "天地遮断の停滞閉塞空", chiikawa_scene: "上のお空と下のお空が…どんどん離れていっちゃう……なんだか冷たいよ…", chiikawa: "ふ、ふえぇッ…（お空が重たく閉ざされて、言葉を失いしゃがみこむ）", hachiware: "風がピタッと止まっちゃった…。呼んでもお空の彼方に届かないような、寂しい空気だね…", usagi: "……（じっと固まり、静かに天地の不交錯を見つめている）", advice: "否は閉塞。通じ合っていた絆が一度切れ、孤立と停滞が支配する時。動けば動くほど深く泥に沈む。今は無理な再接続を望まず、世界の冷却をただ静かに受け入れよ。" },
             "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
             "63": { name: "水火既済", sky_name: "完全均衡 of 終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
-            "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
+            "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成의まま進み続けよ。" }
         };
 
         const effectRegistry = {
@@ -634,6 +752,8 @@
             "8":  { themeClass: 'theme-bi',        startEffect: startBiEffect },
             "9":  { themeClass: 'theme-shouchiku', startEffect: startShouchikuEffect },
             "10": { themeClass: 'theme-ri',        startEffect: startRiEffect },
+            "11": { themeClass: 'theme-tai',       startEffect: startTaiEffect },
+            "12": { themeClass: 'theme-hi',        startEffect: startHiEffect },
             "48": { themeClass: 'theme-well',      startEffect: startWellEffect },
             "63": { themeClass: 'theme-jiji',      startEffect: startJijiEffect },
             "64": { themeClass: 'theme-bisei',     startEffect: startBiseiEffect }
@@ -763,7 +883,7 @@
             }
         }
         
-        // 🌧️ 【03 水雷屯】うごめく地中の生命と雷雨（完全映像仕様）
+        // 🌧️ 【03 水雷屯】
         function startChunEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             let mist = document.createElement('div'); mist.className = 'chun-mist'; container.appendChild(mist);
@@ -775,14 +895,14 @@
             let rainStrong = document.createElement('div'); rainStrong.className = 'chun-rain-strong'; container.appendChild(rainStrong);
         }
 
-        // 🌫️ 【04 山水蒙】幾重に重なるうねる霧（完全映像仕様）
+        // 🌫️ 【04 山水蒙】
         function startMouEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             let fog = document.createElement('div'); fog.className = 'mou-fog-layer'; container.appendChild(fog);
             let particle = document.createElement('div'); particle.className = 'mou-particle-layer'; container.appendChild(particle);
         } 
         
-        // ☁️ 【05 水天需】今にも降りそうな雨雲の圧縮（完全映像仕様）
+        // ☁️ 【05 水天需】
         function startXuEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             let cloud = document.createElement('div'); cloud.className = 'xu-heavy-cloud'; container.appendChild(cloud);
@@ -851,7 +971,7 @@
             }
         }
         
-        // 🐾 【10 天沢履】氷の上を慎重に歩む空（完全映像仕様復活！）
+        // 🐾 【10 天沢履】
         function startRiEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             let tension = document.createElement('div'); tension.className = 'ri-tension-layer'; container.appendChild(tension);
@@ -867,6 +987,35 @@
                 wind.style.top = (Math.random() * 80 + 10) + 'vh'; wind.style.animationDelay = (Math.random() * -6.0) + 's';
                 container.appendChild(wind);
             }
+        }
+
+        // 🌤 【11 地天泰】エフェクト（天地のびやかな呼吸）
+        function startTaiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            // なだらかに対流する雲（Atmospheric Exchange）
+            for (let i = 0; i < 4; i++) {
+                let cloud = document.createElement('div'); cloud.className = 'tai-circulation-cloud';
+                const size = (Math.random() * 30 + 50) + 'vw'; cloud.style.width = size; cloud.style.height = size;
+                cloud.style.left = (Math.random() * 90 - 10) + 'vw'; cloud.style.top = (Math.random() * 100 - 10) + 'vh';
+                cloud.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(cloud);
+            }
+            // 吹き抜ける優しい風の流れ（Wind Circulation）
+            for (let i = 0; i < 6; i++) {
+                let flow = document.createElement('div'); flow.className = 'tai-soft-flow';
+                flow.style.width = (Math.random() * 40 + 20) + 'vw'; flow.style.top = (Math.random() * 80 + 10) + 'vh';
+                flow.style.animationDelay = (Math.random() * -6.0) + 's'; container.appendChild(flow);
+            }
+        }
+
+        // 🔏 【12 天地否】エフェクト（上下の断絶・空間の完全停滞）
+        function startHiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            // 混ざらない上層の気流
+            let upper = document.createElement('div'); upper.className = 'hi-separated-upper'; container.appendChild(upper);
+            // 混ざらない下層の気流
+            let lower = document.createElement('div'); lower.className = 'hi-separated-lower'; container.appendChild(lower);
+            // 通過性を失わせる大気の壁
+            let barrier = document.createElement('div'); barrier.className = 'hi-stagnant-barrier'; container.appendChild(barrier);
         }
 
         // 💧 【48 水風井】
