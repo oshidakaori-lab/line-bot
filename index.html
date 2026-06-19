@@ -491,19 +491,13 @@
             will-change: background-color, transform, filter;
         }
         @keyframes kenTimeline {
-            /* Phase 1: 残光 (0-1s) -> 微ズームアウト開始 */
             0% { background-color: #FFF1C9; transform: scale(1.03); filter: brightness(1.1) contrast(1.05); } 
-            /* Phase 2: 整理 (1-2s) */
             16.6% { background-color: #EBE5D3; transform: scale(1.02); filter: brightness(1.05) contrast(1.0); } 
-            /* Phase 3-4: 削ぎ落とし〜簡素化 (2-4s) */
             50.0% { background-color: #D9E3EC; transform: scale(1.01); filter: brightness(1.0) contrast(0.95); } 
             66.6% { background-color: #C8D5E1; transform: scale(1.005); filter: brightness(0.95) contrast(0.9); } 
-            /* Phase 5: 謙の完成 (4-5s) -> 完全に引き切る */
             83.3% { background-color: #B9C7D3; transform: scale(1.0); filter: brightness(0.9) contrast(0.9); } 
-            /* Phase 6: 余白〜ループへ (5-6s) */
             100% { background-color: #C6D3DD; transform: scale(1.01); filter: brightness(0.95) contrast(0.95); } 
         }
-        /* 減衰していく光の層 */
         .ken-fading-light {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle at 50% 30%, rgba(255, 241, 201, 0.4) 0%, transparent 60%);
@@ -516,7 +510,6 @@
             83.3% { opacity: 0; transform: scale(0.95); }
             100% { opacity: 0.2; transform: scale(1.0); }
         }
-        /* 消えゆくノイズパーティクル */
         .ken-noise-particle {
             position: absolute; border-radius: 50%;
             background: rgba(255, 255, 255, 0.5);
@@ -528,6 +521,80 @@
             33.3% { opacity: 0.2; transform: translateY(-5vh) scale(0.8); filter: blur(1px); }
             66.6% { opacity: 0; transform: translateY(-10vh) scale(0.5); filter: blur(0px); }
             100% { opacity: 0; }
+        }
+
+        /* 🎬 【16 雷地豫】静止の中に芽生える動きの予兆空 */
+        .theme-yo .bg-layer {
+            background-color: #C6D3DD !important;
+            background-image: none !important;
+            animation: yoTimelineAndCamera 6.0s cubic-bezier(0.33, 1, 0.68, 1) infinite !important;
+            will-change: background-color, transform, filter;
+        }
+        @keyframes yoTimelineAndCamera {
+            /* Phase 1: 静寂の極点 (0.0-1.0s) */
+            0% { background-color: #C6D3DD; transform: scale(1.0); filter: contrast(1.0) brightness(1.0); }
+            /* Phase 2: 揺らぎ・気配 (1.0-2.0s) */
+            16.6% { background-color: #C1CCD6; transform: scale(1.003); filter: contrast(1.01) brightness(0.99); }
+            /* Phase 3-4: 兆しと微振動 (2.0-4.0s) */
+            50.0% { background-color: #B8C9D6; transform: scale(1.01) translate(0.5px, -0.5px); filter: contrast(1.03) brightness(1.01); }
+            /* Phase 5: 最大の予感・爆発前緊張 (4.0-5.0s) */
+            83.3% { background-color: #A7BBD0; transform: scale(1.015) translate(-0.5px, 0.5px); filter: contrast(1.05) brightness(1.03); }
+            /* Phase 6: 次への継続 (5.0-6.0s) */
+            100% { background-color: #BFD0DB; transform: scale(1.01); filter: contrast(1.0) brightness(1.0); }
+        }
+        /* インビジブルな波紋（微小な大気の張力） */
+        .yo-tension-ripple {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+            width: 80vw; height: 80vw; border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.0);
+            pointer-events: none;
+            animation: yoRippleFlow 6.0s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+        }
+        @keyframes yoRippleFlow {
+            0%, 16.6% { border-color: rgba(255, 255, 255, 0.05); transform: translate(-50%, -50%) scale(0.5); filter: blur(2px); }
+            50.0% { border-color: rgba(255, 255, 255, 0.15); transform: translate(-50%, -50%) scale(0.85); filter: blur(4px); }
+            83.3% { border-color: rgba(255, 255, 255, 0.25); transform: translate(-50%, -50%) scale(1.1); filter: blur(1px); }
+            100% { border-color: rgba(255, 255, 255, 0.0); transform: translate(-50%, -50%) scale(1.3); filter: blur(8px); }
+        }
+        /* 遠方からのかすかな予兆光 */
+        .yo-latent-energy {
+            position: absolute; bottom: 0; left: 0; width: 100vw; height: 40vh;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.08) 0%, transparent 100%);
+            pointer-events: none; mix-blend-mode: overlay;
+            animation: yoLatentSway 6.0s ease-in-out infinite;
+        }
+        @keyframes yoLatentSway {
+            0%, 100% { opacity: 0.2; transform: translateY(0); }
+            50% { opacity: 0.8; transform: translateY(-2vh); }
+        }
+
+        /* 🎬 【17 沢雷随】ばらばらな動きが一本に調和する同期空 */
+        .theme-zui .bg-layer {
+            background-color: #B8C9D6 !important;
+            background-image: none !important;
+            animation: zuiTimelineAndCamera 6.0s cubic-bezier(0.45, 0, 0.55, 1) infinite !important;
+            will-change: background-color, transform;
+        }
+        @keyframes zuiTimelineAndCamera {
+            /* 横方向への微パン・追従感（観察者から当事者へ） */
+            0% { background-color: #B8C9D6; transform: scale(1.02) translateX(-1vw); }
+            33.3% { background-color: #A3B8C9; transform: scale(1.02) translateX(-0.3vw); }
+            66.6% { background-color: #8FAFBE; transform: scale(1.02) translateX(0.5vw); }
+            100% { background-color: #A9BECC; transform: scale(1.02) translateX(-1vw); }
+        }
+        /* 同調を表現する同期気流 */
+        .zui-synced-wind {
+            position: absolute; height: 2px;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            pointer-events: none; filter: blur(1px);
+            animation: zuiWindSynchronized 6.0s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+        @keyframes zuiWindSynchronized {
+            /* バラバラの方向から、完全に同期した右方向への流れへ */
+            0% { transform: translateX(-30vw) translateY(var(--rand-y, 0)) scaleX(0.4); opacity: 0.2; }
+            33.3% { transform: translateX(10vw) translateY(0px) scaleX(1.0); opacity: 0.5; }
+            66.6% { transform: translateX(50vw) translateY(0px) scaleX(1.8); opacity: 0.8; }
+            100% { transform: translateX(130vw) translateY(0px) scaleX(0.4); opacity: 0.1; }
         }
 
         /* 🎬 【48 水風井】深く静かに湧き上がる井戸の底の生命泡 */
@@ -663,12 +730,14 @@
                 <option value="5">05 水天需 (極限待機・空間圧縮)</option>
                 <option value="6">06 天水訟 (対立の可視化・激突)</option>
                 <option value="7">07 地水師 (統制された雨)</option>
-                <option value="8">08 水地比（自然な結びつき・調和）</option>
-                <option value="9">09 風天小畜（静かなストレス）</option>
-                <option value="10">10 天沢履（氷上を歩くような空）</option>
-                <option value="11">11 地天泰（すべて通じる完全安定の空）</option>
-                <option value="12">12 天地否（上下に断絶された閉塞空）</option>
+                <option value="8">08 水地比 (自然な結びつき・調和)</option>
+                <option value="9">09 風天小畜 (静かなストレス)</option>
+                <option value="10">10 天沢履 (氷上を歩くような空)</option>
+                <option value="11">11 地天泰 (すべて通じる完全安定の空)</option>
+                <option value="12">12 天地否 (上下に断絶された閉塞空)</option>
                 <option value="15">15 地山謙 (削ぎ落とし・均衡)</option>
+                <option value="16">16 雷地豫 (動き出す予兆・気配)</option>
+                <option value="17">17 沢雷随 (流れに乗る・同期)</option>
                 <option value="48">48 水風井 (静的循環)</option>
                 <option value="63">63 水火既済 (完全均衡)</option>
                 <option value="64">64 火水未済 (永遠の途中・循環)</option>
@@ -742,7 +811,7 @@
         const mockDataRegistry = {
             "1": { name: "乾為天", sky_name: "極大陽気の飽和空", chiikawa_scene: "ま、眩しすぎるッ…！お空が真っ白に溶けていくみたい…！", chiikawa: "わァ…ッ（まぶしくて目が開かない）", hachiware: "光が強すぎて、お空の境界線が消えちゃいそう…！なんだか、ちょっと畏れ多いね…！", usagi: "ハァーーーーーッ！！！（眩しそうに手をかざす）", advice: "陽極まれば陰生ず。圧倒的な光は、存在すら消し去る『虚無』を内包する。全力を尽くした先にある静寂を恐れるな。" },
             "2": { name: "坤為地", sky_name: "絶対受容の沈降空", chiikawa_scene: "なんだか…お空がすごく重たい気がする…息が詰まりそう…", chiikawa: "ヮァ…ヮァ…（押しつぶされそう）", hachiware: "全然動いてないのに、どんどん重くなってくるね…！全部受け止めてるのかな…？", usagi: "……。（めずらしく静かに空を見上げている）", advice: "動かないことは死ではない。変化がないことが最大の変化であり、すべての重圧を受け止め、沈黙のまま耐え抜く『究極の器』の姿である。" },      
-            "3": { name: "水雷屯", sky_name: "混沌とうごめく胎動の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！お空の奥がピカピカ光って、雨も降ってきたよォ…！", chiikawa: "わァァ…ッ！（もがくような雷の音にガタガタ震えている）", hachiware: "風があっちこっちから吹いてる…！暗い雲の中で、なにかすごいエネルギーが生まれてるみたいッ！", usagi: "プルルルルルッ！！（混沌に立ち向かうように、お尻を振ってブルブルしている）", advice: "屯は生みの苦しみ、初期のうごめきである。暗闇と嵐の中でもがく時間は無駄ではない。その奥底で次の世代の命が静かに芽吹いている。焦らず力を蓄えよ。" },
+            "3": { name: "水雷屯", sky_name: "混沌とうごめく胎動の雷雲空", chiikawa_scene: "なんだかお空がざわざわしてる…！お空の奥がピカピカ光って、雨も降ってきたよォ…！", chiikawa: "わァァ…ッ！（もがくような雷の音にガタガタ震えている）", hachiware: "風があっちこっちから吹いてる…！暗い雲の中で、なにかすごいエネルギーが生まれてるみたいッ！", usagi: "プルルルルルッ！！（混沌に立ち向かうように、お尻を振ってブルブルしている）", advice: "屯は生みの苦しみ、初期のうごめきである。暗闇と嵐の中でもがく時間は無駄ではない。その奥底で次の世代 of 命が静かに芽吹いている。焦らず力を蓄えよ。" },
             "4": { name: "山水蒙", sky_name: "幾重にもうねる先見えぬ濃霧空", chiikawa_scene: "お空が真っ白で…なにも見えないや……。ハチワレ、うさぎ、どこにいるのー？", chiikawa: "ワヮッ…（深いもやもやに包まれて、涙目でおろおろしている）", hachiware: "声は聞こえるのに姿が見えないよぉ…！なんだか、迷子になっちゃったみたいでドキドキする…！", usagi: "ウラララララァ！！（深い霧にわざと突っ込んで、一瞬で見えなくなってまた戻ってきた）", advice: "見えないのではない、自らの認識がまだ幼いのだ。先を急いでも壁にぶつかるだけである。今は教えを乞い、手探りで霧の先の形を確かめる『学び』の時。焦りは禁物だ。" }, 
             "5": { name: "水天需", sky_name: "今にも降り出しそうな極限待機空", chiikawa_scene: "雨も風もないのに、お空がすっごく重たい……。なんだか、息をのんじゃうね……ゴクリ……。", chiikawa: "…っ（…上にあるおっきな雨雲が迫ってきて、怖くて一歩も動けない）", hachiware: "嵐の前って、こんなに静まり返るんだね……お空がググッと圧縮されてるみたい…！", usagi: "……フゥー。（いつになく真剣なポーズのまま、じっと雲を見据えて『待って』いる）", advice: "需は待機であり、エネルギーの蓄積である。準備が整う前に焦って飛び出せば、大雨に流されて溺れるだけだ。今はごちそうを食べ、十分に休息し、絶好のタイミングを静かに待て。" }, 
             "6": { name: "天水訟", sky_name: "対立と激突の交錯空", chiikawa_scene: "上のお空と下のお空が…逆の方向に動いて、ごっちんこしてるよォ…！！", chiikawa: "わぁッ！！（空が裂ける瞬間に耳をふさいでしゃがみこむ）", hachiware: "すごい風…！上は晴れてるのに、下は雨雲だよ…！お空が真っ二つにちぎれちゃいそう…！", usagi: "ハァァーーーッ！！（雷の閃光に合わせて、空に向かって威嚇している）", advice: "どちらの力も正しいがゆえに、共存できずに衝突する。今は無理にまとめるな。この強烈な摩擦のエネルギーが、次の構造を生み出すための通過儀礼である。" },
@@ -753,6 +822,8 @@
             "11": { name: "地天泰", sky_name: "天地通ずる完全安定空", chiikawa_scene: "お空がフワァッて開いたよ…！なんて気持ちいい風なんだろう…！", chiikawa: "エヘヘ…ッ（緊張がほどけて、ポカポカのお日様を浴びて嬉しそうに笑っている）", hachiware: "お空が深く呼吸してるみたい…！風も雲も、みんな仲良くお散歩してるね…！", usagi: "ヤハーーーッ！！！（両手を大きく広げて、心地よい大気の循環を体いっぱいに浴びている）", advice: "泰は完全な調和と安寧の地。すべての葛藤がほどけ、天地のエネルギーが美しく循環する大吉の時である。この豊かな安心を、全身で満喫せよ。" },
             "12": { name: "天地否", sky_name: "天地遮断の停滞閉塞空", chiikawa_scene: "上のお空と下のお空が…どんどん離れていっちゃう……なんだか冷たいよ…", chiikawa: "ふ、ふえぇッ…（お空が重たく閉ざされて、言葉を失いしゃがみこむ）", hachiware: "風がピタッと止まっちゃった…。呼んでもお空の彼方に届かないような、寂しい空気だね…", usagi: "……（じっと固まり、静かに天地の不交錯を見つめている）", advice: "否は閉塞。通じ合っていた絆が一度切れ、孤立と停滞が支配する時。動けば動くほど深く泥に沈む。今は無理な再接続を望まず、世界の冷却をただ静かに受け入れよ。" },
             "15": { name: "地山謙", sky_name: "静かなる減衰と均衡空", chiikawa_scene: "眩しかった光が…だんだん優しく、静かになっていくよ…", chiikawa: "わァ…（心がすーっと落ち着く）", hachiware: "余計なものがなくなって、本当に必要なものだけが残ったみたいだね…！", usagi: "フゥー…（目を閉じて静寂を味わっている）", advice: "豊かさを誇示せず、あえて減らすことで本質に近づく『謙虚』の極致。足さない強さが、完全な調和を生む。" },
+            "16": { name: "雷地豫", sky_name: "静寂に満ちる鼓動前夜の予感空", chiikawa_scene: "しーんとしてるのに…なんだかお空がそわそわ動き出した気がする…！", chiikawa: "わァ…！あ、何かきそう…？（じっと耳を澄ましている）", hachiware: "まだ風も吹いてないのに、お空の奥が震えてるみたい…！何かが始まるのかな…ワクワクするね！", usagi: "プルルルルル…ッ（静かに興奮を溜めるように、小さくステップを踏みながら待機している）", advice: "豫は予兆であり愉悦の始まり。静寂の中に次の大いなるダイナミズムが息をひそめている。嵐の前のこの『期待感』そのものを、静かに、かつ深く味わえ。" },
+            "17": { name: "沢雷随", sky_name: "流れに寄り添う大気同期空", chiikawa_scene: "バラバラだった風と雲が…おんなじ方向に優しく流れ出したよ…！", chiikawa: "わァ…ッ（流れを怖がらずに、そっと身をまかせている）", hachiware: "抗わないで、みんな同じ方向へすーっと動いていくね…！流れに乗るって、こんなに気持ちいいんだ！", usagi: "ウララァ〜♪（大気の流れと一体になるように、滑らかにスライド移動している）", advice: "自らの固執を手放し、時流や自然の大きなうねりにただ『従う』ことで安全と調和を得る時。抵抗は不要。流れそのものを信じて、身を委ねよ。" },
             "48": { name: "水風井", sky_name: "深層の静的循環空", chiikawa_scene: "深い井戸の底から、お空を見てるみたい…", chiikawa: "わ…ァ…（じーっ）", hachiware: "動いてないのに、ずっと湧き出てる…！すごい構造だね！", usagi: "フーーーッ（湧出）", advice: "閉じられた場所こそが、最大の供給源になる。動かずに維持せよ。" },
             "63": { name: "水火既済", sky_name: "完全均衡 of 終着空", chiikawa_scene: "すべてが完璧に揃った、綺麗すぎるお空…", chiikawa: "ん…？（なにか震えてる…？）", hachiware: "完璧に完成したはずなのに…なんだか静かな緊張感があるね…", usagi: "ハァーーーッ！（パキパキ…）", advice: "完成とは崩壊の開始点。整いきった瞬間から、次の未完成への移行が始まっている。" },
             "64": { name: "火水未済", sky_name: "永遠の途上の循環空", chiikawa_scene: "終わるかと思ったら…また新しく始まってるよ！", chiikawa: "わァ…！あ、あれ…？（また戻った…？）", hachiware: "完成しそうで、完成しない…ずっと『途中』なんだね…！", usagi: "ルルルルルル…！（無限）", advice: "完成とは終点ではなく、循環の中の一状態にすぎない。未完成のまま進み続けよ。" }
@@ -772,6 +843,8 @@
             "11": { themeClass: 'theme-tai',       startEffect: startTaiEffect },
             "12": { themeClass: 'theme-hi',        startEffect: startHiEffect },
             "15": { themeClass: 'theme-ken',       startEffect: startKenEffect },
+            "16": { themeClass: 'theme-yo',        startEffect: startYoEffect },
+            "17": { themeClass: 'theme-zui',       startEffect: startZuiEffect },
             "48": { themeClass: 'theme-well',      startEffect: startWellEffect },
             "63": { themeClass: 'theme-jiji',      startEffect: startJijiEffect },
             "64": { themeClass: 'theme-bisei',     startEffect: startBiseiEffect }
@@ -1037,7 +1110,7 @@
             let barrier = document.createElement('div'); barrier.className = 'hi-stagnant-barrier'; container.appendChild(barrier);
         }
 
-        // 📉 【15 地山謙】減衰と均衡
+        // 📉 【15 地山謙】
         function startKenEffect() {
             const container = document.getElementById('weather-effect'); container.innerHTML = '';
             let fadingLight = document.createElement('div'); fadingLight.className = 'ken-fading-light'; container.appendChild(fadingLight);
@@ -1048,6 +1121,30 @@
                 p.style.left = (Math.random() * 100) + 'vw'; p.style.top = (Math.random() * 80 + 10) + 'vh';
                 p.style.animationDelay = (Math.random() * -3.0) + 's'; 
                 container.appendChild(p);
+            }
+        }
+
+        // 🌩 【16 雷地豫】
+        function startYoEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            let ripple = document.createElement('div'); ripple.className = 'yo-tension-ripple'; container.appendChild(ripple);
+            let energy = document.createElement('div'); energy.className = 'yo-latent-energy'; container.appendChild(energy);
+        }
+
+        // 🌊 【17 沢雷随】
+        function startZuiEffect() {
+            const container = document.getElementById('weather-effect'); container.innerHTML = '';
+            
+            // 同期して右へと流れるシネマティック気流ラインの生成
+            for (let i = 0; i < 15; i++) {
+                let wind = document.createElement('div'); wind.className = 'zui-synced-wind';
+                wind.style.width = (Math.random() * 40 + 20) + 'vw';
+                wind.style.top = (Math.random() * 80 + 10) + 'vh';
+                // 各ラインにランダムなY軸オフセットをカスタムプロパティで渡してPhase 1（分散）を再現
+                const randY = (Math.random() * 150 - 75) + 'px';
+                wind.style.setProperty('--rand-y', randY);
+                wind.style.animationDelay = (Math.random() * -6.0) + 's';
+                container.appendChild(wind);
             }
         }
 
