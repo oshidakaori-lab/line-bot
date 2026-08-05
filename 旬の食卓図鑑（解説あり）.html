@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>二十四節気・七十二候</title>
+  <style>
+    :root{--bg:#f7f4ee;--card:#fff;--text:#2f2a24;--muted:#6c6359;--line:#e7dfd4;--shadow:0 10px 28px rgba(40,28,12,.08)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}
+    .page{max-width:1100px;margin:0 auto;padding:20px 16px 40px}
+    .hero{margin-bottom:20px}
+    .eyebrow{margin:0 0 8px;color:var(--muted);font-size:.9rem}
+    h1{margin:0;font-size:clamp(1.6rem,4vw,2.4rem)}
+    .lead{margin:8px 0 0;color:var(--muted);line-height:1.7}
+    .season-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .season-card{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px}
+    .season-card h2{margin:0 0 8px;font-size:1.3rem}
+    .summary{margin:0 0 14px;color:var(--muted);line-height:1.7}
+    .sekki-list{display:grid;gap:12px}
+    .sekki-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+    .sekki-card>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;background:#faf7f2}
+    .sekki-card>summary::-webkit-details-marker,.kou-card>summary::-webkit-details-marker{display:none}
+    .sekki-body{padding:14px 16px 16px;border-top:1px solid var(--line)}
+    .sekki-body p,.kou-body p{margin:0 0 10px;line-height:1.8}
+    .kou-list{display:grid;gap:10px;margin-top:12px}
+    .kou-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+    .kou-card>summary{list-style:none;cursor:pointer;padding:12px 14px;font-weight:600;background:#fcfbf8}
+    .kou-body{padding:12px 14px 14px;border-top:1px solid var(--line)}
+    .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;color:var(--muted);font-size:.92rem}
+    .tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .tag{display:inline-block;padding:4px 10px;border-radius:999px;background:#f1eadf;font-size:.85rem;color:#5b4e41}
+    .reading{font-weight:500;color:var(--muted);font-size:.95em}
+    @media (max-width:640px){.page{padding-inline:12px}.season-card{border-radius:18px;padding:16px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">二十四節気・七十二候</p>
+      <h1>春夏秋冬の季節カード</h1>
+      <p class="lead">季節の流れを、カードと折りたたみで見やすく表示します。</p>
+    </header>
+    <section id="app" class="season-list"></section>
+  </main>
+  
+    <script>
+    window.seasonData = {
+      meta: {
+        version: "1.0",
+        locale: "ja",
+        type: "seasonal-calendar",
+        unit: "sekki-kou",
+        description: "二十四節気と七十二候を、春夏秋冬の4季節に整理した閲覧用データ。"
+      },
+      seasons: [
+        {
+          id: "spring",
+          label: "春",
+          order: 1,
+          summary: "冬の静けさから芽吹きへ向かう季節。",
+          description: "春は、冬の静けさの中でため込まれていたものが少しずつ外へ向かって動き出す季節です。空気はまだ冷たさを残しながらも、日差しにはやわらかさが戻り、地中では芽吹きの準備が進みます。人の身体もまた、冬の間にこわばっていた感覚がゆるみ、香りや苦味、みずみずしさを求めるようになります。山菜、若葉、発酵のはじまり、淡い色合いの食材などがよく似合う時期で、味わいも暮らしも少しずつ軽やかに切り替わっていきます。春の調味料や保存食は、目覚めと浄化、そして生命力の立ち上がりを支える役割を持っています。",
+          sekki: [
+            {
+              id: "risshun",
+              label: "立春",
+              reading: "りっしゅん",
+              order: 1,
+              summary: "春の始まりを告げる節気。",
+              description: "暦の上で春が始まる日です。実際の体感としてはまだ寒さが強いこともありますが、太陽の光の角度や風のやわらかさに、季節が少しずつ切り替わっていく気配が表れます。冬のあいだに閉じていた植物や生きものの感覚が、静かに外へ向きはじめる時期です。新しい一年の流れを意識し、暮らしを整え直す節目としても大切です。",
+              kou: [
+                {
+                  id: "harukaze_kouri_wo_toku",
+                  label: "東風解凍",
+                  reading: "はるかぜこおりをとく",
+                  order: 1,
+                  summary: "東風が氷をゆるめるころ。",
+                  description: "東風が吹いて氷をゆるめるころです。冬のあいだに固まっていた空気が少しずつほどけ、川や池の表面にも春の動きが見え始めます。食材では、ふきのとうや菜の花のような苦味のある山野のものがよく合い、身体はまだ冷えを残しながらも、香りや軽い刺激に自然と反応しやすくなります。暮らしの中では、重たい冬の空気を入れ替えるように窓を開け、少しずつ春支度を進めたくなる候です。",
+                  foods: {
+                    "潤い": ["ふきのとう", "菜の花", "山菜"],
+                    "清熱": ["梅", "柑橘"],
+                    "消耗対策": ["山菜", "塩麹"]
+                  },
+                  body: "身体はまだ冷えを残しつつも、香りや苦味に敏感になり、眠っていた感覚が少しずつ目を覚まします。"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    };
+  
+      window.seasonData.seasons.push(
+      {
+        id: "spring-2",
+        label: "春",
+        order: 1,
+        summary: "冬の静けさから芽吹きへ向かう季節。",
+        description: "春は、冬の静けさの中でため込まれていたものが少しずつ外へ向かって動き出す季節です。空気はまだ冷たさを残しながらも、日差しにはやわらかさが戻り、地中では芽吹きの準備が進みます。人の身体もまた、冬の間にこわばっていた感覚がゆるみ、香りや苦味、みずみずしさを求めるようになります。",
+        sekki: [
+          {
+            id: "keichitsu",
+            label: "啓蟄",
+            reading: "けいちつ",
+            order: 3,
+            summary: "虫が土中から動き出す節気。",
+            description: "土の中で冬ごもりしていた虫たちが、春の気配に誘われて動き出すころです。見えない場所で眠っていた生命が目を覚まし、地上の景色にも小さな変化が広がります。食材では、山椒や木の芽のような少し刺激のある香りが合い、身体は冷えを抱えたままでも、外へ向かう力を感じ始めます。",
+            kou: [
+              {
+                id: "sugo_mori_no_mushi_to_wo_hiraku",
+                label: "蟄虫啓戸",
+                reading: "すごもりのむしとをひらく",
+                order: 1,
+                summary: "虫が巣ごもりの戸を開くころ。",
+                description: "冬ごもりしていた虫たちが、土の中の戸を開くようにして姿を現すころです。小さな生きものの目覚めは、春が地中まで届いていることを静かに知らせます。",
+                foods: {
+                  "潤い": ["山椒", "木の芽"],
+                  "清熱": ["香味野菜"],
+                  "消耗対策": ["新芽", "春野菜"]
+                },
+                body: "身体は冷えを抱えたままでも、外へ向かう力を感じ始めます。"
+              },
+              {
+                id: "momo_hajimete_saku",
+                label: "桃始笑",
+                reading: "ももはじめてさく",
+                order: 2,
+                summary: "桃の花がほころび始めるころ。",
+                description: "桃の花がほころび始め、春らしいやわらかな彩りが景色に加わるころです。古くは花が咲くことを「笑う」と表現し、開く喜びや明るさを重ねてきました。",
+                foods: {
+                  "潤い": ["桃", "果実"],
+                  "清熱": ["果実ビネガー"],
+                  "消耗対策": ["甘酸っぱい果物"]
+                },
+                body: "身体は目や心がふっと明るくなるような感覚を覚えます。"
+              },
+              {
+                id: "namushi_chou_to_naru",
+                label: "菜虫化蝶",
+                reading: "なむしちょうとなる",
+                order: 3,
+                summary: "虫が蝶へ姿を変えるころ。",
+                description: "菜の葉を食べていた虫が、やがて蝶になるころです。小さな命が姿を変えながら空へ向かう様子には、春の変化と成長が象徴されています。",
+                foods: {
+                  "潤い": ["菜の花", "青菜"],
+                  "清熱": ["和えもの"],
+                  "消耗対策": ["白ごま", "発酵食品"]
+                },
+                body: "身体は変化に対して敏感になり、軽やかなものを自然と受け入れやすくなります。"
+              }
+            ]
+          }
+        ]
+      }
+    );
+  
+      const app = document.querySelector("#app");
+
+    const renderTags = obj =>
+      Object.entries(obj)
+        .map(([k, arr]) => arr.map(v => `<span class="tag">${k}: ${v}</span>`).join(""))
+        .join("");
+
+    const renderKou = kou => `
+      <details class="kou-card">
+        <summary>${kou.label} <span class="reading">(${kou.reading})</span></summary>
+        <div class="kou-body">
+          <p>${kou.description}</p>
+          <div class="meta-row"><span>要約: ${kou.summary}</span></div>
+          <div class="tag-row">${renderTags(kou.foods)}</div>
+          <p>${kou.body}</p>
+        </div>
+      </details>`;
+
+    const renderSekki = sekki => `
+      <details class="sekki-card">
+        <summary>${sekki.label} <span class="reading">(${sekki.reading})</span></summary>
+        <div class="sekki-body">
+          <p>${sekki.description}</p>
+          <div class="meta-row"><span>要約: ${sekki.summary}</span></div>
+          <div class="kou-list">${sekki.kou.map(renderKou).join("")}</div>
+        </div>
+      </details>`;
+
+    const renderSeason = season => `
+      <article class="season-card">
+        <h2>${season.label}</h2>
+        <p class="summary">${season.description}</p>
+        <div class="meta-row"><span>要約: ${season.summary}</span></div>
+        <div class="sekki-list">${season.sekki.map(renderSekki).join("")}</div>
+      </article>`;
+
+    app.innerHTML = window.seasonData.seasons
+      .sort((a, b) => a.order - b.order)
+      .map(renderSeason)
+      .join("");
+  </script>
+</body>
+</html>
